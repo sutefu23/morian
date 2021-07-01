@@ -1,33 +1,32 @@
 version: '3.3'
 services:
-  wordpress:
-    container_name: wordpress-${PROJECT_NAME}
+  frourio:
+    container_name: frourio-${PROJECT_NAME}
     tty: true
-    image: wordpress:latest
+    build: 
+      context: .
+      dockerfile: Dockerfile
     depends_on:
       - db
     ports:
-      - "${PORT}:80"
-    environment:
-      WORDPRESS_DB_HOST: db:3306
-      WORDPRESS_DB_USER: wordpress
-      WORDPRESS_DB_PASSWORD: wordpress
-      WORDPRESS_DB_NAME: wordpress
+      - "8000:8000"
+      - "30743:30743"
     volumes:
-      - ./www/html:/var/www/html
-      - ./log:/var/log/apache2
-      - ./config/apache2/sites-available:/etc/apache2/sites-available
-    working_dir: $WP_DIR
+      - ./app:/app
   db:
     image: mysql:5.7
     container_name: mysql-${PROJECT_NAME}
     volumes:
       - ./db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: wordpress
-      MYSQL_USER: wordpress
-      MYSQL_PASSWORD: wordpress
+      MYSQL_DATABASE: morian
+      MYSQL_USER: morian
+      MYSQL_PASSWORD: morian
+      TZ: 'Asia/Tokyo'
+      command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
   pma:
     container_name: pma-${PROJECT_NAME}
     image: phpmyadmin/phpmyadmin:latest
@@ -39,13 +38,3 @@ services:
       - UPLOAD_LIMIT=20480K
     links:
       - db
-  mailhog:
-    image: mailhog/mailhog
-    ports:
-      - "8025:8025"
-      - "1025:1025"
-    environment:
-      MH_STORAGE: maildir
-      MH_MAILDIR_PATH: /tmp
-    volumes:
-        - "./mailhog:/tmp"
