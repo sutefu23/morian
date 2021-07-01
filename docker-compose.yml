@@ -22,9 +22,9 @@ services:
       - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: morian
-      MYSQL_USER: morian
-      MYSQL_PASSWORD: morian
+      MYSQL_DATABASE: ${PROJECT_NAME}
+      MYSQL_USER: ${PROJECT_NAME}
+      MYSQL_PASSWORD: ${PROJECT_NAME}
       TZ: 'Asia/Tokyo'
       command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
   pma:
