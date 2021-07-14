@@ -9,7 +9,7 @@ EXPOSE  30743
 EXPOSE  5555
 RUN rm -f yarn.lock
 RUN yarn install
-RUN yarn global add prisma
+RUN export PATH=$PATH:./node_modules/.bin
 
-CMD ["yarn" , "dev"]
+CMD ["ash"]
 
