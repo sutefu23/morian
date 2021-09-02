@@ -12,3 +12,123 @@ model Task {
   label String
   done  Boolean @default(false)
 }
+
+// ユーザー
+model User {
+  id          Int       @id
+  name        String    @unique
+  UserPass    UserPass?
+  editHistory History[] @relation("editUser")
+  bookHistory History[] @relation("bookUser")
+  enable      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+// ユーザーログイン
+model UserPass {
+  id     Int    @id @default(autoincrement())
+  pass   String
+  user   User   @relation(fields: [userId], references: [id])
+  userId Int
+}
+
+// 在庫
+model Item {
+  id            Int       @id
+  lotNo         String    @unique // ロット番号
+  itemType      ItemType  @relation(fields: [itemTypeId], references: [id]) // 材種
+  itemTypeId    Int
+  woodSpecies   Species?   @relation(fields: [woodSpeciesId], references: [id]) // 樹種
+  woodSpeciesId Int?
+  spec          String? //仕様
+  length        String // 寸法（長さ）
+  width         String // 寸法（幅）
+  thickness     String // 寸法（厚）
+  package       Decimal // 入数
+  count         Decimal // 在庫数量
+  tempCount     Decimal // 仮想在庫数量
+  unit          Unit      @relation(fields: [unitId], references: [id]) // 単位
+  unitId        Int
+  supplier      Supplier? @relation(fields: [supplierId], references: [id])
+  supplierId    Int?
+  history       History[]
+  arrivalDate   String // 入荷日
+  warehouse     Warehouse @relation(fields: [warehouseId], references: [id]) // 倉庫
+  warehouseId   Int // 倉庫
+  cost          String // 原価
+  costUnit      String // 原価単位
+  note          String // 備考
+  defective     Boolean   @default(false) // 不良品
+  enable        Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Unit {
+  id    Int    @id
+  name  String @unique
+  order Int    @unique
+  item  Item[]
+}
+
+model Supplier {
+  id         Int     @id
+  name       String  @unique
+  furigana   String
+  zip        String?
+  prefecture String?
+  address    String?
+  tel        String?
+  fax        String?
+  enable     Boolean @default(true)
+  item       Item[]
+}
+
+model ItemType {
+  id    Int    @id
+  name  String @unique
+  order Int    @unique
+  item  Item[]
+}
+
+model Species {
+  id    Int    @id
+  name  String @unique
+  order Int    @unique
+  item  Item[]
+}
+
+model Warehouse {
+  id    Int    @id
+  name  String @unique
+  order Int    @unique
+  item  Item[]
+}
+
+model History {
+  id          Int      @id @default(autoincrement())
+  note        String //備考
+  reasonId    Int
+  reason      Reason   @relation(fields: [reasonId], references: [id]) //理由
+  item        Item     @relation(fields: [itemId], references: [id])
+  itemId      Int
+  reduceCount Decimal //出荷数
+  addCount    Decimal //入荷数
+  count       Decimal //残数
+  editUser    User     @relation(name: "editUser", fields: [editUserId], references: [id])
+  editUserId  Int
+  order       Int //並び順
+  bookUser    User?    @relation(name: "bookUser", fields: [bookUserId], references: [id])
+  bookUserId  Int
+  bookDate    DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Reason {
+  id      Int       @id
+  status  String //ステータス
+  order   Int       @unique
+  history History[]
+}

@@ -40,3 +40,4 @@ jobs:
           yarn test
         env:
           API_JWT_SECRET: test_secret
+          API_SALT: test_salt

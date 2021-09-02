@@ -6,6 +6,7 @@
     "paths": {
       "~/*": ["./*"],
       "$/*": ["./server/*"],
+      "@domain/*": ["./server/domain/*"],
       "$prisma/*": ["./server/node_modules/.prisma/*"]
     },
     "allowJs": true,
