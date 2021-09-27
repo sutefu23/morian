@@ -14,13 +14,13 @@ const _updateItem = async (itemId: Item["id"], partialHistory: Prisma.HistoryUpd
   }
 }
 
-export const createHistory = (data:Prisma.HistoryCreateInput) => {
+export const createHistory = (history:Prisma.HistoryCreateInput) => {
   prisma.history.create(
-    {data}
+    {data:history}
   )
-  const itemId = data.item?.connect?.id
+  const itemId = history.item?.connect?.id
   if (itemId) {
-    _updateItem(itemId, data)
+    _updateItem(itemId, history)
   }
 }
 

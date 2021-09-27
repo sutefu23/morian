@@ -1,18 +1,18 @@
 version: '3.3'
 services:
-  frourio:
-    container_name: frourio-${PROJECT_NAME}
-    tty: true
-    build: 
-      context: .
-      dockerfile: Dockerfile
-    depends_on:
-      - db
-    ports:
-      - "8000:8000"
-      - "30743:30743"
-    volumes:
-      - ./app:/app
+  # frourio:
+  #   container_name: frourio-${PROJECT_NAME}
+  #   tty: true
+  #   build: 
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   depends_on:
+  #     - db
+  #   ports:
+  #     - "8000:8000"
+  #     - "30743:30743"
+  #   volumes:
+  #     - ./app:/app
   db:
     image: mysql:5.7
     container_name: mysql-${PROJECT_NAME}
@@ -38,3 +38,10 @@ services:
       - UPLOAD_LIMIT=20480K
     links:
       - db
+  redis:
+    container_name: redis-${PROJECT_NAME}
+    image: "redis:latest"
+    ports:
+      - "6379:6379"
+    volumes:
+      - "./data/redis:/data"

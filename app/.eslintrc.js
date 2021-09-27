@@ -27,6 +27,8 @@ module.exports = {
   },
   rules: {
     'react/react-in-jsx-scope': 'off',
+    'no-throw-literal': "error",
+    'require-await': "error",
     '@typescript-eslint/explicit-module-boundary-types': 'off'
   },
   overrides: [

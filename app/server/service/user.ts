@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcrypt'
 import type { User } from '$prisma/client'
-import { API_SALT } from '$/service/envValues'
+import { API_SALT } from 'envValues'
 const prisma = new PrismaClient()
 
 
@@ -34,6 +34,13 @@ export const createUser = async (id: User['id'], name: string, pass: string) => 
         }
       }
     }
+  })
+}
+
+export const modifyUserName = async (id:User['id'], name: string) => {
+  await prisma.user.update({
+    where:{ id },
+    data: { name }
   })
 }
 

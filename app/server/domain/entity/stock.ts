@@ -1,12 +1,15 @@
-import { ValueObject } from "$/domain/type/valueObject"
-import { Entity } from "$/domain/type/entity"
+import { ValueObject } from "@domain/type/valueObject"
+import { Entity } from "@domain/type/entity"
+import { Decimal } from '@prisma/client/runtime'
+import { ValidationError,InvalidArgumentError } from "../type/error"
+import { User } from "./user"
 
-export class ロット番号型 extends ValueObject<string>{
+export class lotNoType extends ValueObject<string>{
   private constructor(val: string){ super(val) }
 
-  static getInstance(val: string):ロット番号型 | never{
+  static getInstance(val: string):lotNoType | ValidationError{
     if(!/^[A-Z]+-([0-9]|-)+$/gu.test(val)){
-      throw new Error("ロット番号の形式が正しくありません。英語-数字")
+      return new ValidationError("lotNoの形式が正しくありません。英語-数字")
     }
     return new this(val)
   }
@@ -18,123 +21,229 @@ interface Master {
   readonly order: number 
 }
 
-export type 材種型 = Master 
-export type 単位型 = Master 
-export type 樹種型 = Master 
-export type 倉庫型 = Master 
-export type グレード型 = Master 
+export type ItemTypeType = Master 
+export type Unitype = Master 
+export type WoodSpeciesType = Master 
+export type WarehouseType = Master 
+export type GradeType = Master 
 
-export type 仕様型 = string
+export type specType = string
 
-export class フリガナ型 extends ValueObject<string>{
+export class furiganaType extends ValueObject<string>{
   private constructor(val: string){ super(val) }
 
-  static getInstance(val: string):フリガナ型 | never{
+  static getInstance(val: string):furiganaType | ValidationError{
     if(!/^[ァ-ヴー]+$/gu.test(val)){
-      throw new Error("フリガナの形式が正しくありません。")
+      return new ValidationError("furiganaの形式が正しくありません。")
     }
     return new this(val)
   }
 }
 
-export class 郵便番号型 extends ValueObject<string>{
+export class zipType extends ValueObject<string>{
   private constructor(val: string){ super(val) }
 
-  static getInstance(val: string):郵便番号型 | never{
+  static getInstance(val: string):zipType | ValidationError{
     if(!/^[0-9]{3}-[0-9]{4}$/gu.test(val)){
-      throw new Error("郵便番号の形式が正しくありません。")
+      return new ValidationError("zipの形式が正しくありません。")
     }
     return new this(val)
   }
 }
 
 
-export class 原価単位数量型 extends ValueObject<number>{
+export class CountType extends ValueObject<number>{
   private constructor(val: number){ super(val) }
-  static getInstance(val: number):原価単位数量型 | never{
+  static getInstance(val: number):CountType | ValidationError{
     if(val < 0){
-      throw new Error("原価単位数量はマイナス値に出来ません。")
+      return new ValidationError("Countはマイナス値に出来ません。")
     }
     return new this(val)
+  }
+}
+
+
+export class lengthType extends ValueObject<number|"乱尺">{
+  private constructor(val: number|"乱尺"){ super(val) }
+  static getInstance(val: number|string):lengthType | ValidationError{
+    if(!/^[-]?([1-9]\d*|0)(\.\d+)?$/g.test(String(val)) || String(val) != "乱尺"){
+      return new ValidationError("lengthは数値あるいは「乱尺」という言葉だけが許可されています。")
+    }
+    return new this(val as number | "乱尺")
   }
 }
 
 interface ItemProps {
   readonly id :number
-  readonly name: string
+  readonly lotNo: lotNoType
+  readonly itemType: ItemTypeType
+  readonly woodSpecies: WoodSpeciesType
+  readonly grade:GradeType
+  readonly spec: specType
+  readonly length?: lengthType 
+  readonly thickness?: number
+  readonly width?: number 
+  readonly supplierId: Supplier["id"]
+  readonly arrivalDate: Date
+  readonly packageCount: Decimal 
+  readonly costPackageCount: Decimal
+  readonly cost: Decimal
+  readonly warehouse: WarehouseType
+  readonly costUnit: Unitype
+  readonly defectiveNote: string
+  readonly count: Decimal
+  readonly unit: Unitype
+  readonly tempCount : Decimal
+  readonly note: string
   readonly enable: boolean
-  readonly ロット番号: ロット番号型
-  readonly 材種: 材種型
-  readonly 樹種: 樹種型
-  readonly グレード:グレード型
-  readonly 仕様: 仕様型
-  readonly 長さ?: number|"乱尺"
-  readonly 厚み?: number
-  readonly 幅: number
-  readonly 製造元: 製造元型
-  readonly 入数: number 
-  readonly 原価単位数量: number
-  readonly 残数: number
-  readonly 仮残数 : number
 }
 
-export class 商品型 extends Entity<ItemProps>{
+
+
+export class Item extends Entity<ItemProps> implements ItemProps{
   constructor(props: ItemProps){
     super(props)
   }
+  readonly lotNo: lotNoType
+  readonly itemType: ItemTypeType
+  readonly woodSpecies: WoodSpeciesType
+  readonly grade: GradeType
+  readonly spec: string
+  readonly arrivalDate: Date
+  readonly length?: lengthType
+  readonly thickness?: number
+  readonly width?: number
+  readonly supplierId: Supplier["id"]
+  readonly packageCount: Decimal
+  readonly count: Decimal
+  readonly unit: Unitype
+  readonly warehouse: WarehouseType
+  readonly defectiveNote: string
+  readonly costPackageCount: Decimal
+  readonly cost: Decimal
+  readonly costUnit: Unitype
+  readonly tempCount: Decimal
+  readonly note: string
+  readonly enable: boolean
 }
 
-export class 電話番号型 extends ValueObject<string>{
+export class telType extends ValueObject<string>{
   private constructor(val: string){ super(val) }
-  static getInstance(val: string):電話番号型 | never{
+  static getInstance(val: string):telType | ValidationError{
     if(!/^[0-9]+-[0-9]+-[0-9]+$/.test(val)){
-      throw new Error("番号の形式が異なります。")
+      return new ValidationError("番号の形式が異なります。")
     }
     return new this(val)
   }
 }
 
-export type 都道府県型 = "北海道"|"青森県"|"岩手県"|"宮城県"|"秋田県"|"山形県"|"福島県"|"茨城県"|"栃木県"|"群馬県"|"埼玉県"|"千葉県"|"東京都"|"神奈川県"|"新潟県"|"富山県"|"石川県"|"福井県"|"山梨県"|"長野県"|"岐阜県"|"静岡県"|"愛知県"|"三重県"|"滋賀県"|"京都府"|"大阪府"|"兵庫県"|"奈良県"|"和歌山県"|"鳥取県"|"島根県"|"岡山県"|"広島県"|"山口県"|"徳島県"|"香川県"|"愛媛県"|"高知県"|"福岡県"|"佐賀県"|"長崎県"|"熊本県"|"大分県"|"宮崎県"|"鹿児島県"|"沖縄県"
+export const Prefectures = ["北海道","青森県","岩手県","宮城県","秋田県","山形県","福島県","茨城県","栃木県","群馬県","埼玉県","千葉県","東京都","神奈川県","新潟県","富山県","石川県","福井県","山梨県","長野県","岐阜県","静岡県","愛知県","三重県","滋賀県","京都府","大阪府","兵庫県","奈良県","和歌山県","鳥取県","島根県","岡山県","広島県","山口県","徳島県","香川県","愛媛県","高知県","福岡県","佐賀県","長崎県","熊本県","大分県","宮崎県","鹿児島県","沖縄県"] as const
+
+export class PrefectureType extends ValueObject<string>{
+  private constructor(val: string){ super(val) }
+  static getInstance(val: string):PrefectureType | ValidationError{
+    if(!Prefectures.find(p => p !== val)){
+      return new ValidationError("都道府県が存在しません。")
+    }
+    return new this(val)
+  }  
+}
 
 export interface MakerProps {
   readonly id :number
   readonly name: string
   readonly enable: boolean
-  readonly フリガナ	:フリガナ型,
-  readonly 郵便番号	:郵便番号型,
-  readonly 都道府県	:都道府県型,
-  readonly 住所	:string,
-  readonly TEL	:電話番号型,
-  readonly FAX	:電話番号型,
-  readonly 備考	:string,
+  readonly furigana	:furiganaType,
+  readonly zip	:zipType,
+  readonly prefecture	:PrefectureType,
+  readonly address	:string,
+  readonly tel	:telType,
+  readonly fax?	:telType,
 }
 
-export class 製造元型 extends Entity<MakerProps>{}
-
-// export interface History{
-//   readonly id : number
-//   readonly note: string
-//   readonly reason:
-// }
-
-// export class 在庫履歴型 extends Entity<>{
-//   入出庫日
-//   理由
-//   予約
-//   備考
-//   数量,
-//   単位,
-//   残,
-//   仮在庫数,
-//   登録者
-
-// }
-
-export interface UserProps {
+export class Supplier extends Entity<MakerProps> implements MakerProps{
+  constructor(props: MakerProps){
+    super(props)
+  }
   readonly id :number
   readonly name: string
   readonly enable: boolean
-  readonly pass: string
+  readonly furigana: furiganaType
+  readonly zip: zipType
+  readonly prefecture: PrefectureType
+  readonly address: string
+  readonly tel: telType
+  readonly fax?: telType
 }
 
-export class ユーザー型 extends Entity<UserProps>{}
+export enum Status {
+  入庫 = 1,
+  出庫 = 2,
+}
+export type ReasonType = Master & { status: Status }
+
+export interface HistoryProps{
+  readonly id : number
+  readonly date : Date,
+  readonly itemId: Item["id"]
+  readonly isTemp? : boolean,
+  readonly status?: Status,
+  readonly reason: ReasonType,
+  readonly note: string,
+  readonly addCount: Decimal,
+  readonly reduceCount: Decimal,
+  readonly editUserId: User['id'],
+  readonly editUserName: User['name'],
+}
+
+export class History extends Entity<HistoryProps> implements HistoryProps{
+  readonly date: Date
+  readonly status: Status
+  readonly itemId: Item["id"]
+  readonly reason: ReasonType
+  readonly note: string
+  readonly addCount: Decimal
+  readonly reduceCount: Decimal
+  readonly isTemp: boolean = false
+  readonly isNoOperation: boolean = false
+  readonly editUserId: number
+  readonly editUserName: string
+  private constructor(props: HistoryProps){
+    super(props)
+  }
+  public static getInstance(props: HistoryProps): History | InvalidArgumentError{
+    const status = ((addCount, reduceCount) => {
+      if(addCount && !reduceCount){
+        return Status.入庫
+      }
+      else if(!addCount && reduceCount){
+        return Status.出庫
+      }else{
+        return new InvalidArgumentError("入庫数出庫数どちらかに値が入ってる必要があります")
+      }  
+    })(props.addCount, props.reduceCount)
+
+    if (status instanceof Error) {
+      return status as InvalidArgumentError
+    }
+
+    const isTemp = ((status) => {
+      switch (status) {
+        case Status.入庫:
+          return false        
+        case Status.出庫:
+          return false
+        default:
+          return new InvalidArgumentError("unknown stock status is given.")
+        }  
+    })(props.status)
+    
+    if (isTemp instanceof Error) {
+      return isTemp as InvalidArgumentError
+    }
+
+    return new this({ ...props, isTemp, status })
+  }
+}
+
+

@@ -3,21 +3,27 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 const API_JWT_SECRET = process.env.API_JWT_SECRET ?? ''
-const API_USER_ID = process.env.API_USER_ID ?? ''
-const API_USER_PASS = process.env.API_USER_PASS ?? ''
 const API_SERVER_PORT = +(process.env.API_SERVER_PORT ?? '8080')
 const API_BASE_PATH = process.env.API_BASE_PATH ?? ''
 const API_ORIGIN = process.env.API_ORIGIN ?? ''
 const API_UPLOAD_DIR = process.env.API_UPLOAD_DIR ?? ''
 const API_SALT = process.env.API_SALT ?? ''
+const DEFAULT_USER_PASS = process.env.DEFAULT_USER_PASS ?? ''
+const REDIS_USERNAME = process.env.REDIS_USERNAME ?? ''
+const REDIS_PASSWORD = process.env.REDIS_PASSWORD ?? ''
+const REDIS_HOST = process.env.REDIS_HOST ?? 'localhost'
+const REDIS_POST = process.env.REDIS_POST ?? '6379'
 
 export {
   API_JWT_SECRET,
-  API_USER_ID,
-  API_USER_PASS,
   API_SERVER_PORT,
   API_BASE_PATH,
   API_ORIGIN,
   API_UPLOAD_DIR,
-  API_SALT
+  API_SALT,
+  DEFAULT_USER_PASS,
+  REDIS_USERNAME,
+  REDIS_PASSWORD,
+  REDIS_HOST,
+  REDIS_POST
 }

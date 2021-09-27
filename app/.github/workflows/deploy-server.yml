@@ -30,10 +30,9 @@ jobs:
           API_DEPLOY_REPO: https://github.com/${{ github.repository }}.git
           API_DATABASE_URL: ${{ secrets.API_DATABASE_URL }}
           API_JWT_SECRET: ${{ secrets.API_JWT_SECRET }}
-          API_SALT: ${{ secrets.API_SALT }}
-          API_USER_ID: ${{ secrets.API_USER_ID }}
-          API_USER_PASS: ${{ secrets.API_USER_PASS }}
           API_ORIGIN: ${{ secrets.API_ORIGIN }}
           API_BASE_PATH: ${{ secrets.API_BASE_PATH }}
           API_SERVER_PORT: ${{ secrets.API_SERVER_PORT }}
           API_UPLOAD_DIR: ${{ secrets.API_UPLOAD_DIR }}
+          API_SALT: ${{ secrets.API_SALT }}
+          DEFAULT_USER_PASS: ${{ secrets.DEFAULT_USER_PASS }}
