@@ -180,7 +180,32 @@ export enum Status {
   入庫 = 1,
   出庫 = 2,
 }
-export type ReasonType = Master & { status: Status }
+
+export enum 入庫理由{
+  仕入 = "仕入",
+  返品 = "返品",
+  棚卸調整 = "棚卸調整",  
+}
+
+export enum 出庫理由{
+  見積 = "見積",
+  受注予約 = "受注予約",
+  受注出庫 = "受注出庫",
+  不良品 = "不良品",
+  棚卸調整 = "棚卸調整",
+
+}
+export type Reason = 入庫理由 | 出庫理由
+export type ReasonType = Master & { name: Reason, status: Status }
+
+
+export enum ITEM_FIELD {
+  COUNT = "実在庫",
+  TEMP_COUNT = "仮在庫",
+  BOTH = "実在庫仮在庫",
+  NONE = "引落なし"
+}
+
 
 export interface HistoryProps{
   readonly id : number

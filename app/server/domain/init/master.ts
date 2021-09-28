@@ -1,18 +1,18 @@
-import { Unitype, ItemTypeType, WoodSpeciesType, ReasonType, Status } from "../entity/stock"
+import { Unitype, ItemTypeType, WoodSpeciesType, 出庫理由, ReasonType, Status, 入庫理由 } from "../entity/stock"
 
 ///在庫理由
 export const StockReason: readonly ReasonType[] = [
   //入庫
-  {id: 1,  name: "仕入",  status:  Status.入庫, order: 1},   
-  {id: 2,  name: "返品",  status:  Status.入庫,order: 2},   
-  {id: 3,  name: "棚卸調整",  status:  Status.入庫,order: 3},   
+  {id: 1,  name: 入庫理由.仕入,  status:  Status.入庫, order: 1},   
+  {id: 2,  name: 入庫理由.返品,  status:  Status.入庫,order: 2},   
+  {id: 3,  name: 入庫理由.棚卸調整,  status:  Status.入庫,order: 3},   
   //出庫
-  {id: 4,  name: "見積",  status:  Status.出庫,order: 4},   
-  {id: 5,  name: "受注予約",  status:  Status.出庫,order: 5},   
-  {id: 6,  name: "受注出庫",  status:  Status.出庫,order: 6},   
-  {id: 7,  name: "不良品",  status:  Status.出庫,order: 7},   
-  {id: 8,  name: "棚卸調整",  status:  Status.出庫,order: 8},   
-]
+  {id: 4,  name: 出庫理由.見積,  status:  Status.出庫,order: 4},   
+  {id: 5,  name: 出庫理由.受注予約,  status:  Status.出庫,order: 5},   
+  {id: 6,  name: 出庫理由.受注出庫,  status:  Status.出庫,order: 6},   
+  {id: 7,  name: 出庫理由.不良品,  status:  Status.出庫,order: 7},   
+  {id: 8,  name: 出庫理由.棚卸調整,  status:  Status.出庫,order: 8},   
+] as const
 
 ///単位
 export const Units:Unitype[] = [

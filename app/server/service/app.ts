@@ -8,7 +8,7 @@ import {
   API_JWT_SECRET,
   API_BASE_PATH,
   API_UPLOAD_DIR
-} from '$/service/envValues'
+} from '$/envValues'
 import server from '$/$server'
 
 export const init = (serverFactory?: FastifyServerFactory) => {

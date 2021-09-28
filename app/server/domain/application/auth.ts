@@ -1,6 +1,6 @@
 import { UserService } from "../service/user"
 import bcrypt from 'bcrypt'
-import { API_SALT } from '$/service/envValues'
+import { API_SALT } from '$/envValues'
 import { UserRepository } from "../repository/interface"
 
 export class AuthService{

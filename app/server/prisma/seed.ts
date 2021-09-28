@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcrypt'
-import { DEFAULT_USER_PASS , API_SALT} from 'envValues'
+import { DEFAULT_USER_PASS , API_SALT} from '$/envValues'
 const prisma = new PrismaClient()
 // import { Units, ItemTypes, WoodSpecies} from '@domain/seeds/master'
 
