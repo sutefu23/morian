@@ -1,4 +1,4 @@
-import { Unitype, ItemTypeType, WoodSpeciesType, 出庫理由, ReasonType, Status, 入庫理由 } from "../entity/stock"
+import { UnitType, ItemTypeType, WoodSpeciesType, 出庫理由, ReasonType, Status, 入庫理由 } from "../entity/stock"
 
 ///在庫理由
 export const StockReason: readonly ReasonType[] = [
@@ -15,7 +15,7 @@ export const StockReason: readonly ReasonType[] = [
 ] as const
 
 ///単位
-export const Units:Unitype[] = [
+export const Units:UnitType[] = [
   {id: 1, name: "㎥", order:1},
   {id: 2, name: "ケース", order:2},
   {id: 3, name: "枚", order: 3},

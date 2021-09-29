@@ -89,10 +89,10 @@ interface ItemProps {
   readonly costPackageCount: Decimal
   readonly cost: Decimal
   readonly warehouse: WarehouseType
-  readonly costUnit: Unitype
+  readonly costUnit: UnitType
   readonly defectiveNote: string
   readonly count: Decimal
-  readonly unit: Unitype
+  readonly unit: UnitType
   readonly tempCount : Decimal
   readonly note: string
   readonly enable: boolean
@@ -116,12 +116,12 @@ export class Item extends Entity<ItemProps> implements ItemProps{
   readonly supplierId: Supplier["id"]
   readonly packageCount: Decimal
   readonly count: Decimal
-  readonly unit: Unitype
+  readonly unit: UnitType
   readonly warehouse: WarehouseType
   readonly defectiveNote: string
   readonly costPackageCount: Decimal
   readonly cost: Decimal
-  readonly costUnit: Unitype
+  readonly costUnit: UnitType
   readonly tempCount: Decimal
   readonly note: string
   readonly enable: boolean

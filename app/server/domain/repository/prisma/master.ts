@@ -1,5 +1,5 @@
 import { PrismaClient, Reason as DbReason } from "@prisma/client"
-import { GradeType, Unitype, WarehouseType, ReasonType, 入庫理由, 出庫理由 } from "@domain/entity/stock"
+import { GradeType, UnitType, WarehouseType, ReasonType, 入庫理由, 出庫理由 } from "@domain/entity/stock"
 import { IRepository } from "../interface"
 import { FieldNotFoundError } from "$/domain/type/error"
 
@@ -62,8 +62,8 @@ export class GradeRepository implements IRepository<GradeType> {
   }
 }
 
-export class UnitRepository implements IRepository<Unitype> {
-  async update(id: number, entity: Partial<Unitype>): Promise<Unitype | Error> {
+export class UnitRepository implements IRepository<UnitType> {
+  async update(id: number, entity: Partial<UnitType>): Promise<UnitType | Error> {
     const result = await prisma.unit.update(
       {where: {id}, data: entity}
     )
@@ -77,7 +77,7 @@ export class UnitRepository implements IRepository<Unitype> {
     }
     return data
   }
-  async create(entity: Unitype): Promise<Unitype|FieldNotFoundError> {
+  async create(entity: UnitType): Promise<UnitType|FieldNotFoundError> {
     const result = await prisma.unit.create(
       {data: entity}
     )
@@ -92,7 +92,7 @@ export class UnitRepository implements IRepository<Unitype> {
     return data
   }
 
-  async findById(id: number): Promise<Unitype|FieldNotFoundError> {
+  async findById(id: number): Promise<UnitType|FieldNotFoundError> {
     const result = await prisma.unit.findUnique({
       where: {
         id
