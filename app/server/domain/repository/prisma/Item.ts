@@ -1,9 +1,10 @@
-import { IRepository } from "../interface";
+import { IRepository, Query } from "../interface";
 import { Item} from "@domain/entity/stock";
-import { PrismaClient } from '@prisma/client'
+import { Prisma, PrismaClient, Item as ItemModel } from '@prisma/client'
 import { ValidationError, FieldNotFoundError, RepositoryNotFoundError } from "@domain/type/error";
 import { SupplierRepositoryQuery } from "./supplier"
 import { dbModelToEntity } from "../mapper/item";
+import { buildWhereStatement } from "./common";
 
 export class ItemRepositoryCommand implements IRepository<Item> {
   readonly prisma :PrismaClient
@@ -90,6 +91,15 @@ export class ItemRepositoryCommand implements IRepository<Item> {
 
     const newItem = await dbModelToEntity(result)
     return newItem
+  }
+  async findMany(query: Query<Item>|Query<Item>[]):Promise<Item[]>{
+    const criteria = buildWhereStatement(query)
+
+    const result = await this.prisma.$queryRaw<ItemModel[]>(
+      Prisma.sql`SELECT * FROM Item WHERE ${criteria}`
+    )
+    const histories = await Promise.all(result.map(h => dbModelToEntity(h))) as Item[]
+    return histories
   }
 }
 

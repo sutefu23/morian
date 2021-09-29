@@ -25,16 +25,16 @@ export interface IRepositoryQuery<T>{
 
 export type IRepository<T> = IRepositoryCommand<T> & IRepositoryQuery<T>
 
-export type ItemRepository = IRepository<Item>
+export type ItemRepository =  Omit<IRepository<Item>,'findMany'> & Required<Pick<IRepository<Item>, 'findMany'>>
 export type HisotryRepository = Omit<IRepository<History>,"create"|"delete"|"update"> & Required<Pick<IRepository<History>,"findMany">> & {
   create(entity: History, itemField: ITEM_FIELD):Promise<History|Error>
   delete(id: number, entity: Required<Pick<History, 'itemId'>> & Partial<Pick<History, 'reduceCount'|'addCount'>>, itemField: ITEM_FIELD):Promise<[History, Item]|Error>
   update(id: number, entity: Partial<History>, itemField: ITEM_FIELD):Promise<History|Error>}
 export type UserRepository = IRepository<User>
-export type SupplierRepository = IRepository<Supplier>
-export type GradeRepository = IRepository<GradeType>
-export type UnitRepository = IRepository<Unitype>
-export type WarehouseRepository = IRepository<WarehouseType>
-export type ReasonRepository = IRepository<ReasonType>
+export type SupplierRepository = Omit<IRepository<Supplier>,'findAll'> & Required<Pick<IRepository<Supplier>, 'findAll'>>
+export type GradeRepository = Omit<IRepository<GradeType>,'findAll'> & Required<Pick<IRepository<GradeType>, 'findAll'>>
+export type UnitRepository = Omit<IRepository<Unitype>,'findAll'> & Required<Pick<IRepository<Unitype>, 'findAll'>>
+export type WarehouseRepository = Omit<IRepository<WarehouseType>,'findAll'> & Required<Pick<IRepository<WarehouseType>, 'findAll'>>
+export type ReasonRepository = Omit<IRepository<ReasonType>,'findAll'> & Required<Pick<IRepository<ReasonType>, 'findAll'>>
 
 

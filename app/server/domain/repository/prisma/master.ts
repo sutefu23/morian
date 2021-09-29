@@ -1,5 +1,5 @@
-import { PrismaClient } from "@prisma/client"
-import { GradeType, Unitype, WarehouseType, ReasonType } from "@domain/entity/stock"
+import { PrismaClient, Reason as DbReason } from "@prisma/client"
+import { GradeType, Unitype, WarehouseType, ReasonType, 入庫理由, 出庫理由 } from "@domain/entity/stock"
 import { IRepository } from "../interface"
 import { FieldNotFoundError } from "$/domain/type/error"
 
@@ -171,16 +171,16 @@ export class WarehouseRepository implements IRepository<WarehouseType> {
 }
 
 export class ReasonRepository implements IRepository<ReasonType> {
-  async update(id: number, entity: Partial<ReasonType>): Promise<Error | ReasonType> {
+  async update(id: number, entity: Partial<ReasonType>): Promise<FieldNotFoundError | ReasonType> {
     const result = await prisma.reason.update(
       {where: {id}, data: entity}
     )
     if(!result?.id || !result?.name || !result?.order || !result.status){
       return new FieldNotFoundError("データが見つかりません")
     }
-    const data = {
+    const data:ReasonType = {
       id: result.id,
-      name: result.name,
+      name: result.name as 入庫理由|出庫理由,
       status: result.status,
       order: result.order
     }
@@ -195,7 +195,7 @@ export class ReasonRepository implements IRepository<ReasonType> {
     }
     const data = {
       id: result.id,
-      name: result.name,
+      name: result.name as 入庫理由|出庫理由,
       status: result.status,
       order: result.order
     }
@@ -213,7 +213,7 @@ export class ReasonRepository implements IRepository<ReasonType> {
     }
     const data = {
       id: result.id,
-      name: result.name,
+      name: result.name as 入庫理由|出庫理由,
       status: result.status,
       order: result.order
     }
@@ -225,7 +225,9 @@ export class ReasonRepository implements IRepository<ReasonType> {
     if(!result){
       return new FieldNotFoundError("データが見つかりません")
     }
-    return result
+    const reasons = result.map(r => { return {id: r.id, name: r.name as 入庫理由|出庫理由,status : r.status, order: r.order}})
+    return reasons
   }
+
 }
 

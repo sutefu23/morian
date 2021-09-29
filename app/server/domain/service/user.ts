@@ -19,7 +19,7 @@ export class UserService{
     if(dbUser instanceof Error){
       return dbUser
     }
-    return dbUser.pass === encrypt(pass)
+    return dbUser.enable && dbUser.pass === encrypt(pass)
   }
 
 }

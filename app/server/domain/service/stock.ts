@@ -1,6 +1,6 @@
 
 import { Item, History, Reason, ITEM_FIELD, 出庫理由, 入庫理由 } from "@domain/entity/stock"
-import { ItemRepository, HisotryRepository } from "@domain/repository/interface"
+import { ItemRepository, HisotryRepository, Query } from "@domain/repository/interface"
 import { InvalidArgumentError, ValidationError } from "../type/error"
 
 export class ItemService{
@@ -17,6 +17,9 @@ export class ItemService{
   }
   async findItemById(id:number){
     return await this.itemRepository.findById(id)
+  }
+  async findManyItem(query: Query<Item>|Query<Item>[]){
+    return await this.itemRepository.findMany(query)
   }
 }
 
@@ -44,9 +47,12 @@ export class HistoryService{
     const itemUpdateWith = this._whichItemField(history.reason.name)
     return await this.historyRepository.update(id, history, itemUpdateWith)
   }
-
   async getHistoryList(itemId: number){
     return await this.historyRepository.findMany({field:"itemId",value: itemId, operator:"="})
+  }
+
+  async findManyHistory(query: Query<History>|Query<History>[]){
+    return await this.historyRepository.findMany(query)
   }
 
   async deleteHistory(historyId: number){

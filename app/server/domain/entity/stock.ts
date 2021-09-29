@@ -22,7 +22,7 @@ interface Master {
 }
 
 export type ItemTypeType = Master 
-export type Unitype = Master 
+export type UnitType = Master 
 export type WoodSpeciesType = Master 
 export type WarehouseType = Master 
 export type GradeType = Master 
