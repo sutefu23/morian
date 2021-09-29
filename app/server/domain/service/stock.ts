@@ -2,24 +2,48 @@
 import { Item, History, Reason, ITEM_FIELD, 出庫理由, 入庫理由 } from "@domain/entity/stock"
 import { ItemRepository, HisotryRepository, Query } from "@domain/repository/interface"
 import { InvalidArgumentError, ValidationError } from "../type/error"
-
+import { ItemToDTO  } from "../dto/item"
 export class ItemService{
   private itemRepository: ItemRepository
   constructor(itemRepo: ItemRepository){
     this.itemRepository = itemRepo
   }
   async createItem(item: Item){
-    return await this.itemRepository.create(item)
+    const data = await this.itemRepository.create(item)
+    if(data instanceof Error){
+      return data as Error
+    }
+    const itemDto = ItemToDTO(data)
+    return itemDto
   }
 
   async updateItem(id: number, item: Partial<Item>){
-    return await this.itemRepository.update(id, item)
+    const data = await this.itemRepository.update(id, item)
+    if(data instanceof Error){
+      return data as Error
+    }
+    
+    return data
   }
   async findItemById(id:number){
-    return await this.itemRepository.findById(id)
+    const data = await this.itemRepository.findById(id)
+    if(data instanceof Error){
+      return data as Error
+    }
+    if(!data.enable){
+      return null
+    }
+    return data
   }
   async findManyItem(query: Query<Item>|Query<Item>[]){
-    return await this.itemRepository.findMany(query)
+    const data = await this.itemRepository.findMany(query)
+    if(data instanceof Error){
+      return data as Error
+    }
+    if(!Object.prototype.hasOwnProperty.call(query, "enable")){
+      return data.filter(d => d.enable)
+    }
+    return data
   }
 }
 

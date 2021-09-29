@@ -1,18 +1,24 @@
 import { ValidationError, FieldNotFoundError } from "@domain/type/error";
-import { History as EntityHistory } from "@domain/entity/stock";
+import { History as EntityHistory, 入庫理由, 出庫理由 } from "@domain/entity/stock";
 import { History as PrismaHistory } from "$prisma/client"
 import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
 export const dbModelToEntity = async (model: PrismaHistory): Promise<EntityHistory | FieldNotFoundError | ValidationError> => {
-  const reason = await prisma.reason.findUnique({
+  const reasonData = await prisma.reason.findUnique({
     where: {
       id: model.reasonId
     }
   })
-  if(!reason){
+  if(!reasonData){
     return new FieldNotFoundError("reasonが見つかりません")
+  }
+  const reason = {
+    id: reasonData.id,
+    name: reasonData.name as 入庫理由 | 出庫理由,
+    status: reasonData.order,
+    order: reasonData.order
   }
   const user = await prisma.user.findUnique({
     where:{
