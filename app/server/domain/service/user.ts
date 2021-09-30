@@ -7,19 +7,20 @@ export class UserService{
     this.userRepository = userRepo
   }
   async createUser(user: User){
-   await this.userRepository.create(user)
+    const data = await this.userRepository.create(user)
+    if(data instanceof Error){
+      return data
+    }
   }
 
   async updateUser(id: number, user: Partial<User>){
-    await this.userRepository.update(id, user)
-  }
-
-  async validUser(id: number, pass: string, encrypt: (arg:string, salt?:string) => string):Promise<boolean|Error>{
-    const dbUser = await this.userRepository.findById(id)
-    if(dbUser instanceof Error){
-      return dbUser
+    const data = await this.userRepository.update(id, user)
+    if(data instanceof Error){
+      return data
     }
-    return dbUser.enable && dbUser.pass === encrypt(pass)
   }
 
+  async getUserById(id: number){
+    return await this.userRepository.findById(id)
+  }
 }

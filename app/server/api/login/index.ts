@@ -1,8 +1,9 @@
-import type { LoginBody } from '$/validators';
-
 export type Methods = {
    post: {
-     reqBody: LoginBody
+     reqBody: {
+       id: number,
+       pass: string
+     }
      resBody: {
        token: string
     }

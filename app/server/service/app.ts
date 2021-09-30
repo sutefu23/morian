@@ -28,7 +28,7 @@ export const init = (serverFactory?: FastifyServerFactory) => {
       })
     })
   }
-  app.register(fastifyJwt, { secret: API_JWT_SECRET })
+  app.register(fastifyJwt, { secret: API_JWT_SECRET, decode: { complete: true } })
   server(app, { basePath: API_BASE_PATH })
   return app
 }

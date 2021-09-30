@@ -19,7 +19,8 @@
     "pm2:delete": "pm2 delete pm2.config.json",
     "pm2:logs": "pm2 logs",
     "pm2:monit": "pm2 monit",
-    "start": "cross-env NODE_ENV=production node index.js"
+    "start": "cross-env NODE_ENV=production node index.js",
+    "seed": "ts-node --compiler-options {\\\"module\\\":\\\"CommonJS\\\"} ./prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^2.21.2",

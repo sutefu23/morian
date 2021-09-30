@@ -17,6 +17,7 @@ import {
 import { FaUserAlt, FaLock } from "react-icons/fa";
 import { setCookie } from 'nookies'
 import { apiClient } from '~/utils/apiClient'
+import { useRouter } from "next/router";
 
 const CFaUserAlt = chakra(FaUserAlt);
 const CFaLock = chakra(FaLock);
@@ -27,18 +28,21 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false)
 
   const handleShowClick = () => setShowPassword(!showPassword)
+  const router = useRouter()
 
   const handleLogin = useCallback(
-    async () => {
+    async (e:React.MouseEvent) => {
       if (!userId) return
       if (!userPass) return
-
-      const res = await apiClient.token.post({ body: { id: userId, pass: userPass} })
+      e.preventDefault()
+      const res = await apiClient.login.post({ body: { id: Number(userId), pass: userPass} })
       if (res.status == 201){
-        setCookie(null, 'auth', res.body.token, {
+        setCookie(null, 'token', res.body.token, {
           maxAge: 30 * 24 * 60 * 60,
         })
+        router.push('/')
       }
+      return false
     },
     [userId, userPass],
   )
@@ -53,7 +57,6 @@ const Login = () => {
         <Avatar bg="teal.500" />
         <Heading color="teal.400">モリアン在庫管理ログイン</Heading>
         <Box minW={{ base: "90%", md: "468px" }}>
-          <form>
             <Stack
               spacing={4}
               p="1rem"
@@ -106,7 +109,6 @@ const Login = () => {
                 Login
               </Button>
             </Stack>
-          </form>
         </Box>
       </Stack>
     </Flex>

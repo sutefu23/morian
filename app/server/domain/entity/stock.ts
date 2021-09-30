@@ -1,5 +1,5 @@
-import { ValueObject } from "@domain/type/valueObject"
-import { Entity } from "@domain/type/entity"
+import { ValueObject } from "../type/valueObject"
+import { Entity } from "../type/entity"
 import { Decimal } from '@prisma/client/runtime'
 import { ValidationError,InvalidArgumentError } from "../type/error"
 import { User } from "./user"

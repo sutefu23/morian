@@ -8,9 +8,25 @@ import styles from '~/styles/Home.module.css'
 import type { FormEvent, ChangeEvent } from 'react'
 
 const Home = () => {
-  const queryClient = useQueryClient()
+  // const queryClient = useQueryClient()
+  // const { data: tasks, error } = useAspidaQuery(apiClient.user.get({token}))
+  // const [label, setLabel] = useState('')
 
 
+  // const userLogin = useCallback(
+  //   async (e: FormEvent) => {
+  //     e.preventDefault()
+  //     if (!label) return
+
+  //     await apiClient.user.post({ body: {id: 1 , name: "pass", pass: "pass"} })
+  //   },
+  //   [userId, pass]
+  // )
+
+
+
+  // if (error) return <div>failed to load</div>
+  // if (!tasks) return <div>loading...</div>
 
   return (
     <div className={styles.container}>
