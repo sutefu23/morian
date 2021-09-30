@@ -1,6 +1,6 @@
 
-import { GradeType, UnitType, WarehouseType, ReasonType } from "@domain/entity/stock"
-import { GradeRepository, UnitRepository, WarehouseRepository, ReasonRepository } from "@domain/repository/interface"
+import { GradeType, UnitType, WarehouseType, WoodSpeciesType, ReasonType } from "@domain/entity/stock"
+import { GradeRepository, UnitRepository,SpeciesRepository, WarehouseRepository, ReasonRepository } from "@domain/repository/interface"
 import { FieldNotFoundError } from "$/domain/type/error"
 
 export class GradeService {
@@ -107,3 +107,28 @@ export class ReasonService {
 
 }
 
+export class SpeciesService {
+  private speciesRepository :SpeciesRepository
+  constructor(speciesRepository: SpeciesRepository){
+    this.speciesRepository = speciesRepository
+  }
+  async createSpecies(entity: WoodSpeciesType): Promise<WoodSpeciesType|FieldNotFoundError> {
+    const data = await this.speciesRepository.create(entity)
+    return data
+  }
+
+  async updateSpecies(id: number, entity: Partial<WoodSpeciesType>): Promise<WoodSpeciesType|FieldNotFoundError> {
+    const data = await this.speciesRepository.update(id, entity)
+    return data
+  }
+
+  async findSpeciesById(id: number): Promise<WoodSpeciesType|FieldNotFoundError> {
+    const data = await this.speciesRepository.findById(id)
+    return data
+  }
+
+  async getSpeciesList():Promise<WoodSpeciesType[]|FieldNotFoundError>{
+    const data = await this.speciesRepository.findAll()
+    return data
+  }
+}

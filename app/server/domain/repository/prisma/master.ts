@@ -1,5 +1,5 @@
-import { PrismaClient, Reason as DbReason } from "@prisma/client"
-import { GradeType, UnitType, WarehouseType, ReasonType, 入庫理由, 出庫理由 } from "@domain/entity/stock"
+import { PrismaClient } from "@prisma/client"
+import { GradeType, UnitType, WarehouseType, ReasonType, WoodSpeciesType,入庫理由, 出庫理由 } from "@domain/entity/stock"
 import { IRepository } from "../interface"
 import { FieldNotFoundError } from "$/domain/type/error"
 
@@ -231,3 +231,58 @@ export class ReasonRepository implements IRepository<ReasonType> {
 
 }
 
+export class WoodSpeciesRepository implements IRepository<WoodSpeciesType> {
+  async update(id: number, entity: Partial<WoodSpeciesType>): Promise<WoodSpeciesType | Error> {
+    const result = await prisma.species.update(
+      {where: {id}, data: entity}
+    )
+    if(!result?.id || !result?.name || !result?.order){
+      return new FieldNotFoundError("データが見つかりません")
+    }
+    const data = {
+      id: result.id,
+      name: result.name,
+      order: result.order
+    }
+    return data
+  }
+  async create(entity: WoodSpeciesType): Promise<WoodSpeciesType|FieldNotFoundError> {
+    const result = await prisma.species.create(
+      {data: entity}
+    )
+    if(!result?.id || !result?.name || !result?.order){
+      return new FieldNotFoundError("データが見つかりません")
+    }
+    const data = {
+      id: result.id,
+      name: result.name,
+      order: result.order
+    }
+    return data
+  }
+
+  async findById(id: number): Promise<WoodSpeciesType|FieldNotFoundError> {
+    const result = await prisma.species.findUnique({
+      where: {
+        id
+      }
+    })
+    if(!result?.id || !result?.name || !result?.order){
+      return new FieldNotFoundError("データが見つかりません")
+    }
+    const data = {
+      id: result.id,
+      name: result.name,
+      order: result.order
+    }
+    return data
+  }
+
+  async findAll():Promise<WoodSpeciesType[]|FieldNotFoundError>{
+    const result = await prisma.species.findMany()
+    if(!result){
+      return new FieldNotFoundError("データが見つかりません")
+    }
+    return result
+  }
+}

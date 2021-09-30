@@ -1,4 +1,4 @@
-import { Item, History,  Supplier , GradeType, UnitType, WarehouseType, ReasonType, ITEM_FIELD } from "../entity/stock"
+import { Item, History,  Supplier , GradeType, WoodSpeciesType, UnitType, WarehouseType, ReasonType, ITEM_FIELD } from "../entity/stock"
 import { User } from "../entity/user"
 
 interface Operator { value: unknown, operator: string}
@@ -36,5 +36,6 @@ export type GradeRepository = Omit<IRepository<GradeType>,'findAll'> & Required<
 export type UnitRepository = Omit<IRepository<UnitType>,'findAll'> & Required<Pick<IRepository<UnitType>, 'findAll'>>
 export type WarehouseRepository = Omit<IRepository<WarehouseType>,'findAll'> & Required<Pick<IRepository<WarehouseType>, 'findAll'>>
 export type ReasonRepository = Omit<IRepository<ReasonType>,'findAll'> & Required<Pick<IRepository<ReasonType>, 'findAll'>>
+export type SpeciesRepository = Omit<IRepository<WoodSpeciesType>,'findAll'> & Required<Pick<IRepository<WoodSpeciesType>, 'findAll'>>
 
 
