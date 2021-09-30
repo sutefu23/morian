@@ -53,7 +53,6 @@ export const DTOtoHistory = (data: HistoryDTO) => {
     order: data.reasonOrder
   }
 
-
   const history = {
     ...data,
     reason

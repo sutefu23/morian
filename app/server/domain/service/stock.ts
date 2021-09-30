@@ -3,6 +3,7 @@ import { Item, History, Reason, ITEM_FIELD, 出庫理由, 入庫理由 } from "@
 import { ItemRepository, HisotryRepository, Query } from "@domain/repository/interface"
 import { InvalidArgumentError, ValidationError } from "../type/error"
 import { ItemToDTO  } from "../dto/item"
+import { HistoryToDTO } from "../dto/history"
 export class ItemService{
   private itemRepository: ItemRepository
   constructor(itemRepo: ItemRepository){
@@ -23,7 +24,8 @@ export class ItemService{
       return data as Error
     }
     
-    return data
+    const itemDto = ItemToDTO(data)
+    return itemDto
   }
   async findItemById(id:number){
     const data = await this.itemRepository.findById(id)
@@ -33,7 +35,8 @@ export class ItemService{
     if(!data.enable){
       return null
     }
-    return data
+    const itemDto = ItemToDTO(data)
+    return itemDto
   }
   async findManyItem(query: Query<Item>|Query<Item>[]){
     const data = await this.itemRepository.findMany(query)
@@ -41,9 +44,9 @@ export class ItemService{
       return data as Error
     }
     if(!Object.prototype.hasOwnProperty.call(query, "enable")){
-      return data.filter(d => d.enable)
+      return data.filter(d => d.enable).map(i => ItemToDTO(i))
     }
-    return data
+    return data.map(d => ItemToDTO(d))
   }
 }
 
@@ -59,7 +62,11 @@ export class HistoryService{
       return new ValidationError("不良品の時は理由を備考に入れてください。")
     }
     const itemUpdateWith = this._whichItemField(history.reason.name)
-    return await this.historyRepository.create(history, itemUpdateWith)
+    const data = await this.historyRepository.create(history, itemUpdateWith)
+    if(data instanceof Error){
+      return data as Error
+    }
+    return HistoryToDTO(data)
   }
 
   async updateHistory(id: number, history: Partial<History>){
@@ -69,14 +76,26 @@ export class HistoryService{
     }
 
     const itemUpdateWith = this._whichItemField(history.reason.name)
-    return await this.historyRepository.update(id, history, itemUpdateWith)
+    const data = await this.historyRepository.update(id, history, itemUpdateWith)
+    if(data instanceof Error){
+      return data as Error
+    }
+    return HistoryToDTO(data)
   }
   async getHistoryList(itemId: number){
-    return await this.historyRepository.findMany({field:"itemId",value: itemId, operator:"="})
+    const data = await this.historyRepository.findMany({field:"itemId",value: itemId, operator:"="})
+    if(data instanceof Error){
+      return data as Error
+    }
+    return data.map(d => HistoryToDTO(d))
   }
 
   async findManyHistory(query: Query<History>|Query<History>[]){
-    return await this.historyRepository.findMany(query)
+    const data = await this.historyRepository.findMany(query)
+    if(data instanceof Error){
+      return data as Error
+    }
+    return data.map(d => HistoryToDTO(d))
   }
 
   async deleteHistory(historyId: number){
@@ -84,7 +103,12 @@ export class HistoryService{
     if(!target || target instanceof Error) return new InvalidArgumentError("在庫が存在しません。") 
 
     const itemUpdateWith = this._whichItemField(target.reason.name)
-    return await this.historyRepository.delete(historyId, target, itemUpdateWith)
+    const data = await this.historyRepository.delete(historyId, target, itemUpdateWith)
+    if(data instanceof Error){
+      return data as Error
+    }
+    const [history, item] = data
+    return [HistoryToDTO(history), ItemToDTO(item)]
   }
   //どのITEMフィールドを同時に引落すべきか
   private _whichItemField(reason: Reason): ITEM_FIELD {

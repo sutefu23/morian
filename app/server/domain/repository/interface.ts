@@ -2,13 +2,13 @@ import { Item, History,  Supplier , GradeType, UnitType, WarehouseType, ReasonTy
 import { User } from "../entity/user"
 
 interface Operator { value: unknown, operator: string}
-interface UniversalOperator extends Operator { value: string| number, operator: "="|">"|"<"|">="|"<="}
+interface UniversalOperator extends Operator { value: string| number, operator: "="|">"|"<"|">="|"<="|"!="}
 interface InOperator extends Operator { value: string[]| number[] , operator: "in" }
-
+interface NullOperator extends Operator  { value: "NULL", operator: "is"| "is Not"}
 
 export type Query<T> = {
   field: keyof T 
-} & (UniversalOperator | InOperator)
+} & (UniversalOperator | InOperator | NullOperator)
 
 export interface IRepositoryCommand<T>{
   create(entity:T): Promise<T | Error>

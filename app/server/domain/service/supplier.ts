@@ -1,6 +1,7 @@
 
 import { Supplier } from "@domain/entity/stock"
 import { SupplierRepository } from "@domain/repository/interface"
+import { SupplierToDTO } from "../dto/supplier"
 
 export class SupplierService{
   private supplierRepository: SupplierRepository
@@ -8,11 +9,19 @@ export class SupplierService{
     this.supplierRepository = supplierRepo
   }
   async createSupplier(supplier: Supplier){
-    return await this.supplierRepository.create(supplier)
+    const data = await this.supplierRepository.create(supplier)
+    if(data instanceof Error){
+      return data
+    }
+    return SupplierToDTO(data)
   }
 
   async updateSupplier(id: number, supplier: Partial<Supplier>){
-    return await this.supplierRepository.update(id, supplier)
+    const data = await this.supplierRepository.update(id, supplier)
+    if(data instanceof Error){
+      return data
+    }
+    return SupplierToDTO(data)
   }
   async findSupplierById(id:number){
     const data = await this.supplierRepository.findById(id)
@@ -22,7 +31,7 @@ export class SupplierService{
     if (!data.enable){
       return null
     }
-    return await this.supplierRepository.findById(id)
+    return SupplierToDTO(data)
   }
   async getSupplierList(){
     const data = await this.supplierRepository.findAll()
