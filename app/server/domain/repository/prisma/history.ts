@@ -1,19 +1,16 @@
-import { HisotryRepository, Query } from "../interface";
-import { History , Item, ITEM_FIELD} from "@domain/entity/stock";
+import { IHistoryRepository, Query } from "../interface";
+import { History ,HistoryProps, Item, ITEM_FIELD} from "@domain/entity/stock";
 import { Prisma, PrismaClient, History as HistoryModel } from '@prisma/client'
 import { ValidationError, FieldNotFoundError, RepositoryNotFoundError } from "@domain/type/error";
-import { SupplierRepositoryQuery } from "./supplier"
 import { dbModelToEntity } from "../mapper/history"
 import { dbModelToEntity as dbModelToItemEntity} from "../mapper/item";
 import { buildWhereStatement } from "./common";
 
-export class HistoryRepository implements HisotryRepository {
+export class HistoryRepository implements IHistoryRepository {
   readonly prisma :PrismaClient
-  readonly supplierRepository: SupplierRepositoryQuery
 
   constructor(){
     this.prisma = new PrismaClient()
-    this.supplierRepository = new SupplierRepositoryQuery()
   }
   async findById(id: number){
     const result = await this.prisma.history.findUnique({
@@ -29,7 +26,7 @@ export class HistoryRepository implements HisotryRepository {
     return newHistory
   }
 
-  async findMany(query: Query<History>|Query<History>[]):Promise<History[]>{
+  async findMany(query: Query<HistoryModel>|Query<HistoryModel>[]):Promise<History[]>{
     const criteria = buildWhereStatement(query)
 
     const result = await this.prisma.$queryRaw<HistoryModel[]>(
@@ -39,7 +36,7 @@ export class HistoryRepository implements HisotryRepository {
     return histories
   }
 
-  async findItemList(itemId: number):Promise<History[]>{
+  async findHistoryListById(itemId: number):Promise<History[]>{
     const result = await this.prisma.history.findMany({
       where:{
         itemId
@@ -49,7 +46,7 @@ export class HistoryRepository implements HisotryRepository {
     return histories
   }
 
-  async create(entity: History, itemField: ITEM_FIELD):Promise<History|ValidationError|FieldNotFoundError> {
+  async create(entity: HistoryProps, itemField: ITEM_FIELD):Promise<History|ValidationError|FieldNotFoundError> {
     const maxOrder = await this.prisma.history.aggregate({
       _max: {
         order: true,
@@ -71,10 +68,16 @@ export class HistoryRepository implements HisotryRepository {
           id: entity.editUserId
         }
       },
+      bookUser: {
+        connect: {
+          id: entity.bookUserId
+        }
+      },
       order: (maxOrder._max.order ?? 0) + 1,
       id: undefined,
       itemId: undefined,
-      editUserId: undefined
+      editUserId: undefined,
+      bookUserId: undefined,
     }
     const itemUpdateParam = this._itemUpdateParam(entity, itemField)
     
@@ -82,7 +85,7 @@ export class HistoryRepository implements HisotryRepository {
     const newHistory = await dbModelToEntity(result)
     return newHistory
   }
-  async update(id: number, entity: Partial<History>, itemField: ITEM_FIELD):Promise<History|ValidationError|FieldNotFoundError> {
+  async update(id: number, entity: Partial<HistoryProps>, itemField: ITEM_FIELD):Promise<History|ValidationError|FieldNotFoundError> {
 
     const updateParam = { ...entity,
         item: {
@@ -95,6 +98,11 @@ export class HistoryRepository implements HisotryRepository {
             id: entity.editUserId
           }
         },
+        bookUser: {
+          connect: {
+            id: entity.bookUserId
+          }
+        },
         reason: {
           connect: {
             id: entity.reason?.id
@@ -102,7 +110,8 @@ export class HistoryRepository implements HisotryRepository {
         },
         id: undefined,
         itemId: undefined,
-        editUserId: undefined
+        editUserId: undefined,
+        bookUserId: undefined,
       }
       const itemUpdateParam = (() => {
         if(entity.itemId){
@@ -117,7 +126,7 @@ export class HistoryRepository implements HisotryRepository {
     return newHistory
   }
 
-  async delete(id: number, entity: Required<Pick<History, 'itemId'>> & Partial<Pick<History, 'reduceCount'|'addCount'>>, itemField: ITEM_FIELD):Promise<[History, Item]|ValidationError|FieldNotFoundError>{
+  async delete(id: number, entity: Required<Pick<HistoryProps, 'itemId'>> & Partial<Pick<HistoryProps, 'reduceCount'|'addCount'>>, itemField: ITEM_FIELD):Promise<[History, Item]|ValidationError|FieldNotFoundError>{
     const itemUpdateParam = this._itemUpdateParam({...entity}, itemField)
 
     const deleteHistory = this.prisma.history.delete({ where: { id } })
@@ -137,7 +146,7 @@ export class HistoryRepository implements HisotryRepository {
   }
 
   // Itemのcountフィールドをアップデート
-  readonly _itemUpdateParam = (entity: Required<Pick<History, 'itemId'>> & Partial<Pick<History, 'reduceCount'|'addCount'>>, itemField: ITEM_FIELD) => {
+  readonly _itemUpdateParam = (entity: Required<Pick<HistoryProps, 'itemId'>> & Partial<Pick<HistoryProps, 'reduceCount'|'addCount'>>, itemField: ITEM_FIELD) => {
     if(itemField != null){
       
       const isAdd =  (Object.prototype.hasOwnProperty.call(entity, "addCount") && entity.addCount)

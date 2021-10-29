@@ -1,11 +1,11 @@
 
 import { GradeType, UnitType, WarehouseType, WoodSpeciesType, ReasonType } from "@domain/entity/stock"
-import { GradeRepository, UnitRepository,SpeciesRepository, WarehouseRepository, ReasonRepository } from "@domain/repository/interface"
+import { IGradeRepository, IUnitRepository,ISpeciesRepository, IWarehouseRepository, IReasonRepository } from "@domain/repository/interface"
 import { FieldNotFoundError } from "$/domain/type/error"
 
 export class GradeService {
-  private gradeRepository :GradeRepository
-  constructor(gradeRepository: GradeRepository){
+  private gradeRepository :IGradeRepository
+  constructor(gradeRepository: IGradeRepository){
     this.gradeRepository = gradeRepository
   }
   async createGrade(entity: GradeType): Promise<GradeType|FieldNotFoundError> {
@@ -30,8 +30,8 @@ export class GradeService {
 }
 
 export class UnitService {
-  private unitRepository :UnitRepository
-  constructor(unitRepository: UnitRepository){
+  private unitRepository :IUnitRepository
+  constructor(unitRepository: IUnitRepository){
     this.unitRepository = unitRepository
   }
   async createUnit(entity: UnitType): Promise<UnitType|FieldNotFoundError> {
@@ -55,8 +55,8 @@ export class UnitService {
   }}
 
 export class WarehouseService {
-  private warehouseRepository :WarehouseRepository
-  constructor(warehouseRepository: WarehouseRepository){
+  private warehouseRepository :IWarehouseRepository
+  constructor(warehouseRepository: IWarehouseRepository){
     this.warehouseRepository = warehouseRepository
   }
   async createWarehouse(entity: WarehouseType): Promise<WarehouseType|FieldNotFoundError> {
@@ -81,8 +81,8 @@ export class WarehouseService {
 }
 
 export class ReasonService {
-  private reasonRepository :ReasonRepository
-  constructor(reasonRepository: ReasonRepository){
+  private reasonRepository :IReasonRepository
+  constructor(reasonRepository: IReasonRepository){
     this.reasonRepository = reasonRepository
   }
   async createReason(entity: ReasonType): Promise<ReasonType|FieldNotFoundError> {
@@ -108,8 +108,8 @@ export class ReasonService {
 }
 
 export class SpeciesService {
-  private speciesRepository :SpeciesRepository
-  constructor(speciesRepository: SpeciesRepository){
+  private speciesRepository :ISpeciesRepository
+  constructor(speciesRepository: ISpeciesRepository){
     this.speciesRepository = speciesRepository
   }
   async createSpecies(entity: WoodSpeciesType): Promise<WoodSpeciesType|FieldNotFoundError> {

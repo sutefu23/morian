@@ -1,12 +1,12 @@
 import { PrismaClient } from "@prisma/client"
-import { User } from "@domain/entity/user"
-import { IRepository } from "../interface"
+import { User, UserProps } from "@domain/entity/user"
+import { IUserRepository } from "../interface"
 import { FieldNotFoundError } from "$/domain/type/error"
 
 const prisma = new PrismaClient()
 
-export class UserRepository implements IRepository<User> {
-  async create(entity: User): Promise<User|FieldNotFoundError> {
+export class UserRepository implements IUserRepository {
+  async create(entity: UserProps): Promise<User|FieldNotFoundError> {
     const result = await prisma.user.create(
       {include:{
         UserPass: true
@@ -28,7 +28,7 @@ export class UserRepository implements IRepository<User> {
     return data
   }
 
-  async update(id: number, entity: Partial<User>): Promise<User|FieldNotFoundError> {
+  async update(id: number, entity: Partial<UserProps>): Promise<User|FieldNotFoundError> {
     const result = await prisma.user.update(
       {where: {id}, data:entity}
     )

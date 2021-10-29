@@ -1,9 +1,9 @@
 import { User } from "@domain/entity/user"
-import { UserRepository } from "@domain/repository/interface"
+import { IUserRepository } from "@domain/repository/interface"
 
 export class UserService{
-  private userRepository: UserRepository
-  constructor(userRepo: UserRepository){
+  private userRepository: IUserRepository
+  constructor(userRepo: IUserRepository){
     this.userRepository = userRepo
   }
   async createUser(user: User){

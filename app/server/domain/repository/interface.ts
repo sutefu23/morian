@@ -1,5 +1,6 @@
-import { Item, History,  Supplier , GradeType, WoodSpeciesType, UnitType, WarehouseType, ReasonType, ITEM_FIELD } from "../entity/stock"
-import { User } from "../entity/user"
+import { Item, ItemProps, History, HistoryProps, Supplier ,SupplierProps,  GradeType, WoodSpeciesType, UnitType, WarehouseType, ReasonType, ITEM_FIELD } from "../entity/stock"
+import { User, UserProps } from "../entity/user"
+import { Item as ItemModel, History as HistoryModel, User as UserModel, Supplier as SupplierModel} from "@prisma/client"
 
 interface Operator { value: unknown, operator: string}
 interface UniversalOperator extends Operator { value: string| number, operator: "="|">"|"<"|">="|"<="|"!="}
@@ -10,32 +11,41 @@ export type Query<T> = {
   field: keyof T 
 } & (UniversalOperator | InOperator | NullOperator)
 
-export interface IRepositoryCommand<T>{
-  create(entity:T): Promise<T | Error>
-  update(id: number, entity:Partial<T>):Promise<T | Error>
+// interface User {
+//   name: string;
+//   age: number;
+// }
+
+
+export interface IRepositoryCommand<Props, Entity>{
+  create(entity:Props): Promise<Entity | Error>
+  update(id: number, entity:Partial<Props>):Promise<Entity | Error>
+  delete?(id:number):Promise<Entity | Error>
 }
 
-export interface IRepositoryQuery<T>{
-  findById(id: number): Promise<T | Error>
-  findOne?(query:Query<T>|Query<T>[]): Promise<T | Error>
-  findMany?(query:Query<T>|Query<T>[]):Promise<T[] | Error>
-  delete?(id:number):Promise<T | Error>
-  findAll?():Promise<T[] | Error>
+export interface IRepositoryQuery<Model, Entity>{
+  findById(id: number): Promise<Entity | Error>
+  findOne?(query:Query<Model>|Query<Model>[]): Promise<Entity | Error>
+  findMany?(query:Query<Model>|Query<Model>[]):Promise<Entity[] | Error>
+  findAll?():Promise<Entity[] | Error>
 }
 
-export type IRepository<T> = IRepositoryCommand<T> & IRepositoryQuery<T>
+export type IRepository<Props, Model, Entity> = IRepositoryCommand<Props, Entity> & IRepositoryQuery<Model, Entity>
 
-export type ItemRepository =  Omit<IRepository<Item>,'findMany'> & Required<Pick<IRepository<Item>, 'findMany'>>
-export type HisotryRepository = Omit<IRepository<History>,"create"|"delete"|"update"> & Required<Pick<IRepository<History>,"findMany">> & {
-  create(entity: History, itemField: ITEM_FIELD):Promise<History|Error>
-  delete(id: number, entity: Required<Pick<History, 'itemId'>> & Partial<Pick<History, 'reduceCount'|'addCount'>>, itemField: ITEM_FIELD):Promise<[History, Item]|Error>
-  update(id: number, entity: Partial<History>, itemField: ITEM_FIELD):Promise<History|Error>}
-export type UserRepository = IRepository<User>
-export type SupplierRepository = Omit<IRepository<Supplier>,'findAll'> & Required<Pick<IRepository<Supplier>, 'findAll'>>
-export type GradeRepository = Omit<IRepository<GradeType>,'findAll'> & Required<Pick<IRepository<GradeType>, 'findAll'>>
-export type UnitRepository = Omit<IRepository<UnitType>,'findAll'> & Required<Pick<IRepository<UnitType>, 'findAll'>>
-export type WarehouseRepository = Omit<IRepository<WarehouseType>,'findAll'> & Required<Pick<IRepository<WarehouseType>, 'findAll'>>
-export type ReasonRepository = Omit<IRepository<ReasonType>,'findAll'> & Required<Pick<IRepository<ReasonType>, 'findAll'>>
-export type SpeciesRepository = Omit<IRepository<WoodSpeciesType>,'findAll'> & Required<Pick<IRepository<WoodSpeciesType>, 'findAll'>>
+export type IItemRepository =  IRepositoryCommand<ItemProps, Item> & Omit<IRepositoryQuery<ItemProps, Item>,'findMany'> & Required<Pick<IRepositoryQuery<ItemModel, Item>, 'findMany'>>
+export type IHistoryRepository = Omit<IRepositoryCommand<HistoryProps, History>,"create"|"delete"|"update"> & Required<Pick<IRepositoryQuery<HistoryModel, History>,"findMany"|"findById">> & {
+  create(entity: HistoryProps, itemField: ITEM_FIELD):Promise<History|Error>
+  delete(id: number, entity: Required<Pick<HistoryProps, 'itemId'>> & Partial<Pick<HistoryProps, 'reduceCount'|'addCount'>>, itemField: ITEM_FIELD):Promise<[History, Item]|Error>
+  update(id: number, entity: Partial<HistoryProps>, itemField: ITEM_FIELD):Promise<History|Error>}
+export type IUserRepository = IRepositoryCommand<UserProps, User> & IRepositoryQuery<UserModel, User>
+export type ISupplierRepository = Omit<IRepository<SupplierProps, SupplierModel, Supplier>,'findAll'> & Required<Pick<IRepository<SupplierProps, SupplierModel, Supplier>, 'findAll'>>
+
+export type IMasterRepository<Props> = IRepositoryCommand<Props, Props> & IRepositoryQuery<Props, Props>
+
+export type IGradeRepository = Omit<IMasterRepository<GradeType>,'findAll'> & Required<Pick<IMasterRepository<GradeType>, 'findAll'>>
+export type IUnitRepository = Omit<IMasterRepository<UnitType>,'findAll'> & Required<Pick<IMasterRepository<UnitType>, 'findAll'>>
+export type IWarehouseRepository = Omit<IMasterRepository<WarehouseType>,'findAll'> & Required<Pick<IMasterRepository<WarehouseType>, 'findAll'>>
+export type IReasonRepository = Omit<IMasterRepository<ReasonType>,'findAll'> & Required<Pick<IMasterRepository<ReasonType>, 'findAll'>>
+export type ISpeciesRepository = Omit<IMasterRepository<WoodSpeciesType>,'findAll'> & Required<Pick<IMasterRepository<WoodSpeciesType>, 'findAll'>>
 
 

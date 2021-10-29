@@ -1,18 +1,15 @@
-import { IRepository, Query } from "../interface";
-import { Item} from "@domain/entity/stock";
+import { IItemRepository, Query } from "../interface";
+import { Item, ItemProps} from "@domain/entity/stock";
 import { Prisma, PrismaClient, Item as ItemModel } from '@prisma/client'
 import { ValidationError, FieldNotFoundError, RepositoryNotFoundError } from "@domain/type/error";
-import { SupplierRepositoryQuery } from "./supplier"
 import { dbModelToEntity } from "../mapper/item";
 import { buildWhereStatement } from "./common";
 
-export class ItemRepositoryCommand implements IRepository<Item> {
+export class ItemRepository implements IItemRepository {
   readonly prisma :PrismaClient
-  readonly supplierRepository: SupplierRepositoryQuery
 
   constructor(){
     this.prisma = new PrismaClient()
-    this.supplierRepository = new SupplierRepositoryQuery()
   }
   
   async findById(id: number){
@@ -29,7 +26,7 @@ export class ItemRepositoryCommand implements IRepository<Item> {
     return newItem
   }
 
-  async create(entity: Item):Promise<Item|ValidationError|FieldNotFoundError> {
+  async create(entity: ItemProps):Promise<Item|ValidationError|FieldNotFoundError> {
     const newEntity = { ...entity,
       lotNo: entity.lotNo?.value,
       length: String(entity.length?.value),
@@ -40,7 +37,7 @@ export class ItemRepositoryCommand implements IRepository<Item> {
         {id: entity.unit.id}
       },
       supplier: { connect:
-        {id: entity.supplier.id}
+        {id: entity.supplierId}
       },
       costUnit:{ connect:
         {id: entity.costUnit.id}
@@ -57,7 +54,7 @@ export class ItemRepositoryCommand implements IRepository<Item> {
     const newItem = await dbModelToEntity(result)
     return newItem
   }
-  async update(id: number, entity: Partial<Item>):Promise<Item|ValidationError|FieldNotFoundError> {
+  async update(id: number, entity: Partial<ItemProps>):Promise<Item|ValidationError|FieldNotFoundError> {
 
     const newEntity = { ...entity,
                       lotNo: entity.lotNo?.value,
@@ -92,7 +89,7 @@ export class ItemRepositoryCommand implements IRepository<Item> {
     const newItem = await dbModelToEntity(result)
     return newItem
   }
-  async findMany(query: Query<Item>|Query<Item>[]):Promise<Item[]>{
+  async findMany(query: Query<ItemModel>|Query<ItemModel>[]):Promise<Item[]>{
     const criteria = buildWhereStatement(query)
 
     const result = await this.prisma.$queryRaw<ItemModel[]>(

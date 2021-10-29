@@ -1,11 +1,11 @@
 
 import { Supplier } from "@domain/entity/stock"
-import { SupplierRepository } from "@domain/repository/interface"
+import { ISupplierRepository } from "@domain/repository/interface"
 import { SupplierToDTO } from "../dto/supplier"
 
 export class SupplierService{
-  private supplierRepository: SupplierRepository
-  constructor(supplierRepo: SupplierRepository){
+  private supplierRepository: ISupplierRepository
+  constructor(supplierRepo: ISupplierRepository){
     this.supplierRepository = supplierRepo
   }
   async createSupplier(supplier: Supplier){

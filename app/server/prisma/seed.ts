@@ -6,6 +6,7 @@ import { Units, ItemTypes, WoodSpecies} from '../domain/init/master'
 
 async function seed() {
   console.log("seeder: run!")
+
   await prisma.unit.createMany({
     data: Units
   })

@@ -1,11 +1,11 @@
 import { PrismaClient } from "@prisma/client"
 import { GradeType, UnitType, WarehouseType, ReasonType, WoodSpeciesType,入庫理由, 出庫理由 } from "@domain/entity/stock"
-import { IRepository } from "../interface"
+import { IGradeRepository, IReasonRepository, ISpeciesRepository, IUnitRepository, IWarehouseRepository } from "../interface"
 import { FieldNotFoundError } from "$/domain/type/error"
 
 const prisma = new PrismaClient()
 
-export class GradeRepository implements IRepository<GradeType> {
+export class GradeRepository implements IGradeRepository {
   async create(entity: GradeType): Promise<GradeType|FieldNotFoundError> {
     const result = await prisma.grade.create(
       {data: entity}
@@ -62,7 +62,7 @@ export class GradeRepository implements IRepository<GradeType> {
   }
 }
 
-export class UnitRepository implements IRepository<UnitType> {
+export class UnitRepository implements IUnitRepository {
   async update(id: number, entity: Partial<UnitType>): Promise<UnitType | Error> {
     const result = await prisma.unit.update(
       {where: {id}, data: entity}
@@ -114,7 +114,7 @@ export class UnitRepository implements IRepository<UnitType> {
   }
 }
 
-export class WarehouseRepository implements IRepository<WarehouseType> {
+export class WarehouseRepository implements IWarehouseRepository {
   async update(id: number, entity: Partial<WarehouseType>): Promise<WarehouseType | Error> {
     const result = await prisma.warehouse.update(
       {where: {id}, data: entity}
@@ -170,7 +170,7 @@ export class WarehouseRepository implements IRepository<WarehouseType> {
   }
 }
 
-export class ReasonRepository implements IRepository<ReasonType> {
+export class ReasonRepository implements IReasonRepository {
   async update(id: number, entity: Partial<ReasonType>): Promise<FieldNotFoundError | ReasonType> {
     const result = await prisma.reason.update(
       {where: {id}, data: entity}
@@ -231,7 +231,7 @@ export class ReasonRepository implements IRepository<ReasonType> {
 
 }
 
-export class WoodSpeciesRepository implements IRepository<WoodSpeciesType> {
+export class WoodSpeciesRepository implements ISpeciesRepository {
   async update(id: number, entity: Partial<WoodSpeciesType>): Promise<WoodSpeciesType | Error> {
     const result = await prisma.species.update(
       {where: {id}, data: entity}

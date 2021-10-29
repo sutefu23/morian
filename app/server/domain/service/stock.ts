@@ -1,12 +1,13 @@
 
-import { Item, History, Reason, ITEM_FIELD, 出庫理由, 入庫理由 } from "@domain/entity/stock"
-import { ItemRepository, HisotryRepository, Query } from "@domain/repository/interface"
+import { Item, ItemProps, History, HistoryProps, Reason, ITEM_FIELD, 出庫理由, 入庫理由 } from "@domain/entity/stock"
+import { IItemRepository, IHistoryRepository, Query } from "@domain/repository/interface"
 import { InvalidArgumentError, ValidationError } from "../type/error"
+import { Item as ItemModel, History as HistoryModel } from "@prisma/client"
 import { ItemToDTO  } from "../dto/item"
 import { HistoryToDTO } from "../dto/history"
 export class ItemService{
-  private itemRepository: ItemRepository
-  constructor(itemRepo: ItemRepository){
+  private itemRepository: IItemRepository
+  constructor(itemRepo: IItemRepository){
     this.itemRepository = itemRepo
   }
   async createItem(item: Item){
@@ -38,7 +39,7 @@ export class ItemService{
     const itemDto = ItemToDTO(data)
     return itemDto
   }
-  async findManyItem(query: Query<Item>|Query<Item>[]){
+  async findManyItem(query: Query<ItemModel>|Query<ItemModel>[]){
     const data = await this.itemRepository.findMany(query)
     if(data instanceof Error){
       return data as Error
@@ -52,8 +53,8 @@ export class ItemService{
 
 
 export class HistoryService{
-  private historyRepository: HisotryRepository
-  constructor(historyRepo: HisotryRepository){
+  private historyRepository: IHistoryRepository
+  constructor(historyRepo: IHistoryRepository){
     this.historyRepository = historyRepo
   }
   async createHistory(history: History){
@@ -69,7 +70,7 @@ export class HistoryService{
     return HistoryToDTO(data)
   }
 
-  async updateHistory(id: number, history: Partial<History>){
+  async updateHistory(id: number, history: Partial<HistoryProps>){
     if(!history.reason) return new InvalidArgumentError("在庫理由は必須です。") 
     if(history.reason.name == 出庫理由.不良品 && !history.note){
       return new ValidationError("不良品の時は理由を備考に入れてください。")
@@ -90,12 +91,31 @@ export class HistoryService{
     return data.map(d => HistoryToDTO(d))
   }
 
-  async findManyHistory(query: Query<History>|Query<History>[]){
+  async findManyHistory(query: Query<HistoryModel>|Query<HistoryModel>[]){
     const data = await this.historyRepository.findMany(query)
     if(data instanceof Error){
       return data as Error
     }
     return data.map(d => HistoryToDTO(d))
+  }
+
+  // 予約
+  async bookHistory(historyId: number, userId: number, bookDate: Date){
+    const data = await this.historyRepository.update(historyId, {id: historyId, bookUserId: userId, bookDate}, ITEM_FIELD.NONE)
+    if (data instanceof Error){
+      return data as Error
+    }
+    return data
+  }
+
+  // 予約解除
+  async unBookHistory(historyId: History["id"]){
+    const data = await this.historyRepository.update(historyId, {id: historyId, bookUserId: null, bookDate: null}, ITEM_FIELD.NONE)
+    if (data instanceof Error){
+      return data as Error
+    }
+    return data
+
   }
 
   async deleteHistory(historyId: number){

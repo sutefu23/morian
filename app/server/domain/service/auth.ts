@@ -1,11 +1,11 @@
 import bcrypt from 'bcrypt'
 import { API_SALT } from '$/envValues'
-import { UserRepository } from "../repository/interface"
+import { IUserRepository } from "../repository/interface"
 
 export class AuthService{
-  private userRepository: UserRepository
+  private userRepository: IUserRepository
   
-  constructor(userRepo: UserRepository){
+  constructor(userRepo: IUserRepository){
     this.userRepository = userRepo
   }
   public async isValidUser(id: number, pass: string){

@@ -1,7 +1,7 @@
 import { Entity } from "@domain/type/entity"
 
 
-interface UserProps {
+export interface UserProps {
   readonly id :number
   readonly name: string
   readonly pass: string

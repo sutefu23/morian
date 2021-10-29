@@ -73,7 +73,7 @@ export class lengthType extends ValueObject<number|"乱尺">{
   }
 }
 
-interface ItemProps {
+export interface ItemProps {
   readonly id :number
   readonly lotNo: lotNoType
   readonly itemType: ItemTypeType
@@ -149,7 +149,7 @@ export class PrefectureType extends ValueObject<string>{
   }  
 }
 
-export interface MakerProps {
+export interface SupplierProps {
   readonly id :number
   readonly name: string
   readonly enable: boolean
@@ -161,8 +161,8 @@ export interface MakerProps {
   readonly fax?	:telType,
 }
 
-export class Supplier extends Entity<MakerProps> implements MakerProps{
-  constructor(props: MakerProps){
+export class Supplier extends Entity<SupplierProps> implements SupplierProps{
+  constructor(props: SupplierProps){
     super(props)
   }
   readonly id :number
@@ -211,14 +211,17 @@ export interface HistoryProps{
   readonly id : number
   readonly date : Date,
   readonly itemId: Item["id"]
-  readonly isTemp? : boolean,
-  readonly status?: Status,
+  readonly isTemp : boolean,
+  readonly status: Status,
   readonly reason: ReasonType,
   readonly note: string,
   readonly addCount: Decimal,
   readonly reduceCount: Decimal,
   readonly editUserId: User['id'],
   readonly editUserName: User['name'],
+  readonly bookUserId: User['id']|null,
+  readonly bokUserName: User['name']|null,
+  readonly bookDate: Date|null
 }
 
 export class History extends Entity<HistoryProps> implements HistoryProps{
@@ -230,9 +233,11 @@ export class History extends Entity<HistoryProps> implements HistoryProps{
   readonly addCount: Decimal
   readonly reduceCount: Decimal
   readonly isTemp: boolean = false
-  readonly isNoOperation: boolean = false
   readonly editUserId: number
   readonly editUserName: string
+  readonly bookUserId: number|null
+  readonly bokUserName: string|null
+  readonly bookDate: Date|null
   private constructor(props: HistoryProps){
     super(props)
   }
