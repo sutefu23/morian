@@ -1,16 +1,16 @@
 import { AuthHeader } from '$/types';
-import type { Item } from '$prisma/client';
+import { Item } from '@domain/entity/stock';
 import { Prisma } from '@prisma/client';
 
 export type Methods = {
   get: {
     reqHeaders: AuthHeader
-    resBody: Item | null,
+    resBody: Item | null | Error,
     status: 200
   },
   post: {
     reqHeaders: AuthHeader
-    reqBody:Prisma.ItemCreateInput
+    reqBody:Item
     resBody: Item
     status: 201
   },

@@ -220,7 +220,7 @@ export interface HistoryProps{
   readonly editUserId: User['id'],
   readonly editUserName: User['name'],
   readonly bookUserId: User['id']|null,
-  readonly bokUserName: User['name']|null,
+  readonly bookUserName: User['name']|null,
   readonly bookDate: Date|null
 }
 
@@ -236,7 +236,7 @@ export class History extends Entity<HistoryProps> implements HistoryProps{
   readonly editUserId: number
   readonly editUserName: string
   readonly bookUserId: number|null
-  readonly bokUserName: string|null
+  readonly bookUserName: string|null
   readonly bookDate: Date|null
   private constructor(props: HistoryProps){
     super(props)

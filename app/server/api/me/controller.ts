@@ -8,7 +8,6 @@ export default defineController((fastify) => ({
   get: async ({ headers }) =>{
     const token = headers.authorization
     const decodedToken : {id: string}|null = fastify.jwt.decode(token)
-    console.log(decodedToken)
     if(decodedToken){
       const me = await userService.getUserById(Number(decodedToken.id))
       if(me instanceof Error){

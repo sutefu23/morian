@@ -30,7 +30,22 @@ export const dbModelToEntity = async (model: PrismaHistory): Promise<EntityHisto
   }
   const editUserName = user.name
 
-  const history = EntityHistory.getInstance({...model, editUserName, reason })
+  const bookUserName = await (async () => {
+    if(!model.bookUserId){
+      return null
+    }
+    const bUser = await prisma.user.findUnique({
+      where:{
+        id: model.bookUserId
+      }
+    })
+    if(!bUser){
+      return null
+    }
+    return bUser.name
+  }
+  )()
+  const history = EntityHistory.getInstance({...model, editUserName, reason, bookUserName })
 
   return history
 }
