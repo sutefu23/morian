@@ -88,9 +88,20 @@ export class HistoryRepository implements IHistoryRepository {
     })()
     
     const itemUpdateParam = this._itemUpdateParam(entity, itemField)
-    
-            entity.reason?.id
-    const result = await this.prisma.history.create({ data: {...createParam, ...itemUpdateParam, ...bookParam} })
+
+    const bookUpdateParam = (() => {
+      if(entity.bookUserId){
+        return {
+          bookUser: {
+            connect: {
+              id: entity.bookUserId
+            }
+          },
+          bookDate: entity.bookDate ? entity.bookDate : undefined
+        }
+      }
+    })()    
+    const result = await this.prisma.history.create({ data: {...createParam, ...itemUpdateParam, ...bookUpdateParam} })
     const newHistory = await dbModelToEntity(result)
     return newHistory
   }
@@ -107,11 +118,6 @@ export class HistoryRepository implements IHistoryRepository {
             id: entity.editUserId
           }
         },
-        bookUser: {
-          connect: {
-            id: entity.bookUserId
-          }
-        },
         reason: {
           connect: {
             id: entity.reason?.id
@@ -121,6 +127,7 @@ export class HistoryRepository implements IHistoryRepository {
         itemId: undefined,
         editUserId: undefined,
         bookUserId: undefined,
+        bookDate: undefined
       }
       const itemUpdateParam = (() => {
         if(entity.itemId){
@@ -129,7 +136,20 @@ export class HistoryRepository implements IHistoryRepository {
         }
       })()
 
-    const result = await this.prisma.history.update({ where: { id }, data: {...updateParam, ...itemUpdateParam} })
+      const bookUpdateParam = (() => {
+        if(entity.bookUserId){
+          return {
+            bookUser: {
+              connect: {
+                id: entity.bookUserId
+              }
+            },
+            bookDate: entity.bookDate ? entity.bookDate : undefined
+          }
+        }
+      })()
+
+    const result = await this.prisma.history.update({ where: { id }, data: {...updateParam, ...itemUpdateParam, ...bookUpdateParam} })
 
     const newHistory = await dbModelToEntity(result)
     return newHistory

@@ -126,14 +126,16 @@ model History {
   reason      Reason   @relation(fields: [reasonId], references: [id]) //理由
   item        Item     @relation(fields: [itemId], references: [id])
   itemId      Int
+  status      Int
+  isTemp      Boolean
   reduceCount Decimal //出荷数
   addCount    Decimal //入荷数
   editUser    User     @relation(name: "editUser", fields: [editUserId], references: [id])
   editUserId  Int
   order       Int //並び順
   bookUser    User?    @relation(name: "bookUser", fields: [bookUserId], references: [id])
-  bookUserId  Int
-  bookDate    DateTime @default(now())
+  bookUserId  Int?
+  bookDate    DateTime? @default(now())
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
