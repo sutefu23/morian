@@ -68,20 +68,29 @@ export class HistoryRepository implements IHistoryRepository {
           id: entity.editUserId
         }
       },
-      bookUser: {
-        connect: {
-          id: entity.bookUserId
-        }
-      },
       order: (maxOrder._max.order ?? 0) + 1,
       id: undefined,
       itemId: undefined,
       editUserId: undefined,
       bookUserId: undefined,
+      bookDate: undefined,
     }
+    const bookParam = (() => {
+      if(entity.bookUserId){
+        return {
+          bookUser: {
+            connect: {
+              id: entity.bookUserId
+            }
+          }
+        }
+      }
+    })()
+    
     const itemUpdateParam = this._itemUpdateParam(entity, itemField)
     
-    const result = await this.prisma.history.create({ data: {...createParam, ...itemUpdateParam} })
+            entity.reason?.id
+    const result = await this.prisma.history.create({ data: {...createParam, ...itemUpdateParam, ...bookParam} })
     const newHistory = await dbModelToEntity(result)
     return newHistory
   }

@@ -16,10 +16,10 @@ export type HistoryDTO = {
   readonly 	editUserId	:	number
   readonly 	editUserEnable	:	boolean
   readonly 	order	:	number
-  readonly 	bookUserId	:	number
+  readonly 	bookUserId	:	number | undefined
   readonly 	bookUserName	:	string
   readonly 	bookUserEnable	:	boolean
-  readonly 	bookDate	:	Date
+  readonly 	bookDate	:	Date | undefined
 }
 
 export const HistoryToDTO = (history: History):HistoryDTO => {

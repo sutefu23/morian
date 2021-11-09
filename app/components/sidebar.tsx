@@ -1,39 +1,43 @@
+import { useAspidaQuery } from '@aspida/react-query'
 import {
   Box,
   Button,
-  Drawer,
-  DrawerOverlay,
-  DrawerCloseButton,
-  DrawerHeader,
-  DrawerBody,
-  DrawerContent,
   VStack,
 } from '@chakra-ui/react'
-import { useEffect } from 'react'
+import { useState } from 'react'
+import { WoodSpeciesType } from '~/server/domain/entity/stock'
 import { apiClient } from '~/utils/apiClient'
+import router, { useRouter } from 'next/router'
+
+interface Link {
+  key: number|string
+  name: string
+  path: string
+}
 interface Props {
+  links: Link[]
   onClose: () => void
   isOpen: boolean
-  variant: 'drawer' | 'sidebar'
 }
-useEffect(() => {
-}, [])
-const SidebarContent = ({ onClick }: { onClick: () => void }) => (
-  <VStack>
-    <Button onClick={onClick} w="100%">
-      在庫
-    </Button>
-    <Button onClick={onClick} w="100%">
-      About
-    </Button>
-    <Button onClick={onClick} w="100%">
-      Contact
-    </Button>
-  </VStack>
-)
 
-const Sidebar = ({ isOpen, variant, onClose }: Props) => {
-  return variant === 'sidebar' ? (
+const SidebarContent = ({ onClick }: { onClick: () => void }) => {
+  const [_ , setSpecies ] = useState<WoodSpeciesType[]>([])
+  const { data: species, error } = useAspidaQuery(apiClient.master.species)
+  if (!species) return <div>loading...</div>
+  return ( 
+  
+  <VStack>
+
+    {species.map(s => 
+      <Button onClick={onClick} w="100%" key={s.id}>{s.name}</Button>
+    )}
+
+  </VStack>)
+}
+
+
+const Sidebar = ({ links, onClose }: Props) => {
+  return  (
     <Box
       position="fixed"
       left={0}
@@ -43,21 +47,11 @@ const Sidebar = ({ isOpen, variant, onClose }: Props) => {
       h="100%"
       bg="#dfdfdf"
     >
-      <SidebarContent onClick={onClose} />
+      {links.map(link => {
+        <Button onClick={() => {router.push(link.path)}} w="100%" key={link.key}>{link.name}</Button>
+      })}
     </Box>
-  ) : (
-    <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
-      <DrawerOverlay>
-        <DrawerContent>
-          <DrawerCloseButton />
-          <DrawerHeader>Chakra-UI</DrawerHeader>
-          <DrawerBody>
-            <SidebarContent onClick={onClose} />
-          </DrawerBody>
-        </DrawerContent>
-      </DrawerOverlay>
-    </Drawer>
-  )
+  ) 
 }
 
 export default Sidebar

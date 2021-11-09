@@ -6,7 +6,10 @@ class Document extends NextDocument<Props> {
   render() {
     return (
       <Html lang="ja" >
-        <Head />
+      <Head>
+        <title>モリアン在庫管理</title>
+        <link rel="icon" href="/favicon.png" />
+      </Head>
         <body>
           <Main />
           <NextScript />
