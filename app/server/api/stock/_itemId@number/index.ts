@@ -1,23 +1,24 @@
 import { AuthHeader } from '$/types';
-import { Item } from '@domain/entity/stock';
+import { ItemDTO } from '@domain/dto/item'
+import { ItemProps } from '@domain/entity/stock'
 import { Prisma } from '@prisma/client';
 
 export type Methods = {
   get: {
     reqHeaders: AuthHeader
-    resBody: Item | null | Error,
+    resBody: ItemDTO | null | Error,
     status: 200
   },
   post: {
     reqHeaders: AuthHeader
-    reqBody:Item
-    resBody: Item
+    reqBody:ItemProps
+    resBody: ItemDTO
     status: 201
   },
    patch: {
     reqHeaders: AuthHeader
-    reqBody: { id: Item["id"], body: Partial<Item>}
-    resBody: Item
+    reqBody: { id: ItemProps["id"], body: Partial<ItemProps>}
+    resBody: ItemDTO
     status: 204
   }
 }

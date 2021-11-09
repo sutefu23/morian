@@ -10,7 +10,7 @@ export class ItemService{
   constructor(itemRepo: IItemRepository){
     this.itemRepository = itemRepo
   }
-  async createItem(item: Item){
+  async createItem(item: ItemProps){
     const data = await this.itemRepository.create(item)
     if(data instanceof Error){
       return data as Error
@@ -19,7 +19,7 @@ export class ItemService{
     return itemDto
   }
 
-  async updateItem(id: number, item: Partial<Item>){
+  async updateItem(id: number, item: Partial<ItemProps>){
     const data = await this.itemRepository.update(id, item)
     if(data instanceof Error){
       return data as Error

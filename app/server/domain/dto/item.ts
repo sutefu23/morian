@@ -1,7 +1,7 @@
 import { Decimal } from '@prisma/client/runtime'
 import { Item, lotNoType, lengthType } from "@domain/entity/stock";
 
-type ItemDTO = {
+export type ItemDTO = {
   readonly id: number
   readonly lotNo: string
   readonly itemTypeId: number
@@ -38,12 +38,13 @@ type ItemDTO = {
   readonly arrivalDate: Date
   readonly note: string
 }
-export const ItemToDTO = (item: Item) => {
+export const ItemToDTO = (item: Item):ItemDTO => {
   return {
     id : item.id,
     lotNo : item.lotNo.value,
     itemTypeId : item.itemType.id,
     itemTypeName : item.itemType.name,
+    itemTypeOrder: item.itemType.order,
     woodSpeciesId : item.woodSpecies.id,
     woodSpeciesName : item.woodSpecies.name,
     woodSpeciesOrder : item.woodSpecies.order,

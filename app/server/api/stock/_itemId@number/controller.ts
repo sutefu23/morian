@@ -35,7 +35,7 @@ export default defineController(() => ({
       return { status : 500, body: item}
     }
     return{
-      status: 201,
+      status: 204,
       body: item
     }}
 }))
