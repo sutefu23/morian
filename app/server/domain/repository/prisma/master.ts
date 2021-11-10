@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client"
-import { GradeType, UnitType, WarehouseType, ReasonType, WoodSpeciesType,入庫理由, 出庫理由 } from "@domain/entity/stock"
-import { IGradeRepository, IReasonRepository, ISpeciesRepository, IUnitRepository, IWarehouseRepository } from "../interface"
+import { GradeType, UnitType, WarehouseType, ReasonType, ItemTypeType, WoodSpeciesType,入庫理由, 出庫理由 } from "@domain/entity/stock"
+import { IGradeRepository, IReasonRepository, ISpeciesRepository, IUnitRepository, IWarehouseRepository, IItemTypeRepository } from "../interface"
 import { FieldNotFoundError } from "$/domain/type/error"
 
 const prisma = new PrismaClient()
@@ -279,6 +279,62 @@ export class WoodSpeciesRepository implements ISpeciesRepository {
   }
 
   async findAll():Promise<WoodSpeciesType[]|FieldNotFoundError>{
+    const result = await prisma.species.findMany()
+    if(!result){
+      return new FieldNotFoundError("データが見つかりません")
+    }
+    return result
+  }
+}
+
+export class ItemTypeRepository implements IItemTypeRepository {
+  async update(id: number, entity: Partial<ItemTypeType>): Promise<ItemTypeType | Error> {
+    const result = await prisma.species.update(
+      {where: {id}, data: entity}
+    )
+    if(!result?.id || !result?.name || !result?.order){
+      return new FieldNotFoundError("データが見つかりません")
+    }
+    const data = {
+      id: result.id,
+      name: result.name,
+      order: result.order
+    }
+    return data
+  }
+  async create(entity: ItemTypeType): Promise<ItemTypeType|FieldNotFoundError> {
+    const result = await prisma.species.create(
+      {data: entity}
+    )
+    if(!result?.id || !result?.name || !result?.order){
+      return new FieldNotFoundError("データが見つかりません")
+    }
+    const data = {
+      id: result.id,
+      name: result.name,
+      order: result.order
+    }
+    return data
+  }
+
+  async findById(id: number): Promise<ItemTypeType|FieldNotFoundError> {
+    const result = await prisma.species.findUnique({
+      where: {
+        id
+      }
+    })
+    if(!result?.id || !result?.name || !result?.order){
+      return new FieldNotFoundError("データが見つかりません")
+    }
+    const data = {
+      id: result.id,
+      name: result.name,
+      order: result.order
+    }
+    return data
+  }
+
+  async findAll():Promise<ItemTypeType[]|FieldNotFoundError>{
     const result = await prisma.species.findMany()
     if(!result){
       return new FieldNotFoundError("データが見つかりません")

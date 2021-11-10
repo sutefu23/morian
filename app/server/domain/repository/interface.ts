@@ -1,4 +1,4 @@
-import { Item, ItemProps, History, HistoryProps, Supplier ,SupplierProps,  GradeType, WoodSpeciesType, UnitType, WarehouseType, ReasonType, ITEM_FIELD } from "../entity/stock"
+import { Item, ItemProps, History, HistoryProps, Supplier ,SupplierProps,  GradeType, WoodSpeciesType, UnitType, WarehouseType, ReasonType, ITEM_FIELD, ItemTypeType } from "../entity/stock"
 import { User, UserProps } from "../entity/user"
 import { Item as ItemModel, History as HistoryModel, User as UserModel, Supplier as SupplierModel} from "@prisma/client"
 
@@ -10,11 +10,6 @@ interface NullOperator extends Operator  { value: "NULL", operator: "is"| "is No
 export type Query<T> = {
   field: keyof T 
 } & (UniversalOperator | InOperator | NullOperator)
-
-// interface User {
-//   name: string;
-//   age: number;
-// }
 
 
 export interface IRepositoryCommand<Props, Entity>{
@@ -47,5 +42,6 @@ export type IUnitRepository = Omit<IMasterRepository<UnitType>,'findAll'> & Requ
 export type IWarehouseRepository = Omit<IMasterRepository<WarehouseType>,'findAll'> & Required<Pick<IMasterRepository<WarehouseType>, 'findAll'>>
 export type IReasonRepository = Omit<IMasterRepository<ReasonType>,'findAll'> & Required<Pick<IMasterRepository<ReasonType>, 'findAll'>>
 export type ISpeciesRepository = Omit<IMasterRepository<WoodSpeciesType>,'findAll'> & Required<Pick<IMasterRepository<WoodSpeciesType>, 'findAll'>>
+export type IItemTypeRepository = Omit<IMasterRepository<ItemTypeType>,'findAll'> & Required<Pick<IMasterRepository<ItemTypeType>, 'findAll'>>
 
 

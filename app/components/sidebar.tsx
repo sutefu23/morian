@@ -20,23 +20,17 @@ interface Props {
   isOpen: boolean
 }
 
-const SidebarContent = ({ onClick }: { onClick: () => void }) => {
-  const [_ , setSpecies ] = useState<WoodSpeciesType[]>([])
-  const { data: species, error } = useAspidaQuery(apiClient.master.species)
-  if (!species) return <div>loading...</div>
-  return ( 
-  
-  <VStack>
-
-    {species.map(s => 
-      <Button onClick={onClick} w="100%" key={s.id}>{s.name}</Button>
-    )}
-
-  </VStack>)
-}
-
 
 const Sidebar = ({ links, onClose }: Props) => {
+  const { data: species, error } = useAspidaQuery(apiClient.master.species)
+
+  if (!species) return <div>loading...</div>
+  const specieLinks:Link[] = species.map(s => ({
+    key: s.id,
+    name: s.name,
+    path: `/stock/spesies/${s.id}`
+  }))
+
   return  (
     <Box
       position="fixed"

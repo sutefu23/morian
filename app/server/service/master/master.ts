@@ -4,90 +4,90 @@ import type { Item, Unit, Supplier, ItemType, Species, Warehouse, Reason, Prisma
 const prisma = new PrismaClient()
 
 // 商品マスタ
-export const createItem = (data:Prisma.ItemCreateInput) => {
-  return prisma.item.create(
+export const createItem = async (data:Prisma.ItemCreateInput) => {
+  return await prisma.item.create(
     {data}
   )
 }
 
 export const updateItem = 
 async (id: Item['id'], partialItem: Prisma.ItemUpdateInput) => {
-  prisma.item.update({ where: { id }, data: partialItem })
+  return await prisma.item.update({ where: { id }, data: partialItem })
 }
 
 // 単位
-export const createUnit = (data:Prisma.UnitCreateInput) => {
-  prisma.unit.create(
+export const createUnit = async (data:Prisma.UnitCreateInput) => {
+  return await prisma.unit.create(
     {data}
   )
 }
 
 export const updateUnit = 
 async (id: Unit['id'], partialUnit: Prisma.UnitUpdateInput) => {
-  prisma.unit.update({ where: { id }, data: partialUnit })
+  return await prisma.unit.update({ where: { id }, data: partialUnit })
 }
 
 export const fetchUnits = async () => {
-  prisma.unit.findMany()
+  return await prisma.unit.findMany()
 }
 
 // 仕入先
-export const createSupplier = (data:Prisma.SupplierCreateInput) => {
-  prisma.supplier.create(
+export const createSupplier = async (data:Prisma.SupplierCreateInput) => {
+  return await prisma.supplier.create(
     {data}
   )
 }
 
 export const updateSupplier = 
 async (id: Supplier['id'], partialSupplier: Prisma.SupplierUpdateInput) => {
-  prisma.supplier.update({ where: { id }, data: partialSupplier })
+  return await prisma.supplier.update({ where: { id }, data: partialSupplier })
 }
 
 // 材種
-export const createItemType = (data:Prisma.ItemTypeCreateInput) => {
-  prisma.itemType.create(
+export const createItemType = async (data:Prisma.ItemTypeCreateInput) => {
+  return await prisma.itemType.create(
     {data}
   )
 }
 
 export const updateItemType = 
 async (id: ItemType['id'], partialItemType: Prisma.ItemTypeUpdateInput) => {
-  prisma.itemType.update({ where: { id }, data: partialItemType })
+  return await prisma.itemType.update({ where: { id }, data: partialItemType })
 }
 
 // 樹種
-export const createSpecies = (data:Prisma.SpeciesCreateInput) => {
-  prisma.species.create(
+export const createSpecies = async (data:Prisma.SpeciesCreateInput) => {
+  return await prisma.species.create(
     {data}
   )
 }
 
 export const updateSpecies = 
 async (id: Species['id'], partialSpecies: Prisma.SpeciesUpdateInput) => {
-  prisma.species.update({ where: { id }, data: partialSpecies })
+  return await prisma.species.update({ where: { id }, data: partialSpecies })
 }
 
 // 樹種
-export const createWarehouse = (data:Prisma.WarehouseCreateInput) => {
-  prisma.warehouse.create(
+export const createWarehouse = async (data:Prisma.WarehouseCreateInput) => {
+  return await prisma.warehouse.create(
     {data}
   )
 }
 
 export const updateWarehouse = 
 async (id: Warehouse['id'], partialWarehouse: Prisma.WarehouseUpdateInput) => {
-  prisma.warehouse.update({ where: { id }, data: partialWarehouse })
+  return await prisma.warehouse.update({ where: { id }, data: partialWarehouse })
 }
 
 
 // 倉庫
-export const createReason = (data:Prisma.ReasonCreateInput) => {
-  prisma.reason.create(
+export const createReason = async (data:Prisma.ReasonCreateInput) => {
+  return await prisma.reason.create(
     {data}
   )
 }
 
 export const updateReason = 
 async (id: Reason['id'], partialReason: Prisma.ReasonUpdateInput) => {
-  prisma.reason.update({ where: { id }, data: partialReason })
+  return await prisma.reason.update({ where: { id }, data: partialReason })
 }

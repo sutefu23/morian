@@ -1,6 +1,6 @@
 
-import { GradeType, UnitType, WarehouseType, WoodSpeciesType, ReasonType } from "@domain/entity/stock"
-import { IGradeRepository, IUnitRepository,ISpeciesRepository, IWarehouseRepository, IReasonRepository } from "@domain/repository/interface"
+import { GradeType, UnitType, WarehouseType, WoodSpeciesType, ReasonType, ItemTypeType } from "@domain/entity/stock"
+import { IGradeRepository, IUnitRepository,ISpeciesRepository, IWarehouseRepository, IReasonRepository, IItemTypeRepository } from "@domain/repository/interface"
 import { FieldNotFoundError } from "$/domain/type/error"
 
 export class GradeService {
@@ -129,6 +129,32 @@ export class SpeciesService {
 
   async getSpeciesList():Promise<WoodSpeciesType[]|FieldNotFoundError>{
     const data = await this.speciesRepository.findAll()
+    return data
+  }
+}
+
+export class ItemTypeService {
+  private itemTypeRepository :IItemTypeRepository
+  constructor(itemTypeRepository: IItemTypeRepository){
+    this.itemTypeRepository = itemTypeRepository
+  }
+  async createItemType(entity: ItemTypeType): Promise<ItemTypeType|FieldNotFoundError> {
+    const data = await this.itemTypeRepository.create(entity)
+    return data
+  }
+
+  async updateItemType(id: number, entity: Partial<ItemTypeType>): Promise<ItemTypeType|FieldNotFoundError> {
+    const data = await this.itemTypeRepository.update(id, entity)
+    return data
+  }
+
+  async findItemTypeById(id: number): Promise<ItemTypeType|FieldNotFoundError> {
+    const data = await this.itemTypeRepository.findById(id)
+    return data
+  }
+
+  async getItemTypeList():Promise<ItemTypeType[]|FieldNotFoundError>{
+    const data = await this.itemTypeRepository.findAll()
     return data
   }
 }
