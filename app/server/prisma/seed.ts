@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcrypt'
 import { DEFAULT_USER_PASS , API_SALT} from '../envValues'
 const prisma = new PrismaClient()
-import { Units, ItemTypes, WoodSpecies} from '../domain/init/master'
+import { Units, ItemTypes, WoodSpecies, StockReason} from '../domain/init/master'
 
 async function seed() {
   console.log("seeder: run!")
@@ -23,6 +23,10 @@ async function seed() {
       {id:1 , name: "森庵充久", enable: true},
       {id:41 , name: "管理者", enable: true}
     ]
+  })
+
+  await prisma.reason.createMany({
+    data: StockReason
   })
 
   await prisma.userPass.createMany({

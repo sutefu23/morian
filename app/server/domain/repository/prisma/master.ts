@@ -335,7 +335,7 @@ export class ItemTypeRepository implements IItemTypeRepository {
   }
 
   async findAll():Promise<ItemTypeType[]|FieldNotFoundError>{
-    const result = await prisma.species.findMany()
+    const result = await prisma.itemType.findMany()
     if(!result){
       return new FieldNotFoundError("データが見つかりません")
     }

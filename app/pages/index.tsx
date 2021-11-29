@@ -17,7 +17,7 @@ const Home = () => {
         
       </main>
       <aside>
-        <Sidebar links={[]} isOpen={true} onClose={()=>{null}}></Sidebar>
+        <Sidebar isOpen={true} onClose={()=>{null}}></Sidebar>
       </aside>
     </div>
   )
