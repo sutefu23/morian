@@ -32,10 +32,9 @@ services:
     image: phpmyadmin/phpmyadmin:latest
     environment:
       PMA_HOST: db
+      UPLOAD_LIMIT: 20480K
     ports:
     - "8080:80"
-    environment:
-      - UPLOAD_LIMIT=20480K
     links:
       - db
   redis:
