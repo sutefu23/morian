@@ -1,9 +1,10 @@
 import { useRouter } from 'next/router'
-import PageHeader from '~/components/sections/itemList/PageHeader'
-import PageBody from '~/components/sections/itemList/PageBody'
+import PageHeader from '~/components/sections/history/PageHeader'
+import PageBody from '~/components/sections/history/PageBody'
+
 const HistoryListPage = () => {
   const router = useRouter()
-  const { itemTypeId, woodSpeciesId } = router.query
+  const { lotId } = router.query
 
   return (
     <>

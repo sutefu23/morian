@@ -4,7 +4,7 @@ const PageHeader = () => {
   return (
     <>
     <VStack bgColor="aliceblue">
-      <Heading as="h1" size="md" mt="8" >
+      <Heading as="h1" size="md" mt="1" >
         在庫詳細
       </Heading>
       <HStack width="95vw">

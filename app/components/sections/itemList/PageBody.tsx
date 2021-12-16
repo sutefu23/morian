@@ -5,9 +5,6 @@ import { Table,
   Tr,
   Th,
   Td,
-  TableCaption,
-  Box,
-  VStack
  } from "@chakra-ui/react"
 
 const PageHeader = () => {
