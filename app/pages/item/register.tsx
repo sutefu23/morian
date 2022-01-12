@@ -1,15 +1,30 @@
-import { Table,
-  Thead,
-  Tbody,
-  Tfoot,
-  Tr,
-  Th,
-  Td,
- } from "@chakra-ui/react"
+import { HStack, Box, VStack, InputGroup, Input, InputLeftAddon
+  ,Table, Thead, Tbody, Tr, Th, Td,} from "@chakra-ui/react"
+import usePageTitle from '~/hooks/usePageTitle'
 
-const PageHeader = () => {
+const Register = () => {
+
+  const { setTitle } = usePageTitle()
+  setTitle("新規登録")
+
   return (
     <>
+    <VStack bgColor="aliceblue">
+      <HStack width="95vw">
+        <Box>
+          <InputGroup>
+            <InputLeftAddon>樹種</InputLeftAddon>
+            <Input value="レッドシダー" readOnly/>
+          </InputGroup>
+        </Box>
+        <Box>
+          <InputGroup>
+            <InputLeftAddon>材種</InputLeftAddon>
+            <Input value="フローリング" readOnly/>
+          </InputGroup>
+        </Box>
+      </HStack>
+    </VStack>
     <Table variant="striped" colorScheme="gray" size='sm' w="150vw">
       <Thead>
         <Th>ロット番号</Th>
@@ -57,4 +72,4 @@ const PageHeader = () => {
   )
 }
 
-export default PageHeader
+export default Register

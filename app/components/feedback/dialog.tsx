@@ -7,14 +7,12 @@ import {
   ModalBody,
   ModalCloseButton,
   Button,
-  useDisclosure
 } from "@chakra-ui/react"
 
-const Dialog = (props: { title: string, message: string}) => {
-  const { isOpen, onOpen, onClose } = useDisclosure()
+const Dialog = (props: { title?: string, message: string , isOpen: boolean, onClose: () => void}) => {
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={props.isOpen} onClose={props.onClose}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>{props.title}</ModalHeader>
@@ -24,7 +22,7 @@ const Dialog = (props: { title: string, message: string}) => {
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={onClose}>
+            <Button colorScheme="blue" mr={3} onClick={props.onClose}>
               Close
             </Button>
           </ModalFooter>

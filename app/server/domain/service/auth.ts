@@ -5,13 +5,13 @@ import { IUserRepository } from "../repository/interface"
 export class AuthService{
   private userRepository: IUserRepository
   
-  constructor(userRepo: IUserRepository){
-    this.userRepository = userRepo
+  constructor(userRepository: IUserRepository){
+    this.userRepository = userRepository
   }
   public async isValidUser(id: number, pass: string){
     const user = await this.userRepository.findById(id)
     if(user instanceof Error){
-      return user
+      return user as Error
     }
     return user.pass == AuthService.encrypt(pass)
   }

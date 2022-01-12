@@ -13,3 +13,6 @@ restart:
 	@make up
 destroy:
 	@make down
+
+dev:
+	@make up && yarn --cwd ./app dev

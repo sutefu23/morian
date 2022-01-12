@@ -4,8 +4,9 @@ import { UserRepository } from '$/domain/repository/prisma/user'
 
 const authService = new AuthService(new UserRepository)
 export default defineController((fastify) => ({
-  post: async ({ body }) =>
-    await authService.isValidUser(body.id, body.pass)
+  post: async ({ body }) => {
+    return await authService.isValidUser(body.id, body.pass) === true
       ? { status: 201, body: { token: fastify.jwt.sign({ id: body.id }) } }
       : { status: 401 }
+  }
 }))

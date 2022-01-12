@@ -8,18 +8,18 @@ import {
   DrawerOverlay,
   DrawerContent,
   DrawerCloseButton,
-  useDisclosure,
   Accordion,
   AccordionItem,
   AccordionButton,
   AccordionPanel,
   AccordionIcon,
+  Heading,
 } from '@chakra-ui/react'
-import React, { useState } from 'react'
+import React from 'react'
 import { apiClient } from '~/utils/apiClient'
-import router, { useRouter } from 'next/router'
-import Dialog from '~/components/feedback/dialog'
-
+import router from 'next/router'
+import StatusBar from '~/components/feedback/statusBar'
+import useSidebar from '~/hooks/useSidebar'
 interface Link {
   key: number|string
   name: string
@@ -27,19 +27,14 @@ interface Link {
   children?: Link[] 
 }
 
-interface Props {
-  onClose: () => void
-  isOpen: boolean
-}
 
-
-const Sidebar = ({ onClose }: Props) => {
-  const { data: species, error : speciesErr } = useAspidaQuery(apiClient.master.species)
+const Sidebar = () => {
   const { data: itemTypes, error: itemTypeErr } = useAspidaQuery(apiClient.master.itemType)
-  const { isOpen, onOpen } = useDisclosure()
+  const { data: species, error : speciesErr } = useAspidaQuery(apiClient.master.species)
 
-  if (speciesErr) return <Dialog title="エラー" message={speciesErr}/>
-  if (itemTypeErr) return <Dialog title="エラー" message={itemTypeErr}/>
+  const { isOpen, setIsOpen } = useSidebar()
+  if (itemTypeErr) return <StatusBar status="error" message="商品の取得に失敗しました。"/>
+  if (speciesErr) return <StatusBar status="error" message="樹種の取得に失敗しました。"/>
 
   if (!species?.length || !itemTypes?.length) return <div>loading...</div>
 
@@ -67,17 +62,17 @@ const Sidebar = ({ onClose }: Props) => {
     {
       key: "registerItem",
       name: "在庫新規登録",
-      path: "item/register"
+      path: "/item/register"
     },
     {
       key: "issueItem",
       name: "発注",
-      path: "item/issue"
+      path: "/item/issue"
     },
     {
       key: "handhi",
       name: "ハンディ操作",
-      path: "item/handhi"
+      path: "/item/handhi"
     },
     {
       key: "reports",
@@ -86,30 +81,38 @@ const Sidebar = ({ onClose }: Props) => {
         {
           key: "printBarCode",
           name: "バーコード印刷",
-          path: "print/barcode"
+          path: "/print/barcode"
         },
       ]
     },
   ]
-
   const ButtonLinks = (props: {links: Link[]}) => 
     (<React.Fragment>
       {props.links.map(link => (
         !link.children?
-        <Button mt="1" onClick={() => {link.path && router.push(link.path)}} w="100%" key={link.key}>
+        <Button
+        mt="1" 
+        w="100%"
+        bgColor="transparent"
+        border="solid 2px #eee"
+        key={link.key}
+        onClick={() => {link.path && router.push(link.path)}}>
           {link.name}
         </Button>
         :
-        <Accordion allowToggle>
+        <Accordion allowToggle
+          defaultIndex={
+            link.key==='listItem'?0:-1
+          }
+          key={link.key}
+        >
           <AccordionItem>
-          <h2>
             <AccordionButton>
               <Box flex='1' textAlign='left'>
-              {link.name}
+              <Heading as="h3" size="sm">{link.name}</Heading>
               </Box>
               <AccordionIcon />
             </AccordionButton>
-          </h2>
             {link.children &&
             <AccordionPanel pb={4}>
               <ButtonLinks links={link.children}></ButtonLinks>
@@ -123,13 +126,15 @@ const Sidebar = ({ onClose }: Props) => {
     )
   return (
     <Drawer
-    isOpen={true}
+    isOpen={isOpen}
     placement='left'
-    onClose={onClose}
+    onClose={() => setIsOpen(false)}
   >
     <DrawerOverlay />
     <DrawerContent>
-      <DrawerCloseButton />
+      <DrawerCloseButton
+        onClick={() => setIsOpen(false)}
+      />
       <DrawerHeader>メニュー</DrawerHeader>
 
       <DrawerBody>

@@ -9,15 +9,15 @@ import {
   InputLeftElement,
   chakra,
   Box,
-  Link,
   Avatar,
   FormControl,
-  InputRightElement
+  InputRightElement,
+  useDisclosure
 } from "@chakra-ui/react";
 import { FaUserAlt, FaLock } from "react-icons/fa";
-import { setCookie } from 'nookies'
-import { apiClient } from '~/utils/apiClient'
 import { useRouter } from "next/router";
+import Dialog from '~/components/feedback/dialog'
+import useUser from '~/hooks/useUser'
 
 const CFaUserAlt = chakra(FaUserAlt);
 const CFaLock = chakra(FaLock);
@@ -26,28 +26,43 @@ const Login = () => {
   const [userId, setUserId] = useState<string>("")
   const [userPass, setUserPass] = useState<string>("")
   const [showPassword, setShowPassword] = useState(false)
-
+  const [errorMessage, setErrorMessage] = useState("")
+  const { isOpen, onOpen : ModalOpen, onClose } = useDisclosure()
   const handleShowClick = () => setShowPassword(!showPassword)
+  const { setUser, login } = useUser()
   const router = useRouter()
 
   const handleLogin = useCallback(
     async (e:React.MouseEvent) => {
-      if (!userId) return
-      if (!userPass) return
-      e.preventDefault()
-      const res = await apiClient.login.post({ body: { id: Number(userId), pass: userPass} })
-      if (res.status == 201){
-        setCookie(null, 'token', res.body.token, {
-          maxAge: 30 * 24 * 60 * 60,
-        })
-        router.push('/')
+      if (!userId) {
+        setErrorMessage("ユーザーIdを入力してください。")
+        ModalOpen()
+        return
       }
-      return false
+      if (!userPass) {
+        setErrorMessage("パスワード入力してください。")
+        ModalOpen()
+        return
+      }
+      e.preventDefault()
+      try{
+        const user = await login({userId: Number(userId), userPass })
+        if (user && !(user instanceof Error)){
+          setUser(user)
+          router.push('/')
+        }
+      }catch(error){
+        setErrorMessage("ログインできませんでした。")
+        console.error(error)
+        ModalOpen()
+        return
+      }
     },
     [userId, userPass],
   )
+  if(isOpen) return <Dialog message={errorMessage} isOpen onClose={onClose}/>
   return (
-    <Flex flexDirection="column" width="100wh" height="100vh" backgroundColor="gray.200" justifyContent="center" alignItems="center">
+    <Flex flexDirection="column" width="100wh" height="100vh"  justifyContent="center" alignItems="center">
       <Stack
         flexDir="column"
         mb="2"
@@ -55,13 +70,11 @@ const Login = () => {
         alignItems="center"
       >
         <Avatar bg="teal.500" />
-        <Heading color="teal.400">モリアン在庫管理ログイン</Heading>
+        <Heading >モリアン在庫管理ログイン</Heading>
         <Box minW={{ base: "90%", md: "468px" }}>
             <Stack
               spacing={4}
               p="1rem"
-              backgroundColor="whiteAlpha.900"
-              boxShadow="md"
             >
               <FormControl>
                 <InputGroup>
@@ -81,7 +94,7 @@ const Login = () => {
                 <InputGroup>
                   <InputLeftElement
                     pointerEvents="none"
-                    color="gray.300"
+                    
                   >
                     <CFaLock color="gray.300" />
                   </InputLeftElement>
@@ -102,7 +115,6 @@ const Login = () => {
                 borderRadius={0}
                 type="submit"
                 variant="solid"
-                colorScheme="teal"
                 width="full"
                 onClick={handleLogin}
               >
