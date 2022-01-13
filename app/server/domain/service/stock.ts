@@ -1,4 +1,4 @@
-import { Item, ItemProps, History, HistoryProps, Reason, ITEM_FIELD, 出庫理由, 入庫理由 } from "@domain/entity/stock"
+import { ItemProps, History, HistoryProps, Reason, ITEM_FIELD, 出庫理由, 入庫理由 } from "@domain/entity/stock"
 import { IItemRepository, IHistoryRepository, Query } from "@domain/repository/interface"
 import { InvalidArgumentError, ValidationError } from "../type/error"
 import { Item as ItemModel, History as HistoryModel } from "@prisma/client"

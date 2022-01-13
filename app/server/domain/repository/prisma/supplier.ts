@@ -10,8 +10,17 @@ export class SupplierRepository extends PrismaRepository implements ISupplierRep
   constructor(){
     super()
   }
-  async findAll(): Promise<Error | Supplier[]> {
-    const results = await this.prisma.supplier.findMany()
+  async findAll(enable?:boolean): Promise<Error | Supplier[]> {
+    const where = (()=>{
+      if(enable){
+        return {
+          where: {
+            enable
+          }
+        }
+      }
+    })()
+    const results = await this.prisma.supplier.findMany({...where})
     if(!results) {
       return new RepositoryNotFoundError("supplierが見つかりません")
     }

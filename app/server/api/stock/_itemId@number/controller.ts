@@ -1,4 +1,3 @@
-import { createItem } from '$/service/master/master'
 import { defineController } from './$relay'
 import { ItemService } from '$/domain/service/stock'
 import { ItemRepository } from '$/domain/repository/prisma/item'

@@ -1,14 +1,15 @@
 
 import { Supplier } from "@domain/entity/stock"
 import { ISupplierRepository } from "@domain/repository/interface"
-import { SupplierToDTO } from "../dto/supplier"
+import { SupplierDTO, SupplierToDTO, DTOtoSupplier } from "../dto/supplier"
 
 export class SupplierService{
   private supplierRepository: ISupplierRepository
   constructor(supplierRepo: ISupplierRepository){
     this.supplierRepository = supplierRepo
   }
-  async createSupplier(supplier: Supplier){
+  async createSupplier(supplierData: SupplierDTO){
+    const supplier = DTOtoSupplier(supplierData)
     const data = await this.supplierRepository.create(supplier)
     if(data instanceof Error){
       return data

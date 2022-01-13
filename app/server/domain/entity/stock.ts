@@ -15,7 +15,7 @@ export class lotNoType extends ValueObject<string>{
   }
 }
 
-interface Master {
+export interface Master {
   readonly id :number
   readonly name: string
   readonly order: number 

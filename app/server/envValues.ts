@@ -13,6 +13,7 @@ const REDIS_USERNAME = process.env.REDIS_USERNAME ?? ''
 const REDIS_PASSWORD = process.env.REDIS_PASSWORD ?? ''
 const REDIS_HOST = process.env.REDIS_HOST ?? 'localhost'
 const REDIS_POST = process.env.REDIS_POST ?? '6379'
+const NODE_ENV = process.env.NODE_ENV ?? 'development'
 
 export {
   API_JWT_SECRET,
@@ -25,5 +26,6 @@ export {
   REDIS_USERNAME,
   REDIS_PASSWORD,
   REDIS_HOST,
-  REDIS_POST
+  REDIS_POST,
+  NODE_ENV
 }

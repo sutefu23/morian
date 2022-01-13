@@ -72,12 +72,24 @@ export class UserRepository implements IUserRepository {
     return data
   }
 
-  async findAll():Promise<User[]|FieldNotFoundError>{
-    const result = await prisma.user.findMany({
-      include:{
-        UserPass: true
+  async findAll(enable?:boolean):Promise<User[]|FieldNotFoundError>{
+    const where = (()=>{
+      if(enable){
+        return {
+          where: {
+            enable
+          }
+        }
       }
-    })
+    })()
+    const result = await prisma.user.findMany(
+      {
+        include:{
+          UserPass: true
+        },
+        ...where
+      }
+    )
     if(!result){
       return new FieldNotFoundError("データが見つかりません")
     }

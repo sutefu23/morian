@@ -1,12 +1,7 @@
-import type { AuthHeader } from '$/types';
-import type { User, UserPass } from '$prisma/client';
+import { User } from "$/domain/entity/user";
+
 export type Methods = {
-   get: {
-     resBody: User|null
-  }
-   post: {
-     reqFormat: FormData
-     reqBody: Pick<User, 'id'|'name'> & Pick<UserPass, 'pass'>
-     resBody: User
+  get: {
+    resBody: User[]
   }
 }

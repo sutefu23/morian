@@ -1,14 +1,14 @@
+import { UserRepository } from '$/domain/repository/prisma/user'
+import { UserService } from '$/domain/service/user'
 import { defineController } from './$relay'
-import { getUserInfoById, createUser } from '$/service/user'
 
+const service = new UserService(new UserRepository)
 export default defineController(() => ({
-  get: async ({ user }) => {
-    return { 
-      status: 200,
-      body: await getUserInfoById(user.id) }
-  },
-  post: async ({ body }) => ({
-    status: 201,
-    body: await createUser(body.id, body.name, body.pass)
-  })
+  get: async () => {
+    const data = await service.getUserList()
+    if(data instanceof Error){
+      return { status: 500, body: data.message}
+    }
+    return { status: 200, body: data }
+  }
 }))

@@ -42,6 +42,11 @@ const theme = extendTheme({
             boxShadow: "md"
           }
         },
+        VStack:{
+            baseStyle: {
+                backgroundColor:"aliceblue",
+            }    
+        },
         InputLeftElement: {
           baseStyle: {
             color:"gray.300"

@@ -1,7 +1,6 @@
 import { AuthHeader } from '$/types';
 import { ItemDTO } from '@domain/dto/item'
 import { ItemProps } from '@domain/entity/stock'
-import { Prisma } from '@prisma/client';
 
 export type Methods = {
   get: {

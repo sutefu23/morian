@@ -22,7 +22,7 @@ export interface IRepositoryQuery<Model, Entity>{
   findById(id: number): Promise<Entity | Error>
   findOne?(query:Query<Model>|Query<Model>[]): Promise<Entity | Error>
   findMany?(query:Query<Model>|Query<Model>[]):Promise<Entity[] | Error>
-  findAll?():Promise<Entity[] | Error>
+  findAll?(enable?:boolean):Promise<Entity[] | Error>
 }
 
 export type IRepository<Props, Model, Entity> = IRepositoryCommand<Props, Entity> & IRepositoryQuery<Model, Entity>
@@ -32,7 +32,7 @@ export type IHistoryRepository = Omit<IRepositoryCommand<HistoryProps, History>,
   create(entity: HistoryProps, itemField: ITEM_FIELD):Promise<History|Error>
   delete(id: number, entity: Required<Pick<HistoryProps, 'itemId'>> & Partial<Pick<HistoryProps, 'reduceCount'|'addCount'>>, itemField: ITEM_FIELD):Promise<[History, Item]|Error>
   update(id: number, entity: Partial<HistoryProps>, itemField: ITEM_FIELD):Promise<History|Error>}
-export type IUserRepository = IRepositoryCommand<UserProps, User> & IRepositoryQuery<UserModel, User>
+export type IUserRepository = IRepositoryCommand<UserProps, User> & IRepositoryQuery<UserModel, User> & Required<Pick<IRepositoryQuery<UserModel, User>,"findAll">>
 export type ISupplierRepository = Omit<IRepository<SupplierProps, SupplierModel, Supplier>,'findAll'> & Required<Pick<IRepository<SupplierProps, SupplierModel, Supplier>, 'findAll'>>
 
 export type IMasterRepository<Props> = IRepositoryCommand<Props, Props> & IRepositoryQuery<Props, Props>

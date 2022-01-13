@@ -11,6 +11,7 @@ export class UserService{
     if(data instanceof Error){
       return data
     }
+    return data
   }
 
   async updateUser(id: number, user: Partial<User>){
@@ -18,6 +19,15 @@ export class UserService{
     if(data instanceof Error){
       return data
     }
+    return data
+  }
+
+  async getUserList(enable?:boolean){
+    const data = await this.userRepository.findAll(enable)
+    if(data instanceof Error){
+      return data
+    }
+    return data
   }
 
   async getUserById(id: number){

@@ -7,12 +7,14 @@ import fastifyJwt from 'fastify-jwt'
 import {
   API_JWT_SECRET,
   API_BASE_PATH,
-  API_UPLOAD_DIR
+  API_UPLOAD_DIR,
+  NODE_ENV
 } from '$/envValues'
 import server from '$/$server'
 
 export const init = (serverFactory?: FastifyServerFactory) => {
   const app = Fastify({ serverFactory })
+  console.log("環境:" + NODE_ENV)
   app.register(helmet)
   app.register(cors)
   app.register(fastifyStatic, {
