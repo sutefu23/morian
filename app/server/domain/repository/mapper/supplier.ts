@@ -8,38 +8,40 @@ export const dbModelToEntity = (model: PrismaSupplier): EntitySupplier|FieldNotF
   if(furigana instanceof Error){
     throw furigana
   }
-  
-  if(!model.zip){
-    throw new FieldNotFoundError("zipが見つかりません")
-  }
 
-  const zip = zipType.getInstance(model.zip)
-  if(zip instanceof Error){
-    throw zip
-  }
+  const address = model.address ? model.address : undefined
 
-  if(!model.prefecture){
-    throw new FieldNotFoundError("prefectureが見つかりません")
-  }
+  const zip = ((data:string|null) => {
+    if(data){
+      const zip = zipType.getInstance(data)
+      if(zip instanceof Error){
+        throw zip
+      }  
+      return zip
+    }
+  })(model.zip)
 
-  const prefecture = PrefectureType.getInstance(model.prefecture)
-  if(prefecture instanceof Error){
-    throw prefecture
-  }
 
-  if(!model.address){
-    throw new FieldNotFoundError("addressが見つかりません")
-  }
+  const prefecture = ((data:string|null) => {
+    if(data){
+      const prefecture = PrefectureType.getInstance(data)
+      if(prefecture instanceof Error){
+        throw prefecture
+      }  
+      return prefecture
+    }
+  })(model.prefecture)
 
-  if(!model.tel){
-    throw new FieldNotFoundError("telが見つかりません")
-  }
+  const tel = ((dataTel:string|null) => {
+    if(dataTel){
+      const tel = telType.getInstance(dataTel)
+      if(tel instanceof Error){
+        throw tel
+      }  
+      return tel
+    }
+  })(model.tel)
 
-  const tel = telType.getInstance(model.tel)
-  if(tel instanceof Error){
-    throw tel
-  }
-  
   const fax = ((modelFax:string|null) => {
     if(modelFax){
       const fax = telType.getInstance(modelFax)
@@ -55,8 +57,8 @@ export const dbModelToEntity = (model: PrismaSupplier): EntitySupplier|FieldNotF
     furigana,
     zip,
     prefecture,
-    address: model.address,
-    tel: tel,
+    address,
+    tel,
     fax
   }
   return supplier

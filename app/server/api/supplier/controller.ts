@@ -4,8 +4,15 @@ import { defineController } from './$relay'
 
 const service = new SupplierService(new SupplierRepository)
 export default defineController(() => ({
-  get: async () => {
-    const data = await service.getSupplierList()
+  get: async ({query}) => {
+    const data = await (() => {
+      if(query?.name){
+        console.log(service.filterSuppliers(query.name))
+        return service.filterSuppliers(query.name)
+      }else{
+        return service.getSupplierList(query?.enable)
+      }
+    })()
     if(data instanceof Error){
       return { status: 500, body: data.message}
     }

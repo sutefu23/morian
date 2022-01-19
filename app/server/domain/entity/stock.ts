@@ -33,7 +33,7 @@ export class furiganaType extends ValueObject<string>{
   private constructor(val: string){ super(val) }
 
   static getInstance(val: string):furiganaType | ValidationError{
-    if(!/^[ァ-ヴー]+$/gu.test(val)){
+    if(!/^[ぁ-ヴー]+$/gu.test(val)){
       return new ValidationError("furiganaの形式が正しくありません。")
     }
     return new this(val)
@@ -154,10 +154,10 @@ export interface SupplierProps {
   readonly name: string
   readonly enable: boolean
   readonly furigana	:furiganaType,
-  readonly zip	:zipType,
-  readonly prefecture	:PrefectureType,
-  readonly address	:string,
-  readonly tel	:telType,
+  readonly zip?	:zipType,
+  readonly prefecture?	:PrefectureType,
+  readonly address?	:string,
+  readonly tel?	:telType,
   readonly fax?	:telType,
 }
 
@@ -169,10 +169,10 @@ export class Supplier extends Entity<SupplierProps> implements SupplierProps{
   readonly name: string
   readonly enable: boolean
   readonly furigana: furiganaType
-  readonly zip: zipType
-  readonly prefecture: PrefectureType
-  readonly address: string
-  readonly tel: telType
+  readonly zip?: zipType
+  readonly prefecture?: PrefectureType
+  readonly address?: string
+  readonly tel?: telType
   readonly fax?: telType
 }
 

@@ -34,11 +34,18 @@ export class SupplierService{
     }
     return SupplierToDTO(data)
   }
-  async getSupplierList(){
-    const data = await this.supplierRepository.findAll()
+  async filterSuppliers(name: string){
+    const data = await this.supplierRepository.filterName(name)
     if(data instanceof Error){
       return data as Error
     }
-    return data.filter(d => d.enable)
+    return data    
+  }
+  async getSupplierList(enable?:boolean){
+    const data = await this.supplierRepository.findAll(enable)
+    if(data instanceof Error){
+      return data as Error
+    }
+    return data
   }
 }

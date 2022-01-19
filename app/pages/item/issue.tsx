@@ -1,25 +1,13 @@
 import { HStack, Box, VStack, InputGroup, Input, InputLeftAddon} from "@chakra-ui/react"
-import { useState } from 'react'
-import { CUIAutoComplete } from "chakra-ui-autocomplete"
-import { WoodSpeciesSelect, ItemTypeSelect } from "~/components/select/"
+import { WoodSpeciesSelect, ItemTypeSelect, SupplierSelect } from "~/components/select/"
 import StatusBar from "~/components/feedback/statusBar"
 import usePageTitle from '~/hooks/usePageTitle'
 import useUser from "~/hooks/useUser"
-import zIndex from "@material-ui/core/styles/zIndex"
 
 export interface Item {
   label: string;
   value: string;
 }
-const countries = [
-  { value: "ghana", label: "Ghana" },
-  { value: "nigeria", label: "Nigeria" },
-  { value: "kenya", label: "Kenya" },
-  { value: "southAfrica", label: "South Africa" },
-  { value: "unitedStates", label: "United States" },
-  { value: "canada", label: "Canada" },
-  { value: "germany", label: "Germany" }
-];
 
 const Register = () => {
   const { setTitle } = usePageTitle()
@@ -33,26 +21,7 @@ const Register = () => {
     <>
     <VStack>
       <HStack>
-      <CUIAutoComplete
-          labelStyleProps={{
-            display:"none",
-          }}
-          inputStyleProps={{
-            minWidth:"300px",
-          }}
-
-          listStyleProps={{
-            position: "absolute",
-            minWidth:"300px",
-            backgroundColor:"white",
-            zIndex:"1"
-          }}
-
-          label=""
-          placeholder="仕入先"
-          items={countries}
-
-        />
+        <SupplierSelect onSelect={() => { return}}/>
       </HStack>
     </VStack>
     <VStack>

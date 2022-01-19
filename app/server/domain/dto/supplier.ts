@@ -19,10 +19,10 @@ export const SupplierToDTO = (supplier: Supplier):SupplierDTO => {
     id	:	supplier.id,
     name	:	supplier.name,
     furigana	:	supplier.furigana.value,
-    zip	:	supplier.zip.value,
-    prefecture	:	supplier.prefecture.value,
-    address	:	supplier.address,
-    tel	:	supplier.tel.value,
+    zip	:	supplier.zip ? supplier.zip.value: null,
+    prefecture	:	supplier.prefecture ? supplier.prefecture.value : null,
+    address	:	supplier.address ? supplier.address : null,
+    tel	:	supplier.tel ? supplier.tel.value : null,
     fax	:	supplier.fax ? supplier.fax.value : null,
     enable	:	supplier.enable	    
   }
@@ -33,37 +33,40 @@ export const DTOtoSupplier = (data: SupplierDTO): Supplier => {
   if(furigana instanceof Error){
     throw furigana
   }
+   
+  const address = data.address ? data.address : undefined
+
+  const zip = ((data:string|null) => {
+    if(data){
+      const zip = zipType.getInstance(data)
+      if(zip instanceof Error){
+        throw zip
+      }  
+      return zip
+    }
+  })(data.zip)
+
+
+  const prefecture = ((data:string|null) => {
+    if(data){
+      const prefecture = PrefectureType.getInstance(data)
+      if(prefecture instanceof Error){
+        throw prefecture
+      }  
+      return prefecture
+    }
+  })(data.prefecture)
+
+  const tel = ((dataTel:string|null) => {
+    if(dataTel){
+      const tel = telType.getInstance(dataTel)
+      if(tel instanceof Error){
+        throw tel
+      }  
+      return tel
+    }
+  })(data.tel)
   
-  if(!data.zip){
-    throw new FieldNotFoundError("zipが見つかりません")
-  }
-
-  const zip = zipType.getInstance(data.zip)
-  if(zip instanceof Error){
-    throw zip
-  }
-
-  if(!data.prefecture){
-    throw new FieldNotFoundError("prefectureが見つかりません")
-  }
-
-  const prefecture = PrefectureType.getInstance(data.prefecture)
-  if(prefecture instanceof Error){
-    throw prefecture
-  }
-
-  if(!data.address){
-    throw new FieldNotFoundError("addressが見つかりません")
-  }
-
-  if(!data.tel){
-    throw new FieldNotFoundError("telが見つかりません")
-  }
-
-  const tel = telType.getInstance(data.tel)
-  if(tel instanceof Error){
-    throw tel
-  }
   
   const fax = ((dataFax:string|null) => {
     if(dataFax){
@@ -80,8 +83,8 @@ export const DTOtoSupplier = (data: SupplierDTO): Supplier => {
     furigana,
     zip,
     prefecture,
-    address: data.address,
-    tel: tel,
+    address,
+    tel,
     fax
   }
 

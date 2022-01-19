@@ -35,6 +35,14 @@ async function seed() {
       {userId:41 , pass:  bcrypt.hashSync(DEFAULT_USER_PASS, API_SALT)}
     ]
   })
+  await prisma.supplier.createMany({
+    data: [
+      {id:1 , name: "北材商事",furigana:"ほくざいしょうじ", enable: true},
+      {id:2 , name: "サンセイ",furigana:"さんせい", enable: true},
+      {id:3 , name: "日本インシュレーション㈱",furigana:"にほんいんしゅれーしょん", enable: true}
+    ]
+  })
+  
   console.log("seeder: finish!")
   process.exit(0)
 }

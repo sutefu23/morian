@@ -4,5 +4,6 @@ import ReasonSelect from './reasonSelect'
 import UnitSelect from './unitSelect'
 import WarehouseSelect from './warehouseSelect'
 import WoodSpeciesSelect from './woodSpeciesSelect'
+import SupplierSelect from './supplier'
 
-export { GradeSelect, ItemTypeSelect, ReasonSelect, UnitSelect, WarehouseSelect, WoodSpeciesSelect }
+export { GradeSelect, ItemTypeSelect, ReasonSelect, UnitSelect, WarehouseSelect, WoodSpeciesSelect, SupplierSelect }

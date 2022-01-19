@@ -4,8 +4,8 @@ import { defineController } from './$relay'
 
 const service = new UserService(new UserRepository)
 export default defineController(() => ({
-  get: async () => {
-    const data = await service.getUserList()
+  get: async ({ query}) => {
+    const data = await service.getUserList(query?.enable)
     if(data instanceof Error){
       return { status: 500, body: data.message}
     }

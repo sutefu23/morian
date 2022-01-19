@@ -14,7 +14,7 @@ const select = ({ onSelect, selected, required }:Props) => {
   const list = useAsyncList<Supplier>({
     async load({ filterText }) {
       const res = await apiClient.supplier.get( { query: { name: filterText} } )
-
+      console.log(res.body)
       return {
         items: res.body
       }          

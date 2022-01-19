@@ -45,7 +45,7 @@ export class ItemService{
       return data as Error
     }
     if(!Object.prototype.hasOwnProperty.call(query, "enable")){
-      return data.filter(d => d.enable).map(i => ItemToDTO(i))
+      return data.filter(d => ItemToDTO(d))
     }
     return data.map(d => ItemToDTO(d))
   }

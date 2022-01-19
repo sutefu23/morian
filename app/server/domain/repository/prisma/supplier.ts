@@ -1,7 +1,7 @@
 import { Supplier, SupplierProps } from "@domain/entity/stock";
 import { ISupplierRepository } from "@domain/repository/interface"
 import { PrismaRepository } from "./super"
-import { RepositoryNotFoundError, ValidationError } from "@domain/type/error";
+import { RepositoryNotFoundError } from "@domain/type/error";
 import { dbModelToEntity } from "../mapper/supplier";
 import { FieldNotFoundError } from "$/domain/type/error"
 
@@ -27,7 +27,33 @@ export class SupplierRepository extends PrismaRepository implements ISupplierRep
     const suppliers = await Promise.all(results.map(s => dbModelToEntity(s))) as Supplier[]
     return suppliers
   }
+
+  async filterName(name:string): Promise<Error | Supplier[]> {
+    const results = await this.prisma.supplier.findMany({
+      where: {
+        OR : [
+        {
+          name:{
+            contains: name
+          }
+        },
+        {
+          furigana:{
+            contains: name
+          }
+        }
+      ]}
+    })
+    console.log(results)
+
+    if(!results) {
+      return new RepositoryNotFoundError("supplierが見つかりません")
+    }
+    const suppliers = await Promise.all(results.map(s => dbModelToEntity(s))) as Supplier[]
+    return suppliers
+  }
   
+
   async findById(id: number): Promise<SupplierProps|Error>{
     const result = await this.prisma.supplier.findUnique({
       where: {
@@ -43,9 +69,9 @@ export class SupplierRepository extends PrismaRepository implements ISupplierRep
     const data = {
       ...entity,
       furigana: entity.furigana.value,
-      zip: entity.zip.value,
-      prefecture: entity.prefecture.value,
-      tel: entity.tel.value,
+      zip: entity.zip?.value,
+      prefecture: entity.prefecture?.value,
+      tel: entity.tel?.value,
       fax: entity.fax?.value,
 
     }
