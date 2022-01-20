@@ -7,7 +7,6 @@ export default defineController(() => ({
   get: async ({query}) => {
     const data = await (() => {
       if(query?.name){
-        console.log(service.filterSuppliers(query.name))
         return service.filterSuppliers(query.name)
       }else{
         return service.getSupplierList(query?.enable)

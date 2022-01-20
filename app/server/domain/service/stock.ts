@@ -1,16 +1,16 @@
-import { ItemProps, History, HistoryProps, Reason, ITEM_FIELD, 出庫理由, 入庫理由 } from "@domain/entity/stock"
+import { History, Reason, ITEM_FIELD, 出庫理由, 入庫理由 } from "@domain/entity/stock"
 import { IItemRepository, IHistoryRepository, Query } from "@domain/repository/interface"
 import { InvalidArgumentError, ValidationError } from "../type/error"
-import { Item as ItemModel, History as HistoryModel } from "@prisma/client"
-import { ItemToDTO  } from "../dto/item"
-import { HistoryToDTO } from "../dto/history"
+import { ItemDTO, ItemToDTO  } from "../dto/item"
+import { filterReasonFromDTO, HistoryDTO, HistoryToDTO } from "../dto/history"
+import { DTOtoReason } from "../dto/reason"
 
 export class ItemService{
   private itemRepository: IItemRepository
   constructor(itemRepo: IItemRepository){
     this.itemRepository = itemRepo
   }
-  async createItem(item: ItemProps){
+  async createItem(item: ItemDTO){
     const data = await this.itemRepository.create(item)
     if(data instanceof Error){
       return data as Error
@@ -19,7 +19,16 @@ export class ItemService{
     return itemDto
   }
 
-  async updateItem(id: number, item: Partial<ItemProps>){
+  async issueItem(item: ItemDTO){
+    const data = await this.itemRepository.create(item)
+    if(data instanceof Error){
+      return data as Error
+    }
+    const itemDto = ItemToDTO(data)
+    return itemDto
+  }
+
+  async updateItem(id: number, item: Partial<ItemDTO>){
     const data = await this.itemRepository.update(id, item)
     if(data instanceof Error){
       return data as Error
@@ -39,15 +48,19 @@ export class ItemService{
     const itemDto = ItemToDTO(data)
     return itemDto
   }
-  async findManyItem(query: Query<ItemModel>|Query<ItemModel>[]){
+  async findManyItem(query: Query<ItemDTO>|Query<ItemDTO>[]){
     const data = await this.itemRepository.findMany(query)
     if(data instanceof Error){
       return data as Error
     }
-    if(!Object.prototype.hasOwnProperty.call(query, "enable")){
-      return data.filter(d => ItemToDTO(d))
-    }
-    return data.map(d => ItemToDTO(d))
+    const item = (() => {
+      if(!Object.prototype.hasOwnProperty.call(query, "enable")){
+        return data.filter(d => d.enable)
+      }else{
+        return data
+      }
+    })()
+    return item.map(i => ItemToDTO(i))
   }
 }
 
@@ -57,12 +70,13 @@ export class HistoryService{
   constructor(historyRepo: IHistoryRepository){
     this.historyRepository = historyRepo
   }
-  async createHistory(history: History){
-    if(!history.reason) return new InvalidArgumentError("在庫理由は必須です。") 
-    if(history.reason.name == 出庫理由.不良品 && !history.note){
+  async createHistory(history: HistoryDTO){
+    if(!history.reasonId) return new InvalidArgumentError("在庫理由は必須です。") 
+    if(history.reasonName == 出庫理由.不良品 && !history.note){
       return new ValidationError("不良品の時は理由を備考に入れてください。")
     }
-    const itemUpdateWith = this._whichItemField(history.reason.name)
+    const reason = filterReasonFromDTO(history)
+    const itemUpdateWith = this._whichItemField(reason.name)
     const data = await this.historyRepository.create(history, itemUpdateWith)
     if(data instanceof Error){
       return data as Error
@@ -70,13 +84,19 @@ export class HistoryService{
     return HistoryToDTO(data)
   }
 
-  async updateHistory(id: number, history: Partial<HistoryProps>){
-    if(!history.reason) return new InvalidArgumentError("在庫理由は必須です。") 
-    if(history.reason.name == 出庫理由.不良品 && !history.note){
+  async updateHistory(id: number, history: Partial<HistoryDTO>){
+    if(!history.reasonId || !history.reasonName || !history.reasonStatus || !history.reasonOrder) return new InvalidArgumentError("在庫理由は必須です。") 
+    if(history.reasonName == 出庫理由.不良品 && !history.note){
       return new ValidationError("不良品の時は理由を備考に入れてください。")
     }
-
-    const itemUpdateWith = this._whichItemField(history.reason.name)
+    
+    const reason = DTOtoReason({
+      reasonId	:	history.reasonId,
+      reasonName	:	history.reasonName,
+      reasonStatus	:	history.reasonStatus,
+      reasonOrder: history.reasonOrder
+    })
+    const itemUpdateWith = this._whichItemField(reason.name)
     const data = await this.historyRepository.update(id, history, itemUpdateWith)
     if(data instanceof Error){
       return data as Error
@@ -91,7 +111,7 @@ export class HistoryService{
     return data.map(d => HistoryToDTO(d))
   }
 
-  async findManyHistory(query: Query<HistoryModel>|Query<HistoryModel>[]){
+  async findManyHistory(query: Query<HistoryDTO>|Query<HistoryDTO>[]){
     const data = await this.historyRepository.findMany(query)
     if(data instanceof Error){
       return data as Error

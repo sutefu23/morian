@@ -1,9 +1,10 @@
 import { IItemRepository, Query } from "../interface";
-import { Item, ItemProps} from "@domain/entity/stock";
+import { Item } from "@domain/entity/stock";
 import { Prisma, PrismaClient, Item as ItemModel } from '@prisma/client'
 import { ValidationError, FieldNotFoundError, RepositoryNotFoundError } from "@domain/type/error";
 import { dbModelToEntity } from "../mapper/item";
 import { buildWhereStatement } from "./common";
+import { ItemDTO } from "@domain/dto/item"
 
 export class ItemRepository implements IItemRepository {
   readonly prisma :PrismaClient
@@ -26,70 +27,84 @@ export class ItemRepository implements IItemRepository {
     return newItem
   }
 
-  async create(entity: ItemProps):Promise<Item|ValidationError|FieldNotFoundError> {
+  async create(entity: ItemDTO):Promise<Item|ValidationError|FieldNotFoundError> {
     const newEntity = { ...entity,
-      lotNo: entity.lotNo?.value,
-      length: String(entity.length?.value),
+      lotNo: entity.lotNo,
+      length: entity.length,
       itemType: {connect: 
-        {id: entity.itemType.id}
+        {id: entity.itemTypeId}
       },
       unit:{ connect:
-        {id: entity.unit.id}
+        {id: entity.unitId}
       },
       supplier: { connect:
         {id: entity.supplierId}
       },
       costUnit:{ connect:
-        {id: entity.costUnit.id}
+        {id: entity.costUnitId}
       },
       woodSpecies: {connect: 
-        {id: entity.woodSpecies.id}
+        {id: entity.woodSpeciesId}
       },
       grade: {connect: 
-        {id: entity.grade?.id}
+        {id: entity.gradeId}
       },
-      supplierId: undefined
+      warehouse: {connect: 
+        {id: entity.warehouseId}
+      },
+      supplierId: undefined,
+      itemTypeId: undefined,
+      woodSpeciesId: undefined,
+      gradeId: undefined,
+      unitId: undefined,
+      costUnitId: undefined,
+      warehouseId: undefined,
     }
     const result = await this.prisma.item.create({ data: newEntity })
     const newItem = await dbModelToEntity(result)
     return newItem
   }
-  async update(id: number, entity: Partial<ItemProps>):Promise<Item|ValidationError|FieldNotFoundError> {
+  async update(id: number, entity: Partial<ItemDTO>):Promise<Item|ValidationError|FieldNotFoundError> {
 
     const newEntity = { ...entity,
-                      lotNo: entity.lotNo?.value,
-                      length: String(entity.length?.value),
-                      superId: 1,
+                      lotNo: entity.lotNo,
+                      length: entity.length,
                       itemType: {connect: 
-                        {id: entity.itemType?.id}
+                        {id: entity.itemTypeId}
                       },
                       unit:{ connect:
-                        {id: entity.unit?.id}
+                        {id: entity.unitId}
                       },
                       costUnit:{ connect:
-                        {id: entity.costUnit?.id}
+                        {id: entity.costUnitId}
                       },
                       woodSpecies: {connect: 
-                        {id: entity.woodSpecies?.id}
+                        {id: entity.woodSpeciesId}
                       },
                       supplier: { connect:
                         {id: entity.supplierId}
                       },
                       grade: {connect: 
-                        {id: entity.grade?.id}
+                        {id: entity.gradeId}
                       },
                       warehouse: {connect: 
-                        {id: entity.warehouse?.id}
+                        {id: entity.warehouseId}
                       },
                       arrivalDate: entity.arrivalDate?.toString(),
-                      supplierId: undefined
+                      supplierId: undefined,
+                      itemTypeId: undefined,
+                      woodSpeciesId: undefined,
+                      gradeId: undefined,
+                      unitId: undefined,
+                      costUnitId: undefined,
+                      warehouseId: undefined,
                     }
     const result = await this.prisma.item.update({ where: { id }, data: newEntity })
 
     const newItem = await dbModelToEntity(result)
     return newItem
   }
-  async findMany(query: Query<ItemModel>|Query<ItemModel>[]):Promise<Item[]>{
+  async findMany(query: Query<ItemDTO>|Query<ItemDTO>[]):Promise<Item[]>{
     const criteria = buildWhereStatement(query)
 
     const result = await this.prisma.$queryRaw<ItemModel[]>(

@@ -8,12 +8,6 @@ export type Methods = {
     resBody: ItemDTO | null | Error,
     status: 200
   },
-  post: {
-    reqHeaders: AuthHeader
-    reqBody:ItemProps
-    resBody: ItemDTO
-    status: 201
-  },
    patch: {
     reqHeaders: AuthHeader
     reqBody: { id: ItemProps["id"], body: Partial<ItemProps>}

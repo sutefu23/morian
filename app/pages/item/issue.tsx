@@ -3,6 +3,7 @@ import { WoodSpeciesSelect, ItemTypeSelect, SupplierSelect } from "~/components/
 import StatusBar from "~/components/feedback/statusBar"
 import usePageTitle from '~/hooks/usePageTitle'
 import useUser from "~/hooks/useUser"
+import { Supplier } from "~/server/domain/entity/stock"
 
 export interface Item {
   label: string;
@@ -16,7 +17,7 @@ const Register = () => {
   if(user && user.id !== 1){
     return <StatusBar status="error" message="発注権限のあるユーザーではありません"/>
   } 
-
+  
   return (
     <>
     <VStack>
