@@ -26,6 +26,7 @@ export type UpdateItemData = {
   readonly costUnitId: number
   readonly warehouseId: number
   readonly manufacturer?: string
+  readonly arrivalDate?: Date
   readonly arrivalExpectedDate?: string
   readonly enable: boolean
   readonly note: string

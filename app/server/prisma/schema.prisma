@@ -35,7 +35,7 @@ model UserPass {
 
 // 在庫
 model Item {
-  id            Int       @id
+  id            Int       @id  @default(autoincrement())
   lotNo         String    @unique // ロット番号
   itemType      ItemType  @relation(fields: [itemTypeId], references: [id]) // 材種
   itemTypeId    Int
@@ -56,7 +56,7 @@ model Item {
   supplier      Supplier? @relation(fields: [supplierId], references: [id])
   supplierId    Int?
   history       History[]
-  arrivalDate   DateTime // 入荷日
+  arrivalDate   DateTime? // 入荷日
   arrivalExpectedDate   DateTime? // 入荷予定日
   warehouse     Warehouse @relation(fields: [warehouseId], references: [id]) // 倉庫
   warehouseId   Int // 倉庫
@@ -72,7 +72,7 @@ model Item {
 }
 
 model Unit {
-  id    Int    @id
+  id    Int    @id  @default(autoincrement())
   name  String @unique
   order Int    @unique
   item  Item[] @relation("unit")
@@ -80,7 +80,7 @@ model Unit {
 }
 
 model Supplier {
-  id         Int     @id
+  id         Int     @id  @default(autoincrement())
   name       String  @unique
   furigana   String
   zip        String?
@@ -93,28 +93,28 @@ model Supplier {
 }
 
 model ItemType {
-  id    Int    @id
+  id    Int    @id  @default(autoincrement())
   name  String @unique
   order Int    @unique
   item  Item[]
 }
 
 model Species {
-  id    Int    @id
+  id    Int    @id  @default(autoincrement())
   name  String @unique
   order Int    @unique
   item  Item[]
 }
 
 model Warehouse {
-  id    Int    @id
+  id    Int    @id @default(autoincrement())
   name  String @unique
   order Int    @unique
   item  Item[]
 }
 
 model Grade {
-  id    Int    @id
+  id    Int    @id @default(autoincrement())
   name  String @unique
   order Int    @unique
   item  Item[]
@@ -143,7 +143,7 @@ model History {
 }
 
 model Reason {
-  id      Int       @id
+  id      Int       @id 
   name    String    
   status  Int //ステータス
   order   Int       @unique
