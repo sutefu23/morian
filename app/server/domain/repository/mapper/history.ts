@@ -1,18 +1,25 @@
-import { ValidationError, FieldNotFoundError } from "@domain/type/error";
-import { History as EntityHistory, 入庫理由, 出庫理由 } from "@domain/entity/stock";
-import { History as PrismaHistory } from "$prisma/client"
+import { ValidationError, FieldNotFoundError } from '@domain/type/error'
+import {
+  History as EntityHistory,
+  入庫理由,
+  出庫理由
+} from '@domain/entity/stock'
+import { History as PrismaHistory } from '$prisma/client'
 import { PrismaClient } from '@prisma/client'
+import { Decimal } from 'decimal.js'
 
 const prisma = new PrismaClient()
 
-export const dbModelToEntity = async (model: PrismaHistory): Promise<EntityHistory | FieldNotFoundError | ValidationError> => {
+export const dbModelToEntity = async (
+  model: PrismaHistory
+): Promise<EntityHistory | FieldNotFoundError | ValidationError> => {
   const reasonData = await prisma.reason.findUnique({
     where: {
       id: model.reasonId
     }
   })
-  if(!reasonData){
-    return new FieldNotFoundError("reasonが見つかりません")
+  if (!reasonData) {
+    return new FieldNotFoundError('reasonが見つかりません')
   }
   const reason = {
     id: reasonData.id,
@@ -21,31 +28,40 @@ export const dbModelToEntity = async (model: PrismaHistory): Promise<EntityHisto
     order: reasonData.order
   }
   const user = await prisma.user.findUnique({
-    where:{
+    where: {
       id: model.editUserId
     }
   })
-  if(!user){
-    return new FieldNotFoundError("ユーザーが見つかりません")
+  if (!user) {
+    return new FieldNotFoundError('ユーザーが見つかりません')
   }
   const editUserName = user.name
 
   const bookUserName = await (async () => {
-    if(!model.bookUserId){
+    if (!model.bookUserId) {
       return null
     }
     const bUser = await prisma.user.findUnique({
-      where:{
+      where: {
         id: model.bookUserId
       }
     })
-    if(!bUser){
+    if (!bUser) {
       return null
     }
     return bUser.name
-  }
-  )()
-  const history = EntityHistory.getInstance({...model, editUserName, reason, bookUserName })
+  })()
+  const reduceCount = new Decimal(model.reduceCount.toString())
+  const addCount = new Decimal(model.addCount.toString())
+
+  const history = EntityHistory.getInstance({
+    ...model,
+    editUserName,
+    reduceCount,
+    addCount,
+    reason,
+    bookUserName
+  })
 
   return history
 }

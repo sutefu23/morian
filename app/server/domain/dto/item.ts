@@ -1,5 +1,5 @@
 import { Decimal } from 'decimal.js'
-import { Item, lotNoType, lengthType } from "@domain/entity/stock";
+import { Item, lotNoType, lengthType } from '@domain/entity/stock'
 
 export type ItemDTO = {
   readonly id: number
@@ -25,7 +25,7 @@ export type ItemDTO = {
   readonly unitId: number
   readonly unitName: string
   readonly unitOrder: number
-  readonly defectiveNote: string
+  readonly defectiveNote?: string
   readonly costPackageCount: Decimal
   readonly cost: Decimal
   readonly costUnitId: number
@@ -36,125 +36,122 @@ export type ItemDTO = {
   readonly warehouseOrder: number
   readonly manufacturer?: string
   readonly enable: boolean
-  readonly arrivalDate: Date
+  readonly arrivalDate?: Date
   readonly arrivalExpectedDate?: Date
   readonly note: string
 }
-export const ItemToDTO = (item: Item):ItemDTO => {
+export const ItemToDTO = (item: Item): ItemDTO => {
   return {
-    id : item.id,
-    lotNo : item.lotNo.value,
-    itemTypeId : item.itemType.id,
-    itemTypeName : item.itemType.name,
+    id: item.id,
+    lotNo: item.lotNo.value,
+    itemTypeId: item.itemType.id,
+    itemTypeName: item.itemType.name,
     itemTypeOrder: item.itemType.order,
-    woodSpeciesId : item.woodSpecies.id,
-    woodSpeciesName : item.woodSpecies.name,
-    woodSpeciesOrder : item.woodSpecies.order,
-    gradeId : item.grade.id,
-    gradeName : item.grade.name,
-    gradeOrder : item.grade.order,
-    spec : item.spec,
-    length : (item.length) ? String(item.length.value) : item.length,
-    thickness : item.thickness,
-    width : item.width,
-    supplierId : item.supplier.id,
-    supplierName : item.supplier.name,
-    packageCount : item.packageCount,
-    count : item.count,
-    tempCount : item.tempCount,
-    unitId : item.unit.id,
-    unitName : item.unit.name,
-    unitOrder : item.unit.order,
-    warehouseId : item.warehouse.id,
-    warehouseName : item.warehouse.name,
-    warehouseOrder : item.warehouse.order,
-    defectiveNote : item.defectiveNote,
-    costPackageCount : item.costPackageCount,
-    cost : item.cost,
-    costUnitId : item.costUnit.id,
-    costUnitName : item.costUnit.name,
-    costUnitOrder : item.costUnit.order,
-    arrivalDate : item.arrivalDate,
-    arrivalExpectedDate : item.arrivalExpectedDate,
+    woodSpeciesId: item.woodSpecies.id,
+    woodSpeciesName: item.woodSpecies.name,
+    woodSpeciesOrder: item.woodSpecies.order,
+    gradeId: item.grade.id,
+    gradeName: item.grade.name,
+    gradeOrder: item.grade.order,
+    spec: item.spec,
+    length: item.length ? String(item.length.value) : item.length,
+    thickness: item.thickness,
+    width: item.width,
+    supplierId: item.supplier.id,
+    supplierName: item.supplier.name,
+    packageCount: item.packageCount,
+    count: item.count,
+    tempCount: item.tempCount,
+    unitId: item.unit.id,
+    unitName: item.unit.name,
+    unitOrder: item.unit.order,
+    warehouseId: item.warehouse.id,
+    warehouseName: item.warehouse.name,
+    warehouseOrder: item.warehouse.order,
+    defectiveNote: item.defectiveNote,
+    costPackageCount: item.costPackageCount,
+    cost: item.cost,
+    costUnitId: item.costUnit.id,
+    costUnitName: item.costUnit.name,
+    costUnitOrder: item.costUnit.order,
+    arrivalDate: item.arrivalDate,
+    arrivalExpectedDate: item.arrivalExpectedDate,
     manufacturer: item.manufacturer,
-    note : item.note,
-    enable : item.enable,
+    note: item.note,
+    enable: item.enable
   }
 }
 
 export const DtoToItem = (data: ItemDTO) => {
-    const lotNo = lotNoType.getInstance(data.lotNo)
-    if(lotNo instanceof Error){
-      throw lotNo
+  const lotNo = lotNoType.getInstance(data.lotNo)
+  if (lotNo instanceof Error) {
+    throw lotNo
+  }
+  const itemType = {
+    id: data.itemTypeId,
+    name: data.itemTypeName,
+    order: data.itemTypeOrder
+  }
+
+  const supplierId = data.supplierId
+
+  const woodSpecies = {
+    id: data.woodSpeciesId,
+    name: data.woodSpeciesName,
+    order: data.woodSpeciesOrder
+  }
+
+  const grade = {
+    id: data.gradeId,
+    name: data.gradeName,
+    order: data.gradeOrder
+  }
+
+  const costUnit = {
+    id: data.costUnitId,
+    name: data.costUnitName,
+    order: data.costUnitOrder
+  }
+
+  const unit = {
+    id: data.unitId,
+    name: data.unitName,
+    order: data.unitOrder
+  }
+
+  const warehouse = {
+    id: data.warehouseId,
+    name: data.warehouseName,
+    order: data.warehouseOrder
+  }
+
+  const length = ((length) => {
+    if (length) {
+      return lengthType.getInstance(length)
     }
-    const itemType = {
-      id:data.itemTypeId,
-      name: data.itemTypeName,
-      order: data.itemTypeOrder
-    }
+  })(data.length)
 
-    const supplierId = data.supplierId
+  if (length instanceof Error) {
+    throw length
+  }
 
-    const woodSpecies = {
-      id: data.woodSpeciesId,
-      name: data.woodSpeciesName,
-      order: data.woodSpeciesOrder
-    }
+  const width = data.width ?? undefined
+  const thickness = data.thickness ?? undefined
 
-
-    const grade = {
-      id: data.gradeId,
-      name: data.gradeName,
-      order: data.gradeOrder
-    }
-
-
-    const costUnit = {
-      id: data.costUnitId,
-      name: data.costUnitName,
-      order: data.costUnitOrder
-    }
-
-    const unit = {
-      id: data.unitId,
-      name: data.unitName,
-      order: data.unitOrder
-    }
-
-    const warehouse = {
-      id: data.warehouseId,
-      name: data.warehouseName,
-      order: data.warehouseOrder
-    }
-
-
-    const length = ((length) => {
-      if(length){
-        return lengthType.getInstance(length)
-      }
-    })(data.length)
-
-    if(length instanceof Error){
-      throw length
-    }
-
-    const width = data.width??undefined
-    const thickness = data.thickness??undefined
-
-    const newItem = {
-      ...data,
-      itemType: itemType,
-      woodSpecies: woodSpecies,
-      lotNo: lotNo,
-      supplierId,
-      length,
-      width,
-      thickness,
-      grade,
-      spec: data.spec,
-      costUnit,
-      unit,
-      warehouse,
-    }
-    return newItem
+  const newItem = {
+    ...data,
+    itemType: itemType,
+    woodSpecies: woodSpecies,
+    lotNo: lotNo,
+    supplierId,
+    length,
+    width,
+    thickness,
+    grade,
+    spec: data.spec,
+    costUnit,
+    unit,
+    warehouse
+  }
+  return newItem
 }

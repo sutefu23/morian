@@ -1,59 +1,73 @@
-import { IHistoryRepository, Query } from "../interface";
-import { History , Item, ITEM_FIELD} from "@domain/entity/stock";
+import { IHistoryRepository, Query } from '../interface'
+import { History, Item, ITEM_FIELD } from '@domain/entity/stock'
 import { Prisma, PrismaClient, History as HistoryModel } from '@prisma/client'
-import { ValidationError, FieldNotFoundError, RepositoryNotFoundError } from "@domain/type/error";
-import { dbModelToEntity } from "../mapper/history"
-import { dbModelToEntity as dbModelToItemEntity} from "../mapper/item";
-import { buildWhereStatement } from "./common";
-import { HistoryDTO } from "$/domain/dto/history";
+import {
+  ValidationError,
+  FieldNotFoundError,
+  RepositoryNotFoundError
+} from '@domain/type/error'
+import { dbModelToEntity } from '../mapper/history'
+import { dbModelToEntity as dbModelToItemEntity } from '../mapper/item'
+import { buildWhereStatement } from './common'
+import { HistoryDTO } from '$/domain/dto/history'
 
 export class HistoryRepository implements IHistoryRepository {
-  readonly prisma :PrismaClient
+  readonly prisma: PrismaClient
 
-  constructor(){
+  constructor() {
     this.prisma = new PrismaClient()
   }
-  async findById(id: number){
+  async findById(id: number) {
     const result = await this.prisma.history.findUnique({
-      where: {id}
+      where: { id }
     })
-    if(result instanceof Error){
+    if (result instanceof Error) {
       return result
     }
-    if(!result){
+    if (!result) {
       return new RepositoryNotFoundError(`historyが見つかりませんid:${id}`)
     }
     const newHistory = await dbModelToEntity(result)
     return newHistory
   }
 
-  async findMany(query: Query<HistoryDTO>|Query<HistoryDTO>[]):Promise<History[]>{
+  async findMany(
+    query: Query<HistoryDTO> | Query<HistoryDTO>[]
+  ): Promise<History[]> {
     const criteria = buildWhereStatement(query)
 
     const result = await this.prisma.$queryRaw<HistoryModel[]>(
       Prisma.sql`SELECT * FROM History WHERE ${criteria}`
     )
-    const histories = await Promise.all(result.map(h => dbModelToEntity(h))) as History[]
+    const histories = (await Promise.all(
+      result.map((h) => dbModelToEntity(h))
+    )) as History[]
     return histories
   }
 
-  async findHistoryListById(itemId: number):Promise<History[]>{
+  async findHistoryListById(itemId: number): Promise<History[]> {
     const result = await this.prisma.history.findMany({
-      where:{
+      where: {
         itemId
       }
     })
-    const histories = await Promise.all(result.map(h => dbModelToEntity(h))) as History[]
+    const histories = (await Promise.all(
+      result.map((h) => dbModelToEntity(h))
+    )) as History[]
     return histories
   }
 
-  async create(entity: HistoryDTO, itemField: ITEM_FIELD):Promise<History|ValidationError|FieldNotFoundError> {
+  async create(
+    entity: HistoryDTO,
+    itemField: ITEM_FIELD
+  ): Promise<History | ValidationError | FieldNotFoundError> {
     const maxOrder = await this.prisma.history.aggregate({
       _max: {
-        order: true,
+        order: true
       }
     })
-    const createParam = { ...entity,
+    const createParam = {
+      ...entity,
       item: {
         connect: {
           id: entity.itemId
@@ -70,15 +84,17 @@ export class HistoryRepository implements IHistoryRepository {
         }
       },
       order: (maxOrder._max.order ?? 0) + 1,
+      reduceCount: entity.reduceCount.toString(),
+      addCount: entity.addCount.toString(),
       id: undefined,
       itemId: undefined,
       editUserId: undefined,
       bookUserId: undefined,
       reasonId: undefined,
-      bookDate: undefined,
+      bookDate: undefined
     }
     const bookParam = (() => {
-      if(entity.bookUserId){
+      if (entity.bookUserId) {
         return {
           bookUser: {
             connect: {
@@ -88,11 +104,11 @@ export class HistoryRepository implements IHistoryRepository {
         }
       }
     })()
-    
+
     const itemUpdateParam = this._itemUpdateParam(entity, itemField)
 
     const bookUpdateParam = (() => {
-      if(entity.bookUserId){
+      if (entity.bookUserId) {
         return {
           bookUser: {
             connect: {
@@ -102,75 +118,99 @@ export class HistoryRepository implements IHistoryRepository {
           bookDate: entity.bookDate ? entity.bookDate : undefined
         }
       }
-    })()    
-    const result = await this.prisma.history.create({ data: {...createParam, ...itemUpdateParam, ...bookUpdateParam} })
+    })()
+    const result = await this.prisma.history.create({
+      data: { ...createParam, ...itemUpdateParam, ...bookUpdateParam }
+    })
     const newHistory = await dbModelToEntity(result)
     return newHistory
   }
-  async update(id: number, entity: Partial<HistoryDTO>, itemField: ITEM_FIELD):Promise<History|ValidationError|FieldNotFoundError> {
-
-    const updateParam = { ...entity,
-        item: {
-          connect: {
-            id: entity.itemId
-          }
-        },
-        editUser: {
-          connect: {
-            id: entity.editUserId
-          }
-        },
-        reason: {
-          connect: {
-            id: entity.reasonId
-          }
-        },
-        id: undefined,
-        itemId: undefined,
-        editUserId: undefined,
-        bookUserId: undefined,
-        bookDate: undefined,
-        reasonId: undefined,
+  async update(
+    id: number,
+    entity: Partial<HistoryDTO>,
+    itemField: ITEM_FIELD
+  ): Promise<History | ValidationError | FieldNotFoundError> {
+    const updateParam = {
+      ...entity,
+      item: {
+        connect: {
+          id: entity.itemId
+        }
+      },
+      editUser: {
+        connect: {
+          id: entity.editUserId
+        }
+      },
+      reason: {
+        connect: {
+          id: entity.reasonId
+        }
+      },
+      reduceCount: entity.reduceCount
+        ? entity.reduceCount.toString()
+        : undefined,
+      addCount: entity.addCount ? entity.addCount.toString() : undefined,
+      id: undefined,
+      itemId: undefined,
+      editUserId: undefined,
+      bookUserId: undefined,
+      bookDate: undefined,
+      reasonId: undefined
+    }
+    const itemUpdateParam = (() => {
+      if (entity.itemId) {
+        const itemId = entity.itemId
+        return this._itemUpdateParam({ ...entity, itemId }, itemField)
       }
-      const itemUpdateParam = (() => {
-        if(entity.itemId){
-          const itemId = entity.itemId
-          return this._itemUpdateParam({...entity, itemId}, itemField)
-        }
-      })()
+    })()
 
-      const bookUpdateParam = (() => {
-        if(entity.bookUserId){
-          return {
-            bookUser: {
-              connect: {
-                id: entity.bookUserId
-              }
-            },
-            bookDate: entity.bookDate ? entity.bookDate : undefined
-          }
+    const bookUpdateParam = (() => {
+      if (entity.bookUserId) {
+        return {
+          bookUser: {
+            connect: {
+              id: entity.bookUserId
+            }
+          },
+          bookDate: entity.bookDate ? entity.bookDate : undefined
         }
-      })()
+      }
+    })()
 
-    const result = await this.prisma.history.update({ where: { id }, data: {...updateParam, ...itemUpdateParam, ...bookUpdateParam} })
+    const result = await this.prisma.history.update({
+      where: { id },
+      data: { ...updateParam, ...itemUpdateParam, ...bookUpdateParam }
+    })
 
     const newHistory = await dbModelToEntity(result)
     return newHistory
   }
 
-  async delete(id: number, entity: Required<Pick<HistoryDTO, 'itemId'>> & Partial<Pick<HistoryDTO, 'reduceCount'|'addCount'>>, itemField: ITEM_FIELD):Promise<[History, Item]|ValidationError|FieldNotFoundError>{
-    const itemUpdateParam = this._itemUpdateParam({...entity}, itemField)
+  async delete(
+    id: number,
+    entity: Required<Pick<HistoryDTO, 'itemId'>> &
+      Partial<Pick<HistoryDTO, 'reduceCount' | 'addCount'>>,
+    itemField: ITEM_FIELD
+  ): Promise<[History, Item] | ValidationError | FieldNotFoundError> {
+    const itemUpdateParam = this._itemUpdateParam({ ...entity }, itemField)
 
     const deleteHistory = this.prisma.history.delete({ where: { id } })
-    const updateItem = this.prisma.item.update({ where: { id: entity.itemId }, data: {...itemUpdateParam?.item.data} })
-      const [historyModel, itemModel] = await this.prisma.$transaction([deleteHistory, updateItem])
+    const updateItem = this.prisma.item.update({
+      where: { id: entity.itemId },
+      data: { ...itemUpdateParam?.item.data }
+    })
+    const [historyModel, itemModel] = await this.prisma.$transaction([
+      deleteHistory,
+      updateItem
+    ])
     const history = await dbModelToEntity(historyModel)
-    if(history instanceof Error){
+    if (history instanceof Error) {
       return history
     }
 
     const item = await dbModelToItemEntity(itemModel)
-    if(item instanceof Error){
+    if (item instanceof Error) {
       return item
     }
 
@@ -178,14 +218,21 @@ export class HistoryRepository implements IHistoryRepository {
   }
 
   // Itemのcountフィールドをアップデート
-  readonly _itemUpdateParam = (entity: Required<Pick<HistoryDTO, 'itemId'>> & Partial<Pick<HistoryDTO, 'reduceCount'|'addCount'>>, itemField: ITEM_FIELD) => {
-    if(itemField != null){
-      
-      const isAdd =  (Object.prototype.hasOwnProperty.call(entity, "addCount") && entity.addCount)
-      const isReduce =  (Object.prototype.hasOwnProperty.call(entity, "reduceCount") && entity.reduceCount)
+  readonly _itemUpdateParam = (
+    entity: Required<Pick<HistoryDTO, 'itemId'>> &
+      Partial<Pick<HistoryDTO, 'reduceCount' | 'addCount'>>,
+    itemField: ITEM_FIELD
+  ) => {
+    if (itemField != null) {
+      const isAdd =
+        Object.prototype.hasOwnProperty.call(entity, 'addCount') &&
+        entity.addCount
+      const isReduce =
+        Object.prototype.hasOwnProperty.call(entity, 'reduceCount') &&
+        entity.reduceCount
 
       const updateField = (() => {
-        if(isAdd){
+        if (isAdd) {
           switch (itemField) {
             case ITEM_FIELD.COUNT:
               return {
@@ -199,11 +246,11 @@ export class HistoryRepository implements IHistoryRepository {
                   increment: entity.addCount
                 }
               }
-            
+
             case ITEM_FIELD.BOTH:
               return {
                 count: {
-                  increment: entity.addCount,
+                  increment: entity.addCount
                 },
                 tempCount: {
                   increment: entity.addCount
@@ -211,7 +258,7 @@ export class HistoryRepository implements IHistoryRepository {
               }
           }
         }
-        if(isReduce){
+        if (isReduce) {
           switch (itemField) {
             case ITEM_FIELD.COUNT:
               return {
@@ -225,11 +272,11 @@ export class HistoryRepository implements IHistoryRepository {
                   decrement: entity.reduceCount
                 }
               }
-            
+
             case ITEM_FIELD.BOTH:
               return {
                 count: {
-                  decrement: entity.reduceCount,
+                  decrement: entity.reduceCount
                 },
                 tempCount: {
                   decrement: entity.reduceCount
@@ -240,12 +287,11 @@ export class HistoryRepository implements IHistoryRepository {
       })()
 
       return {
-        item:{
-        connect: {id: entity.itemId},
-        data: {...updateField}
+        item: {
+          connect: { id: entity.itemId },
+          data: { ...updateField }
         }
       }
     }
   }
 }
-
