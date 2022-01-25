@@ -16,7 +16,7 @@ export default defineController(() => ({
     }
   },
   patch: async ({body, params}) => {
-    const item = await itemService.updateItem(params.itemId, body)
+    const item = await itemService.updateItem(params.itemId, body.body)
     if(item instanceof Error){
       console.error(item.message)
       return { status : 500, body: item}

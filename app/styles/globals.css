@@ -14,3 +14,21 @@ a {
 * {
   box-sizing: border-box;
 }
+
+[aria-required="true"]::after{
+  content: "*";
+  color: red;
+}
+.footer{
+  position: fixed;
+  width: 100vw;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px;
+  margin: auto;
+  z-index: 1;
+}
+.footer input{
+  background-color: #eee;
+}

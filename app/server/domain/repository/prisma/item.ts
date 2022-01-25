@@ -31,6 +31,7 @@ export class ItemRepository implements IItemRepository {
     const newEntity = { ...entity,
       lotNo: entity.lotNo,
       length: entity.length,
+      manufacturer: entity.manufacturer ?? "",
       itemType: {connect: 
         {id: entity.itemTypeId}
       },

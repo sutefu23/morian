@@ -7,7 +7,7 @@ import { ReasonType } from '~/server/domain/entity/stock'
 
 type Props = { 
   onSelect: (event:React.ChangeEvent<HTMLSelectElement>) => void;
-  selected? : ReasonType
+  selected? : ReasonType["id"]
   required?: boolean
 
 }
@@ -23,7 +23,7 @@ const select = ({ onSelect, selected, required }:Props) => {
     >
       {
         reasons &&
-          reasons.map(reason => (<option key={reason.id} value={reason.id} selected={(selected?.id === reason.id)}>{reason.name}</option>))
+          reasons.map(reason => (<option key={reason.id} value={reason.id} selected={(selected === reason.id)}>{reason.name}</option>))
       }
       
     </Select>

@@ -7,7 +7,7 @@ import { ItemTypeType } from '~/server/domain/entity/stock'
 
 type Props = { 
   onSelect: (event:React.ChangeEvent<HTMLSelectElement>) => void;
-  selected? : ItemTypeType
+  selected? : ItemTypeType["id"]
   required?: boolean
 
 }
@@ -23,7 +23,7 @@ const select = ({ onSelect, selected, required }:Props) => {
     >
       {
         itemTypes &&
-          itemTypes.map(itemType => (<option key={itemType.id} value={itemType.id} selected={(selected?.id === itemType.id)}>{itemType.name}</option>))
+          itemTypes.map(itemType => (<option key={itemType.id} value={itemType.id} selected={(selected === itemType.id)}>{itemType.name}</option>))
       }
       
     </Select>

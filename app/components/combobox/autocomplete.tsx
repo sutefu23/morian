@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, {useCallback} from "react";
 import type { ComboBoxProps } from "@react-types/combobox";
 import type { LoadingState } from "@react-types/shared";
 import { useComboBoxState } from "react-stately";
@@ -27,6 +27,12 @@ interface AutocompleteProps<T> extends ComboBoxProps<T> {
 export function Autocomplete<T extends Record<string, unknown>>(props: AutocompleteProps<T>) {
   const { contains } = useFilter({ sensitivity: "base" });
   const state = useComboBoxState({ ...props, defaultFilter: contains });
+  
+  const keyEnter = useCallback((e:React.KeyboardEvent) =>{
+    if (e.key === "Enter" && props.inputValue && props.onInputChange){ 
+      props.onInputChange(props.inputValue)
+    }
+  },[props.inputValue, props.onInputChange])
 
   const inputRef = React.useRef(null);
   const listBoxRef = React.useRef(null);
@@ -44,12 +50,13 @@ export function Autocomplete<T extends Record<string, unknown>>(props: Autocompl
 
   return (
     <Box display="inline-block" position="relative">
-      <FormLabel {...labelProps}>{props.label}</FormLabel>
+      {/* <FormLabel {...labelProps}>{props.label}</FormLabel> */}
       <InputGroup>
         <InputLeftElement>
           <Search2Icon color="gray.500" />
         </InputLeftElement>
-        <Input {...inputProps} ref={inputRef} size="md" />
+        <Input {...inputProps} ref={inputRef} size="md" 
+        onKeyPress={(e) => keyEnter(e)}/>
         <InputRightElement>
           {props.loadingState === "loading" ||
           props.loadingState === "filtering" ? (

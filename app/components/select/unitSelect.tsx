@@ -18,7 +18,7 @@ const select = ({ onSelect, selected, required }:Props) => {
   return (
     <Select 
       onChange={(e) => onSelect(e)}
-      placeholder="選択して下さい"
+      placeholder=""
       required={required}
     >
       {

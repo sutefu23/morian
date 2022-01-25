@@ -2,15 +2,59 @@ import { History, Reason, ITEM_FIELD, 出庫理由, 入庫理由 } from "@domain
 import { IItemRepository, IHistoryRepository, Query } from "@domain/repository/interface"
 import { InvalidArgumentError, ValidationError } from "../type/error"
 import { ItemDTO, ItemToDTO  } from "../dto/item"
-import { filterReasonFromDTO, HistoryDTO, HistoryToDTO } from "../dto/history"
-import { DTOtoReason } from "../dto/reason"
+import { HistoryDTO, HistoryToDTO } from "../dto/history"
+import { Decimal } from "decimal.js"
+import { StockReason } from "../init/master"
+
+
+export type UpdateItemData = {
+  readonly lotNo: string
+  readonly itemTypeId: number
+  readonly woodSpeciesId: number
+  readonly gradeId: number
+  readonly spec: string
+  readonly length?: number | "乱尺"
+  readonly thickness?: number
+  readonly width?: number
+  readonly supplierId: number
+  readonly packageCount: Decimal
+  readonly count: Decimal
+  readonly tempCount: Decimal
+  readonly unitId: number
+  readonly costPackageCount: Decimal
+  readonly cost: Decimal
+  readonly costUnitId: number
+  readonly warehouseId: number
+  readonly manufacturer?: string
+  readonly arrivalExpectedDate?: string
+  readonly enable: boolean
+  readonly note: string
+  readonly defectiveNote?: string
+
+}
+
+
+export type UpdateHistoryData = {
+  readonly 	itemId	:	number
+  readonly 	note	:	string
+  readonly 	date	:	Date
+  readonly  status: number
+  readonly 	reasonId	:	number
+  readonly 	reduceCount	:	Decimal
+  readonly 	addCount	:	Decimal
+  readonly 	editUserId	:	number
+  readonly 	order	:	number
+  readonly 	bookUserId	:	number | null
+  readonly 	bookDate	:	Date | null
+  readonly  isTemp: boolean
+}
 
 export class ItemService{
   private itemRepository: IItemRepository
   constructor(itemRepo: IItemRepository){
     this.itemRepository = itemRepo
   }
-  async createItem(item: ItemDTO){
+  async createItem(item: UpdateItemData){
     const data = await this.itemRepository.create(item)
     if(data instanceof Error){
       return data as Error
@@ -19,7 +63,7 @@ export class ItemService{
     return itemDto
   }
 
-  async issueItem(item: ItemDTO){
+  async issueItem(item: UpdateItemData){
     const data = await this.itemRepository.create(item)
     if(data instanceof Error){
       return data as Error
@@ -28,7 +72,7 @@ export class ItemService{
     return itemDto
   }
 
-  async updateItem(id: number, item: Partial<ItemDTO>){
+  async updateItem(id: number, item: Partial<UpdateItemData>){
     const data = await this.itemRepository.update(id, item)
     if(data instanceof Error){
       return data as Error
@@ -70,12 +114,14 @@ export class HistoryService{
   constructor(historyRepo: IHistoryRepository){
     this.historyRepository = historyRepo
   }
-  async createHistory(history: HistoryDTO){
+  async createHistory(history: UpdateHistoryData){
     if(!history.reasonId) return new InvalidArgumentError("在庫理由は必須です。") 
-    if(history.reasonName == 出庫理由.不良品 && !history.note){
+    const reason = StockReason.filter(s => s.id === history.reasonId)[0]
+    
+    if(reason.name == 出庫理由.不良品 && !history.note){
       return new ValidationError("不良品の時は理由を備考に入れてください。")
     }
-    const reason = filterReasonFromDTO(history)
+
     const itemUpdateWith = this._whichItemField(reason.name)
     const data = await this.historyRepository.create(history, itemUpdateWith)
     if(data instanceof Error){
@@ -84,18 +130,14 @@ export class HistoryService{
     return HistoryToDTO(data)
   }
 
-  async updateHistory(id: number, history: Partial<HistoryDTO>){
-    if(!history.reasonId || !history.reasonName || !history.reasonStatus || !history.reasonOrder) return new InvalidArgumentError("在庫理由は必須です。") 
-    if(history.reasonName == 出庫理由.不良品 && !history.note){
+  async updateHistory(id: number, history: Partial<UpdateHistoryData>){
+    
+    if(!history.reasonId ) return new InvalidArgumentError("在庫理由は必須です。") 
+    const reason = StockReason.filter(s => s.id === history.reasonId)[0]
+    if(reason.name == 出庫理由.不良品 && !history.note){
       return new ValidationError("不良品の時は理由を備考に入れてください。")
     }
     
-    const reason = DTOtoReason({
-      reasonId	:	history.reasonId,
-      reasonName	:	history.reasonName,
-      reasonStatus	:	history.reasonStatus,
-      reasonOrder: history.reasonOrder
-    })
     const itemUpdateWith = this._whichItemField(reason.name)
     const data = await this.historyRepository.update(id, history, itemUpdateWith)
     if(data instanceof Error){
@@ -121,7 +163,7 @@ export class HistoryService{
 
   // 予約
   async bookHistory(historyId: number, userId: number, bookDate: Date){
-    const data = await this.historyRepository.update(historyId, {id: historyId, bookUserId: userId, bookDate}, ITEM_FIELD.NONE)
+    const data = await this.historyRepository.update(historyId, { bookUserId: userId, bookDate}, ITEM_FIELD.NONE)
     if (data instanceof Error){
       return data as Error
     }
@@ -130,7 +172,7 @@ export class HistoryService{
 
   // 予約解除
   async unBookHistory(historyId: History["id"]){
-    const data = await this.historyRepository.update(historyId, {id: historyId, bookUserId: null, bookDate: null}, ITEM_FIELD.NONE)
+    const data = await this.historyRepository.update(historyId, {bookUserId: null, bookDate: null}, ITEM_FIELD.NONE)
     if (data instanceof Error){
       return data as Error
     }
@@ -156,7 +198,7 @@ export class HistoryService{
     switch (reason) {
       case 出庫理由.見積:
         return ITEM_FIELD.NONE//引落なし
-      case 出庫理由.受注予約:  
+      case 出庫理由.受注予約, 入庫理由.発注:  
         return ITEM_FIELD.TEMP_COUNT//仮在庫
       case 入庫理由.仕入, 出庫理由.受注出庫:
         return ITEM_FIELD.COUNT//実在庫

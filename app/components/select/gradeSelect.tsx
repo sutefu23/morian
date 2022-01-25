@@ -7,7 +7,7 @@ import { GradeType } from '~/server/domain/entity/stock'
 
 type Props = { 
   onSelect: (event:React.ChangeEvent<HTMLSelectElement>) => void;
-  selected? : GradeType
+  selected? : GradeType["id"]
   required?: boolean
 }
 const select = ({ onSelect, selected, required }:Props) => {
@@ -23,10 +23,10 @@ const select = ({ onSelect, selected, required }:Props) => {
       {
         grades &&
           grades.map(grade => {
-            (<option
+            return (<option
               key={grade.id} 
               value={grade.id}
-              selected={(selected?.id === grade.id)}
+              selected={(selected === grade.id)}
               >{grade.name}</option>)
           })
       }

@@ -1,4 +1,4 @@
-import { UnitType, ItemTypeType, WoodSpeciesType, 出庫理由, ReasonType, Status, 入庫理由 } from "../entity/stock"
+import { UnitType, ItemTypeType, WoodSpeciesType, 出庫理由, ReasonType, Status, 入庫理由, GradeType, WarehouseType } from "../entity/stock"
 
 ///在庫理由
 export const StockReason: ReasonType[] = [
@@ -63,3 +63,27 @@ export const WoodSpecies:WoodSpeciesType[] = [
   {id: 23,  name: "針葉樹",  order: 23}
 ]
 
+export const Grades:GradeType[] = [
+  {id: 1,  name: "A",  order: 1},   
+  {id: 2,  name: "B",  order: 2},   
+  {id: 3,  name: "C",  order: 3},   
+  {id: 4,  name: "D",  order: 4},   
+  {id: 5,  name: "CD",  order: 5},   
+  {id: 6,  name: "AB",  order: 6},   
+  {id: 7,  name: "表A裏A",  order: 7},   
+  {id: 8,  name: "表A裏B",  order: 8},   
+  {id: 9,  name: "表AB裏B",  order: 9},   
+  {id: 10,  name: "節有",  order: 10},   
+  {id: 11,  name: "無節",  order: 11},   
+  {id: 12,  name: "上小無節",  order: 12},   
+  {id: 13,  name: "無節・上小節",  order: 13},   
+]
+
+///倉庫
+export const Warehouse:WarehouseType[] =  [
+  {id: 1, name: "本社", order:1},
+  {id: 2, name: "日吉", order:2},
+  {id: 3, name: "B品", order: 3},
+  {id: 4, name: "阪南倉庫", order:4},
+  {id: 5, name: "他倉庫", order:5},
+]

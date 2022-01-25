@@ -73,6 +73,9 @@ export const dbModelToEntity = async (model: PrismaItem): Promise<EntityItem | F
 
     const width = model.width??undefined
     const thickness = model.thickness??undefined
+    const manufacturer = model.manufacturer??undefined
+    const defectiveNote = model.defectiveNote??undefined
+    const arrivalExpectedDate = model.arrivalExpectedDate??undefined
 
     const newItem = {
       ...model,
@@ -88,6 +91,9 @@ export const dbModelToEntity = async (model: PrismaItem): Promise<EntityItem | F
       costUnit,
       unit,
       warehouse,
+      manufacturer,
+      defectiveNote,
+      arrivalExpectedDate
     }
     return newItem
   }

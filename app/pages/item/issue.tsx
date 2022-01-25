@@ -1,9 +1,8 @@
-import { HStack, Box, VStack, InputGroup, Input, InputLeftAddon} from "@chakra-ui/react"
+import { HStack, Box, VStack, InputGroup, InputLeftAddon} from "@chakra-ui/react"
 import { WoodSpeciesSelect, ItemTypeSelect, SupplierSelect } from "~/components/select/"
 import StatusBar from "~/components/feedback/statusBar"
 import usePageTitle from '~/hooks/usePageTitle'
 import useUser from "~/hooks/useUser"
-import { Supplier } from "~/server/domain/entity/stock"
 
 export interface Item {
   label: string;
@@ -29,6 +28,12 @@ const Register = () => {
       <HStack>
         <Box>
           <InputGroup>
+            <InputLeftAddon>ロットNo</InputLeftAddon>
+            <WoodSpeciesSelect onSelect={() => { return}}/>
+          </InputGroup>
+        </Box>
+        <Box>
+          <InputGroup>
             <InputLeftAddon>樹種</InputLeftAddon>
             <WoodSpeciesSelect onSelect={() => { return}}/>
           </InputGroup>
@@ -39,6 +44,7 @@ const Register = () => {
             <ItemTypeSelect onSelect={() => { return}}/>
           </InputGroup>
         </Box>
+
       </HStack>
     </VStack>
     </>

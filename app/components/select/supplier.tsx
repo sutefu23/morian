@@ -6,7 +6,7 @@ import { useAsyncList } from "react-stately";
 
 type Props = { 
   onSelect: (event:React.ChangeEvent<HTMLSelectElement>) => void;
-  selected? : Supplier
+  selected? : Supplier["id"]
   required?: boolean
 }
 const select = ({ onSelect, selected, required }:Props) => {
@@ -14,7 +14,6 @@ const select = ({ onSelect, selected, required }:Props) => {
   const list = useAsyncList<Supplier>({
     async load({ filterText }) {
       const res = await apiClient.supplier.get( { query: { name: filterText} } )
-      console.log(res.body)
       return {
         items: res.body
       }          
@@ -22,7 +21,7 @@ const select = ({ onSelect, selected, required }:Props) => {
   });
   return (
     <Autocomplete
-    label="仕入先"
+    isRequired={required}
     items={list.items}
     inputValue={list.filterText}
     onInputChange={list.setFilterText}

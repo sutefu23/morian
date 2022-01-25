@@ -1,6 +1,6 @@
 import { ValueObject } from "../type/valueObject"
 import { Entity } from "../type/entity"
-import { Decimal } from '@prisma/client/runtime'
+import { Decimal } from 'decimal.js'
 import { ValidationError,InvalidArgumentError } from "../type/error"
 import { User } from "./user"
 
@@ -85,12 +85,14 @@ export interface ItemProps {
   readonly width?: number 
   readonly supplierId: Supplier["id"]
   readonly arrivalDate: Date
+  readonly arrivalExpectedDate?: Date
   readonly packageCount: Decimal 
   readonly costPackageCount: Decimal
   readonly cost: Decimal
   readonly warehouse: WarehouseType
   readonly costUnit: UnitType
   readonly defectiveNote: string
+  readonly manufacturer? : string
   readonly count: Decimal
   readonly unit: UnitType
   readonly tempCount : Decimal
@@ -98,18 +100,14 @@ export interface ItemProps {
   readonly enable: boolean
 }
 
-
-
 export class Item extends Entity<ItemProps> implements ItemProps{
-  constructor(props: ItemProps){
-    super(props)
-  }
   readonly lotNo: lotNoType
   readonly itemType: ItemTypeType
   readonly woodSpecies: WoodSpeciesType
   readonly grade: GradeType
   readonly spec: string
   readonly arrivalDate: Date
+  readonly arrivalExpectedDate?: Date
   readonly length?: lengthType
   readonly thickness?: number
   readonly width?: number
@@ -118,6 +116,7 @@ export class Item extends Entity<ItemProps> implements ItemProps{
   readonly count: Decimal
   readonly unit: UnitType
   readonly warehouse: WarehouseType
+  readonly manufacturer? : string
   readonly defectiveNote: string
   readonly costPackageCount: Decimal
   readonly cost: Decimal
@@ -125,6 +124,11 @@ export class Item extends Entity<ItemProps> implements ItemProps{
   readonly tempCount: Decimal
   readonly note: string
   readonly enable: boolean
+
+  constructor(props: ItemProps){
+    super(props)
+  }
+
 }
 
 export class telType extends ValueObject<string>{
@@ -182,6 +186,7 @@ export enum Status {
 }
 
 export enum 入庫理由{
+  発注 = "発注",
   仕入 = "仕入",
   返品 = "返品",
   棚卸調整 = "棚卸調整",  

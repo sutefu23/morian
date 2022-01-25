@@ -7,7 +7,7 @@ import { WoodSpeciesType } from '~/server/domain/entity/stock'
 
 type Props = { 
   onSelect: (event:React.ChangeEvent<HTMLSelectElement>) => void;
-  selected? : WoodSpeciesType
+  selected? : WoodSpeciesType["id"]
   required?: boolean
 }
 const select = ({ onSelect, selected, required }:Props) => {
@@ -22,7 +22,7 @@ const select = ({ onSelect, selected, required }:Props) => {
     >
       {
         woodSpecieses &&
-          woodSpecieses.map(woodSpecies => (<option key={woodSpecies.id} value={woodSpecies.id} selected={selected?.id===woodSpecies.id}>{woodSpecies.name}</option>))
+          woodSpecieses.map(woodSpecies => (<option key={woodSpecies.id} value={woodSpecies.id} selected={selected===woodSpecies.id}>{woodSpecies.name}</option>))
       }
       
     </Select>

@@ -1,4 +1,4 @@
-import { Decimal } from '@prisma/client/runtime'
+import { Decimal } from 'decimal.js'
 import { History, ReasonType } from "@domain/entity/stock";
 import { DTOtoReason } from "./reason"
 
