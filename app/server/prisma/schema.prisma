@@ -63,7 +63,7 @@ model Item {
   cost          Decimal // 原価
   costUnit      Unit      @relation(name: "costUnit",fields: [costUnitId], references: [id]) // 原価単位
   costUnitId    Int       
-  note          String // 備考
+  note          String? // 備考
   manufacturer  String? // 製造元
   defectiveNote  String?   //不良品備考
   enable        Boolean   @default(true)

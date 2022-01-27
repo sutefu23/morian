@@ -19,6 +19,7 @@ const select = ({ onSelect, selected, required }:Props) => {
       onChange={(e) => onSelect(e)}
       placeholder="選択して下さい"
       required={required}
+      defaultValue={selected}
     >
       {
         grades &&
@@ -26,7 +27,6 @@ const select = ({ onSelect, selected, required }:Props) => {
             return (<option
               key={grade.id} 
               value={grade.id}
-              selected={(selected === grade.id)}
               >{grade.name}</option>)
           })
       }

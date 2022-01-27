@@ -92,7 +92,7 @@ export interface ItemProps {
   readonly itemType: ItemTypeType
   readonly woodSpecies: WoodSpeciesType
   readonly grade: GradeType
-  readonly spec: specType
+  readonly spec?: specType
   readonly length?: lengthType
   readonly thickness?: number
   readonly width?: number
@@ -109,7 +109,7 @@ export interface ItemProps {
   readonly count: Decimal
   readonly unit: UnitType
   readonly tempCount: Decimal
-  readonly note: string
+  readonly note?: string
   readonly enable: boolean
 }
 
@@ -118,7 +118,7 @@ export class Item extends Entity<ItemProps> implements ItemProps {
   readonly itemType: ItemTypeType
   readonly woodSpecies: WoodSpeciesType
   readonly grade: GradeType
-  readonly spec: string
+  readonly spec?: string
   readonly arrivalDate?: Date
   readonly arrivalExpectedDate?: Date
   readonly length?: lengthType
@@ -135,7 +135,7 @@ export class Item extends Entity<ItemProps> implements ItemProps {
   readonly cost: Decimal
   readonly costUnit: UnitType
   readonly tempCount: Decimal
-  readonly note: string
+  readonly note?: string
   readonly enable: boolean
 
   constructor(props: ItemProps) {

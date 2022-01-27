@@ -5,11 +5,15 @@ import { Autocomplete, Item } from "~/components/combobox/autocomplete"
 import { useAsyncList } from "react-stately";
 
 type Props = { 
-  onSelect: (event:React.ChangeEvent<HTMLSelectElement>) => void;
-  selected? : Supplier["id"]
+  onSelect: (event:React.Key) => void;
   required?: boolean
 }
-const select = ({ onSelect, selected, required }:Props) => {
+
+const select = ({ onSelect, required }:Props) => {
+
+  const onSelectionChange = (key:React.Key) => {
+    onSelect(key)
+  };
 
   const list = useAsyncList<Supplier>({
     async load({ filterText }) {
@@ -21,14 +25,16 @@ const select = ({ onSelect, selected, required }:Props) => {
   });
   return (
     <Autocomplete
+    aria-label="仕入先" 
     isRequired={required}
     items={list.items}
     inputValue={list.filterText}
     onInputChange={list.setFilterText}
     loadingState={list.loadingState}
     onLoadMore={list.loadMore}
+    onSelectionChange={onSelectionChange}
   >
-    {(item) => <Item key={item.name}>{item.name}</Item>}
+    {(item) => <Item key={item.key}>{item.name}</Item>}
   </Autocomplete>
   )
 }

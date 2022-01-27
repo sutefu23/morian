@@ -13,7 +13,7 @@ export type ItemDTO = {
   readonly gradeId: number
   readonly gradeName: string
   readonly gradeOrder: number
-  readonly spec: string
+  readonly spec?: string
   readonly length?: string
   readonly thickness?: number
   readonly width?: number
@@ -38,7 +38,7 @@ export type ItemDTO = {
   readonly enable: boolean
   readonly arrivalDate?: Date
   readonly arrivalExpectedDate?: Date
-  readonly note: string
+  readonly note?: string
 }
 export const ItemToDTO = (item: Item): ItemDTO => {
   return {

@@ -6,7 +6,7 @@ import { User } from '~/server/domain/entity/user'
 
 type Props = { 
   onSelect: (event:React.ChangeEvent<HTMLSelectElement>) => void;
-  selected? : User
+  selected? : User["id"]
   required?: boolean
   enableOnly?: boolean
 }
@@ -32,10 +32,11 @@ const select = ({ onSelect, selected, required , enableOnly}:Props) => {
       onChange={(e) => onSelect(e)}
       placeholder="選択して下さい"
       required={required}
+      defaultValue={selected}
     >
       {
         users &&
-          users.map(user => (<option key={user.id} value={user.id} selected={(selected?.id === user.id)}>{user.name}</option>))
+          users.map(user => (<option key={user.id} value={user.id}>{user.name}</option>))
       }
       
     </Select>

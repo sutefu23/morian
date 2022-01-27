@@ -18,7 +18,7 @@ export const YearSelect: VFC<YearSelectProps> = (props) => {
       _hover={{ bg: "gray.100" }}
     >
       {years.map((year) => (
-        <option value={year} selected={String(year) === String(defaultValue)}>
+        <option value={year} key={year} selected={String(year) === String(defaultValue)}>
           {month} {year}
         </option>
       ))}

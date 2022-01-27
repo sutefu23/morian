@@ -86,6 +86,7 @@ export const dbModelToEntity = async (
   const width = model.width ?? undefined
   const thickness = model.thickness ?? undefined
   const manufacturer = model.manufacturer ?? undefined
+  const note = model.note ?? undefined
   const defectiveNote = model.defectiveNote ?? undefined
   const arrivalExpectedDate = model.arrivalExpectedDate ?? undefined
 
@@ -110,6 +111,7 @@ export const dbModelToEntity = async (
     unit,
     warehouse,
     manufacturer,
+    note,
     defectiveNote,
     arrivalExpectedDate
   }

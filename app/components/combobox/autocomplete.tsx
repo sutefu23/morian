@@ -8,7 +8,6 @@ import {
   Input,
   InputGroup,
   InputRightElement,
-  FormLabel,
   Box,
   Spinner,
   InputLeftElement
@@ -45,7 +44,7 @@ export function Autocomplete<T extends Record<string, unknown>>(props: Autocompl
       listBoxRef,
       popoverRef
     },
-    state
+    state,
   );
 
   return (
@@ -55,7 +54,7 @@ export function Autocomplete<T extends Record<string, unknown>>(props: Autocompl
         <InputLeftElement>
           <Search2Icon color="gray.500" />
         </InputLeftElement>
-        <Input {...inputProps} ref={inputRef} size="md" 
+        <Input {...inputProps} ref={inputRef} size="md"
         onKeyPress={(e) => keyEnter(e)}/>
         <InputRightElement>
           {props.loadingState === "loading" ||

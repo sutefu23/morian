@@ -20,10 +20,11 @@ const select = ({ onSelect, selected, required }:Props) => {
       onChange={(e) => onSelect(e)}
       placeholder="選択して下さい"
       required={required}
+      defaultValue={selected}
     >
       {
         itemTypes &&
-          itemTypes.map(itemType => (<option key={itemType.id} value={itemType.id} selected={(selected === itemType.id)}>{itemType.name}</option>))
+          itemTypes.map(itemType => (<option key={itemType.id} value={itemType.id}>{itemType.name}</option>))
       }
       
     </Select>

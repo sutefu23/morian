@@ -7,7 +7,7 @@ import { WarehouseType } from '~/server/domain/entity/stock'
 
 type Props = { 
   onSelect: (event:React.ChangeEvent<HTMLSelectElement>) => void;
-  selected? : WarehouseType
+  selected? : WarehouseType["id"]
   required?: boolean
 }
 const select = ({ onSelect, selected, required }:Props) => {
@@ -19,10 +19,11 @@ const select = ({ onSelect, selected, required }:Props) => {
       onChange={(e) => onSelect(e)}
       placeholder="選択して下さい"
       required={required}
+      defaultValue={selected}
     >
       {
         warehouses &&
-          warehouses.map(warehouse => (<option key={warehouse.id} value={warehouse.id} selected={selected?.id===warehouse.id}>{warehouse.name}</option>))
+          warehouses.map(warehouse => (<option key={warehouse.id} value={warehouse.id}>{warehouse.name}</option>))
       }
       
     </Select>

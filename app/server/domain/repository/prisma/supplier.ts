@@ -44,7 +44,6 @@ export class SupplierRepository extends PrismaRepository implements ISupplierRep
         }
       ]}
     })
-    console.log(results)
 
     if(!results) {
       return new RepositoryNotFoundError("supplierが見つかりません")

@@ -1,4 +1,4 @@
-import { History, Reason, ITEM_FIELD, 出庫理由, 入庫理由 } from "@domain/entity/stock"
+import { History, Reason, ITEM_FIELD, 出庫理由, 入庫理由, UnitType } from "@domain/entity/stock"
 import { IItemRepository, IHistoryRepository, Query } from "@domain/repository/interface"
 import { InvalidArgumentError, ValidationError } from "../type/error"
 import { ItemDTO, ItemToDTO  } from "../dto/item"
@@ -12,15 +12,15 @@ export type UpdateItemData = {
   readonly itemTypeId: number
   readonly woodSpeciesId: number
   readonly gradeId: number
-  readonly spec: string
-  readonly length?: number | "乱尺"
-  readonly thickness?: number
-  readonly width?: number
+  readonly spec?: string
+  readonly length: number | "乱尺"
+  readonly thickness: number
+  readonly width: number
   readonly supplierId: number
   readonly packageCount: Decimal
   readonly count: Decimal
   readonly tempCount: Decimal
-  readonly unitId: number
+  readonly unitId: UnitType["id"]
   readonly costPackageCount: Decimal
   readonly cost: Decimal
   readonly costUnitId: number
@@ -29,7 +29,7 @@ export type UpdateItemData = {
   readonly arrivalDate?: Date
   readonly arrivalExpectedDate?: string
   readonly enable: boolean
-  readonly note: string
+  readonly note?: string
   readonly defectiveNote?: string
 
 }

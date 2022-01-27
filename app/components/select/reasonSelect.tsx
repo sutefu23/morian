@@ -20,10 +20,11 @@ const select = ({ onSelect, selected, required }:Props) => {
       onChange={(e) => onSelect(e)}
       placeholder="選択して下さい"
       required={required}
+      defaultValue={selected}
     >
       {
         reasons &&
-          reasons.map(reason => (<option key={reason.id} value={reason.id} selected={(selected === reason.id)}>{reason.name}</option>))
+          reasons.map(reason => (<option key={reason.id} value={reason.id}>{reason.name}</option>))
       }
       
     </Select>

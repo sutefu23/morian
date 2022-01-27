@@ -7,7 +7,7 @@ import { UnitType } from '~/server/domain/entity/stock'
 
 type Props = { 
   onSelect: (event:React.ChangeEvent<HTMLSelectElement>) => void;
-  selected? : UnitType
+  selected? : UnitType["id"]
   required?: boolean
 
 }
@@ -18,12 +18,13 @@ const select = ({ onSelect, selected, required }:Props) => {
   return (
     <Select 
       onChange={(e) => onSelect(e)}
-      placeholder=""
+      placeholder="単位"
       required={required}
+      defaultValue={selected}
     >
       {
         units &&
-          units.map(unit => (<option key={unit.id} value={unit.id} selected={selected?.id===unit.id}>{unit.name}</option>))
+          units.map(unit => (<option key={unit.id} value={unit.id}>{unit.name}</option>))
       }
       
     </Select>
