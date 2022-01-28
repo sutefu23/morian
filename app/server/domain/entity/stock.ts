@@ -91,7 +91,7 @@ export interface ItemProps {
   readonly lotNo: lotNoType
   readonly itemType: ItemTypeType
   readonly woodSpecies: WoodSpeciesType
-  readonly grade: GradeType
+  readonly grade?: GradeType
   readonly spec?: specType
   readonly length?: lengthType
   readonly thickness?: number
@@ -117,7 +117,7 @@ export class Item extends Entity<ItemProps> implements ItemProps {
   readonly lotNo: lotNoType
   readonly itemType: ItemTypeType
   readonly woodSpecies: WoodSpeciesType
-  readonly grade: GradeType
+  readonly grade?: GradeType
   readonly spec?: string
   readonly arrivalDate?: Date
   readonly arrivalExpectedDate?: string

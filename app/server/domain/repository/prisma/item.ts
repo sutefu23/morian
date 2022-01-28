@@ -106,9 +106,8 @@ export class ItemRepository implements IItemRepository {
   }
   async findMany(query: Query<ItemDTO> | Query<ItemDTO>[]): Promise<Item[]> {
     const criteria = buildWhereStatement(query)
-
     const result = await this.prisma.$queryRaw<ItemModel[]>(
-      Prisma.sql`SELECT * FROM Item WHERE ${criteria}`
+      Prisma.sql`SELECT * FROM Item`
     )
     const histories = (await Promise.all(
       result.map((h) => dbModelToEntity(h))

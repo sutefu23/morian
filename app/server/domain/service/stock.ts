@@ -11,7 +11,7 @@ export type UpdateItemData = {
   readonly lotNo: string
   readonly itemTypeId: number
   readonly woodSpeciesId: number
-  readonly gradeId: number
+  readonly gradeId?: number
   readonly spec?: string
   readonly length: number | "乱尺"
   readonly thickness: number
@@ -55,7 +55,27 @@ export class ItemService{
   constructor(itemRepo: IItemRepository){
     this.itemRepository = itemRepo
   }
+  async findLotNo(lotNo: string){
+    const data = await this.itemRepository.findMany({
+      field: "lotNo",
+      operator:"=",
+      value: lotNo
+    })
+    console.log(data)
+    if(data instanceof Error){
+      return data as Error
+    }
+    return data.length > 0
+  }
+
   async createItem(item: UpdateItemData){
+    const hasLotNo = await this.findLotNo(item.lotNo)
+    if(hasLotNo instanceof Error){
+      return hasLotNo as Error
+    }
+    if(hasLotNo){
+      return new Error("ロットNoが既に存在します。")
+    }
     const data = await this.itemRepository.create(item)
     if(data instanceof Error){
       return data as Error

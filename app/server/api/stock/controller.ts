@@ -18,19 +18,11 @@ export default defineController(() => ({
     }
   },
   post: async ({body}) => {
-    try{
-      const item = await itemService.createItem(body)
-      if(item instanceof Error){
-        console.error(item.message)
-        return { status : 403, body: item}
-      }  
-      return{
-        status: 201,
-        body: item
-      }  
-    }catch(e: unknown){
-      console.error(e)
-      return { status : 403, body: e}
-    }
+    const item = await itemService.createItem(body)
+    if (item instanceof Error) throw item
+    return{
+      status: 201,
+      body: item
+    }  
   }
 }))

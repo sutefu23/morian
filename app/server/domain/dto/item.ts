@@ -10,9 +10,9 @@ export type ItemDTO = {
   readonly woodSpeciesId: number
   readonly woodSpeciesName: string
   readonly woodSpeciesOrder: number
-  readonly gradeId: number
-  readonly gradeName: string
-  readonly gradeOrder: number
+  readonly gradeId?: number
+  readonly gradeName?: string
+  readonly gradeOrder?: number
   readonly spec?: string
   readonly length?: string
   readonly thickness?: number
@@ -50,9 +50,9 @@ export const ItemToDTO = (item: Item): ItemDTO => {
     woodSpeciesId: item.woodSpecies.id,
     woodSpeciesName: item.woodSpecies.name,
     woodSpeciesOrder: item.woodSpecies.order,
-    gradeId: item.grade.id,
-    gradeName: item.grade.name,
-    gradeOrder: item.grade.order,
+    gradeId: item.grade?.id,
+    gradeName: item.grade?.name,
+    gradeOrder: item.grade?.order,
     spec: item.spec,
     length: item.length ? String(item.length.value) : item.length,
     thickness: item.thickness,

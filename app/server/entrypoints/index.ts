@@ -7,4 +7,4 @@ init()
     // PM2 graceful start
     // See also https://pm2.keymetrics.io/docs/usage/signals-clean-restart/
     process.send?.('ready')
-  }).catch((e) => {console.error(e)})
+  })

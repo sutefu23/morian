@@ -32,12 +32,8 @@ export const dbModelToEntity = async (
   }
 
   const grade = await prisma.grade.findUnique({
-    where: { id: model.gradeId }
-  })
-
-  if (!grade) {
-    throw new FieldNotFoundError('gradeが見つかりません。')
-  }
+    where: { id: model.gradeId ?? undefined }
+  }) ?? undefined
 
   const costUnit = await prisma.unit.findUnique({
     where: { id: model.costUnitId }
@@ -63,9 +59,6 @@ export const dbModelToEntity = async (
     throw new FieldNotFoundError('warehouseが見つかりません。')
   }
 
-  if (!model.spec) {
-    throw new FieldNotFoundError('specが見つかりません。')
-  }
   const length = ((length) => {
     if (length) {
       return lengthType.getInstance(length)
@@ -106,7 +99,7 @@ export const dbModelToEntity = async (
     width,
     thickness,
     grade,
-    spec: model.spec,
+    spec: model.spec ?? undefined,
     costUnit,
     unit,
     warehouse,

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { UpdateItemData } from '~/server/domain/service/stock'
 import { Decimal } from 'decimal.js'
 import { Units } from '~/server/domain/init/master'
@@ -215,21 +215,16 @@ const useStock = () => {
     const postStockData = checkValidStock(stockData)
     if (!postStockData) {
       console.error('postStockData is not valid')
-      return true
+      return
     }
     const cookies = parseCookies()
-    const res = await apiClient.stock.post({
+
+    await apiClient.stock.post({
       body: postStockData,
       headers: { authorization: cookies.token }
     })
-
-    if (res.status !== 201) {
-      console.error(res.body)
-      alert('登録に失敗しました')
-      return true
-    }
     alert('登録しました')
-    return true //遷移
+
   }, [stockData])
 
   return {

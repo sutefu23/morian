@@ -30,6 +30,13 @@ export const init = (serverFactory?: FastifyServerFactory) => {
       })
     })
   }
+  app.addHook('onError', (req, reply, err) => {
+    console.error("onError")
+    console.error(err)
+    reply.send(JSON.stringify(err))
+  })
+
+  app.listen(3000)
   app.register(fastifyJwt, { secret: API_JWT_SECRET, decode: { complete: true } })
   server(app, { basePath: API_BASE_PATH })
   return app

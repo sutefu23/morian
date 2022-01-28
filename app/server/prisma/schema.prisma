@@ -42,8 +42,8 @@ model Item {
   woodSpecies   Species?   @relation(fields: [woodSpeciesId], references: [id]) // 樹種
   woodSpeciesId Int?
   spec          String? //仕様
-  grade         Grade      @relation(fields: [gradeId], references: [id]) // グレード
-  gradeId       Int
+  grade         Grade?      @relation(fields: [gradeId], references: [id]) // グレード
+  gradeId       Int?
   length        String? // 寸法（長さ）
   width         Int? // 寸法（幅）
   thickness     Int? // 寸法（厚）
