@@ -196,8 +196,8 @@ const Register = () => {
         <Box>
           <Button type='submit' ml={50} w={100} bgColor="green.200"
             onClick={async (e) => {
-              await postStock()
               e.preventDefault()
+              await postStock()
             }}
           >登録</Button>
         </Box>

@@ -11,7 +11,7 @@ export default defineController((fastify) => ({
     if(decodedToken){
       const me = await userService.getUserById(Number(decodedToken.payload.id))
       if(me instanceof Error){
-        return { status : 500, body: me}
+        return { status : 400, body: me}
       }
       return { status: 201, body: me }
     }else{
@@ -24,7 +24,7 @@ export default defineController((fastify) => ({
     if(decodedToken){
       const me = await userService.getUserById(Number(decodedToken.payload.id))
       if(me instanceof Error){
-        return { status : 500, body: me}
+        return { status : 401, body: me}
       }
       await userService.updateUser(me.id, { pass: body.pass})
       return { status: 201, body: me }

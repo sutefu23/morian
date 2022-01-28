@@ -7,7 +7,7 @@ export default defineController(() => ({
   get: async () => {
     const data = await service.getSpeciesList()
     if(data instanceof Error){
-      return { status: 500, body: data.message}
+      return { status: 400, body: data.message}
     }
     return { status: 200, body: data }
   }

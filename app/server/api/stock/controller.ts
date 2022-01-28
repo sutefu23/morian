@@ -10,21 +10,27 @@ export default defineController(() => ({
     const item = await itemService.findManyItem(query)
 
     if(item instanceof Error){
-      return { status : 500, body: item}
+      console.error(item)
+      return { status : 400, body: item}
     }
     return {
       status: 200, body: item
     }
   },
   post: async ({body}) => {
-    const item = await itemService.createItem(body)
-    if(item instanceof Error){
-      console.error(item.message)
-      return { status : 500, body: item}
-    }
-    return{
-      status: 201,
-      body: item
+    try{
+      const item = await itemService.createItem(body)
+      if(item instanceof Error){
+        console.error(item.message)
+        return { status : 403, body: item}
+      }  
+      return{
+        status: 201,
+        body: item
+      }  
+    }catch(e: unknown){
+      console.error(e)
+      return { status : 403, body: e}
     }
   }
 }))

@@ -57,7 +57,7 @@ model Item {
   supplierId    Int?
   history       History[]
   arrivalDate   DateTime? // 入荷日
-  arrivalExpectedDate   DateTime? // 入荷予定日
+  arrivalExpectedDate   String? // 入荷予定日
   warehouse     Warehouse @relation(fields: [warehouseId], references: [id]) // 倉庫
   warehouseId   Int // 倉庫
   cost          Decimal // 原価

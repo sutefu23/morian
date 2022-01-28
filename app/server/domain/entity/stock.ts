@@ -98,7 +98,7 @@ export interface ItemProps {
   readonly width?: number
   readonly supplierId: Supplier['id']
   readonly arrivalDate?: Date
-  readonly arrivalExpectedDate?: Date
+  readonly arrivalExpectedDate?: string
   readonly packageCount: Decimal
   readonly costPackageCount: Decimal
   readonly cost: Decimal
@@ -120,7 +120,7 @@ export class Item extends Entity<ItemProps> implements ItemProps {
   readonly grade: GradeType
   readonly spec?: string
   readonly arrivalDate?: Date
-  readonly arrivalExpectedDate?: Date
+  readonly arrivalExpectedDate?: string
   readonly length?: lengthType
   readonly thickness?: number
   readonly width?: number
