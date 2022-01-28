@@ -9,9 +9,9 @@ type Props = {
   onSelect: (event:React.ChangeEvent<HTMLSelectElement>) => void;
   selected? : UnitType["id"]
   required?: boolean
-
+  value?: UnitType["id"]
 }
-const select = ({ onSelect, selected, required }:Props) => {
+const select = ({ onSelect, selected, required, value }:Props) => {
   const { data: units, error: unitErr } = useAspidaQuery(apiClient.master.unit)
   if (unitErr) return <StatusBar status="error" message="単位の取得に失敗しました。"/>
 
@@ -21,6 +21,7 @@ const select = ({ onSelect, selected, required }:Props) => {
       placeholder="単位"
       required={required}
       defaultValue={selected}
+      value={value}
     >
       {
         units &&

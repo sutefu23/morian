@@ -9,7 +9,7 @@ type Props = {
   required?: boolean
 }
 
-const select = ({ onSelect, required }:Props) => {
+const select = ({ onSelect, required, }:Props) => {
 
   const onSelectionChange = (key:React.Key) => {
     onSelect(key)

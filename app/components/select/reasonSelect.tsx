@@ -9,9 +9,9 @@ type Props = {
   onSelect: (event:React.ChangeEvent<HTMLSelectElement>) => void;
   selected? : ReasonType["id"]
   required?: boolean
-
+  value?: ReasonType["id"]
 }
-const select = ({ onSelect, selected, required }:Props) => {
+const select = ({ onSelect, selected, required, value }:Props) => {
   const { data: reasons, error: reasonErr } = useAspidaQuery(apiClient.master.reason)
   if (reasonErr) return <StatusBar status="error" message="理由カテゴリの取得に失敗しました。"/>
 
@@ -21,6 +21,7 @@ const select = ({ onSelect, selected, required }:Props) => {
       placeholder="選択して下さい"
       required={required}
       defaultValue={selected}
+      value={value}
     >
       {
         reasons &&

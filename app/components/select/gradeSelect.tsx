@@ -8,9 +8,10 @@ import { GradeType } from '~/server/domain/entity/stock'
 type Props = { 
   onSelect: (event:React.ChangeEvent<HTMLSelectElement>) => void;
   selected? : GradeType["id"]
+  value? : GradeType["id"]
   required?: boolean
 }
-const select = ({ onSelect, selected, required }:Props) => {
+const select = ({ onSelect, selected, required, value }:Props) => {
   const { data: grades, error: gradeErr } = useAspidaQuery(apiClient.master.grade)
   if (gradeErr) return <StatusBar status="error" message="グレードの取得に失敗しました。"/>
 
@@ -20,6 +21,7 @@ const select = ({ onSelect, selected, required }:Props) => {
       placeholder="選択して下さい"
       required={required}
       defaultValue={selected}
+      value={value}
     >
       {
         grades &&

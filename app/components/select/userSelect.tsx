@@ -9,8 +9,9 @@ type Props = {
   selected? : User["id"]
   required?: boolean
   enableOnly?: boolean
+  value?: User["id"]
 }
-const select = ({ onSelect, selected, required , enableOnly}:Props) => {
+const select = ({ onSelect, selected, required , enableOnly, value}:Props) => {
   const [ users, setUsers ] = useState<User[]>()
   const [ error , setError ] = useState<Error>()
 
@@ -33,6 +34,7 @@ const select = ({ onSelect, selected, required , enableOnly}:Props) => {
       placeholder="選択して下さい"
       required={required}
       defaultValue={selected}
+      value={value}
     >
       {
         users &&

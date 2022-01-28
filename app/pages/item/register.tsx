@@ -15,7 +15,7 @@ const Register = () => {
   setTitle("新規在庫登録")
   const { user } = useUser()
 
-  const { stockData, updateField, calcCostPackageCount, costPerUnit, totalPrice, postStock } = useStock()
+  const { stockData, updateField, calcCostPackageCount, costPerUnit, totalPrice, postStock, useDemo } = useStock()
 
 
 
@@ -44,7 +44,7 @@ const Register = () => {
           <InputGroup>
             <InputLeftAddon aria-required>樹種</InputLeftAddon>
             <WoodSpeciesSelect required onSelect={(e) => { updateField<"woodSpeciesId">("woodSpeciesId", Number(e.target.value))}}
-              selected={stockData?.woodSpeciesId}
+              value={stockData?.woodSpeciesId}
             />
           </InputGroup>
         </Box>
@@ -52,6 +52,7 @@ const Register = () => {
           <InputGroup>
             <InputLeftAddon aria-required>材種</InputLeftAddon>
             <ItemTypeSelect required 
+            value={stockData?.itemTypeId}
             onSelect={(e) => { updateField<"itemTypeId">("itemTypeId", Number(e.target.value))}}/>
           </InputGroup>
         </Box>
@@ -66,7 +67,7 @@ const Register = () => {
         <Box>
           <InputGroup>
             <InputLeftAddon aria-required>グレード</InputLeftAddon>
-            <GradeSelect required onSelect={(e) => { updateField<"gradeId">("gradeId", Number(e.target.value))}}/>
+            <GradeSelect required value={stockData.gradeId} onSelect={(e) => { updateField<"gradeId">("gradeId", Number(e.target.value))}}/>
           </InputGroup>
         </Box>
         <Box>
@@ -80,18 +81,19 @@ const Register = () => {
         <Box>
           <InputGroup>
             <InputLeftAddon aria-required>長さｘ厚みｘ幅</InputLeftAddon>
-            <Input 
-            onChange={(e) => { updateField<"length">("length", e.target.value as number | "乱尺")}}/>
+            <Input placeholder="長さ" value={stockData.length} onChange={(e) => { updateField<"length">("length", e.target.value as number | "乱尺")}}/>
             <InputLabel style={{fontSize:"1.2em", marginTop:"10px"}}>ｘ</InputLabel>
-            <Input type="number" onChange={(e) => { updateField<"thickness">("thickness", Number(e.target.value))}}/>
+            <Input placeholder="厚み" type="number" value={stockData.thickness} onChange={(e) => { updateField<"thickness">("thickness", Number(e.target.value))}}/>
             <InputLabel style={{fontSize:"1.2em", marginTop:"10px"}}>ｘ</InputLabel>
-            <Input type="number" onChange={(e) => { updateField<"width">("width", Number(e.target.value))}}/>
+            <Input placeholder="幅" type="number" value={stockData.width} onChange={(e) => { updateField<"width">("width", Number(e.target.value))}}/>
           </InputGroup>
         </Box>
         <Box>
           <InputGroup>
             <InputLeftAddon aria-required>入数</InputLeftAddon>
-            <Input required type="number" onChange={(e) => { 
+            <Input required type="number" 
+            value={stockData.packageCount?.toString()}
+            placeholder="数字" onChange={(e) => { 
               updateField<"packageCount">("packageCount", new Decimal(e.target.value))}}/>
           </InputGroup>
         </Box>
@@ -100,19 +102,23 @@ const Register = () => {
         <Box>
           <InputGroup>
           <InputLeftAddon>製造元</InputLeftAddon>
-            <Input placeholder="自由入力" onChange={(e) => { updateField<"manufacturer">("manufacturer", e.target.value)}}/>
+            <Input placeholder="自由入力" value={stockData.manufacturer} onChange={(e) => { updateField<"manufacturer">("manufacturer", e.target.value)}}/>
           </InputGroup>
         </Box>
         <Box>
           <InputGroup>
             <InputLeftAddon aria-required>倉庫</InputLeftAddon>
-            <WarehouseSelect required onSelect={(e) => { updateField<"warehouseId">("warehouseId", Number(e.target.value))}}/>
+            <WarehouseSelect required 
+            value={stockData?.warehouseId}
+            onSelect={(e) => { updateField<"warehouseId">("warehouseId", Number(e.target.value))}}/>
           </InputGroup>
         </Box>
         <Box>
           <InputGroup>
             <InputLeftAddon aria-required>入荷予定日</InputLeftAddon>
-            <Input placeholder="自由入力" required onChange={(e) => { updateField<"arrivalExpectedDate">("arrivalExpectedDate", e.target.value)}}/>
+            <Input placeholder="自由入力" required 
+            value={stockData.arrivalExpectedDate}
+            onChange={(e) => { updateField<"arrivalExpectedDate">("arrivalExpectedDate", e.target.value)}}/>
           </InputGroup>
         </Box>
       </HStack>
@@ -120,16 +126,24 @@ const Register = () => {
         <Box>
           <InputGroup>
             <InputLeftAddon aria-required>原価</InputLeftAddon>
-            <Input required type="number" onChange={(e) => { updateField<"cost">("cost", new Decimal(e.target.value))}}/>
+            <Input required type="number" 
+            value={stockData.cost?.toString()}
+            placeholder="数字" onChange={(e) => { updateField<"cost">("cost", new Decimal(e.target.value))}}/>
             <InputLabel style={{fontSize:"1.5em", marginTop:"10px"}}>/</InputLabel>
-            <UnitSelect required onSelect={(e) => { updateField<"costUnitId">("costUnitId", Number(e.target.value)) }}/>
+            <UnitSelect required 
+            value={stockData.costUnitId}
+            onSelect={(e) => { updateField<"costUnitId">("costUnitId", Number(e.target.value)) }}/>
           </InputGroup>
         </Box>
         <Box>
           <InputGroup>
             <InputLeftAddon aria-required>数量</InputLeftAddon>
-            <Input required type="number" onChange={(e) => { updateField<"count">("count", new Decimal(e.target.value))}}/>
-            <UnitSelect required onSelect={(e) => { updateField<"unitId">("unitId", Number(e.target.value)) }}/>
+            <Input required 
+            value={stockData.count?.toString()}
+            type="number" placeholder="数字" onChange={(e) => { updateField<"count">("count", new Decimal(e.target.value))}}/>
+            <UnitSelect required 
+            value={stockData.unitId}
+            onSelect={(e) => { updateField<"unitId">("unitId", Number(e.target.value)) }}/>
           </InputGroup>
         </Box>
         <Box>
@@ -181,8 +195,16 @@ const Register = () => {
         </Box>
         <Box>
           <Button type='submit' ml={50} w={100} bgColor="green.200"
-            onClick={postStock}
+            onClick={async (e) => {
+              await postStock()
+              e.preventDefault()
+            }}
           >登録</Button>
+        </Box>
+        <Box>
+          <Button ml={50} w={100} bgColor="red.200"
+            onClick={useDemo}
+          >デモ</Button>
         </Box>
       </HStack>
     </Footer>

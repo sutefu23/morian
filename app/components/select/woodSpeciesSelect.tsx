@@ -9,8 +9,9 @@ type Props = {
   onSelect: (event:React.ChangeEvent<HTMLSelectElement>) => void;
   selected? : WoodSpeciesType["id"]
   required?: boolean
+  value?: WoodSpeciesType["id"]
 }
-const select = ({ onSelect, selected, required }:Props) => {
+const select = ({ onSelect, selected, required, value }:Props) => {
   const { data: woodSpecieses, error: woodSpeciesErr } = useAspidaQuery(apiClient.master.species)
   if (woodSpeciesErr) return <StatusBar status="error" message="樹種の取得に失敗しました。"/>
 
@@ -20,6 +21,7 @@ const select = ({ onSelect, selected, required }:Props) => {
       placeholder="選択して下さい"
       required={required}
       defaultValue={selected}
+      value={value}
       >
       {
         woodSpecieses &&
