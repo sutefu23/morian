@@ -1,6 +1,6 @@
 import { IItemRepository, Query } from '../interface'
-import { Item, lotNoType } from '@domain/entity/stock'
-import { Prisma, PrismaClient, Item as ItemModel } from '@prisma/client'
+import { Item } from '@domain/entity/stock'
+import { PrismaClient } from '@prisma/client'
 import {
   ValidationError,
   FieldNotFoundError,

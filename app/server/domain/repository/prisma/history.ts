@@ -94,21 +94,9 @@ export class HistoryRepository implements IHistoryRepository {
       itemId: undefined,
       editUserId: undefined,
       bookUserId: undefined,
-      bookDate: undefined
+      bookDate: undefined,
+      reasonId: undefined
     }
-    const bookParam = (() => {
-      if (entity.bookUserId) {
-        return {
-          bookUser: {
-            connect: {
-              id: entity.bookUserId
-            }
-          }
-        }
-      }
-    })()
-
-    const itemUpdateParam = this._itemUpdateParam(entity, itemField)
 
     const bookUpdateParam = (() => {
       if (entity.bookUserId) {
@@ -122,8 +110,10 @@ export class HistoryRepository implements IHistoryRepository {
         }
       }
     })()
+    console.log(reasons[0].id)
+    console.log({ data: { ...createParam, ...bookUpdateParam } })
     const result = await this.prisma.history.create({
-      data: { ...createParam, ...itemUpdateParam, ...bookUpdateParam }
+      data: { ...createParam, ...bookUpdateParam }
     })
     const newHistory = await dbModelToEntity(result)
     return newHistory
@@ -201,7 +191,9 @@ export class HistoryRepository implements IHistoryRepository {
     const deleteHistory = this.prisma.history.delete({ where: { id } })
     const updateItem = this.prisma.item.update({
       where: { id: entity.itemId },
-      data: { ...itemUpdateParam?.item.data }
+      data: {
+        ...itemUpdateParam
+      }
     })
     const [historyModel, itemModel] = await this.prisma.$transaction([
       deleteHistory,
@@ -240,23 +232,23 @@ export class HistoryRepository implements IHistoryRepository {
             case ITEM_FIELD.COUNT:
               return {
                 count: {
-                  increment: entity.addCount
+                  increment: (entity.addCount ?? 0).toString()
                 }
               }
             case ITEM_FIELD.TEMP_COUNT:
               return {
                 tempCount: {
-                  increment: entity.addCount
+                  increment: (entity.addCount ?? 0).toString()
                 }
               }
 
             case ITEM_FIELD.BOTH:
               return {
                 count: {
-                  increment: entity.addCount
+                  increment: (entity.addCount ?? 0).toString()
                 },
                 tempCount: {
-                  increment: entity.addCount
+                  increment: (entity.addCount ?? 0).toString()
                 }
               }
           }
@@ -266,35 +258,30 @@ export class HistoryRepository implements IHistoryRepository {
             case ITEM_FIELD.COUNT:
               return {
                 count: {
-                  decrement: entity.reduceCount
+                  decrement: (entity.reduceCount ?? 0).toString()
                 }
               }
             case ITEM_FIELD.TEMP_COUNT:
               return {
                 tempCount: {
-                  decrement: entity.reduceCount
+                  decrement: (entity.reduceCount ?? 0).toString()
                 }
               }
 
             case ITEM_FIELD.BOTH:
               return {
                 count: {
-                  decrement: entity.reduceCount
+                  decrement: (entity.reduceCount ?? 0).toString()
                 },
                 tempCount: {
-                  decrement: entity.reduceCount
+                  decrement: (entity.reduceCount ?? 0).toString()
                 }
               }
           }
         }
       })()
 
-      return {
-        item: {
-          connect: { id: entity.itemId },
-          data: { ...updateField }
-        }
-      }
+      return updateField
     }
   }
 }

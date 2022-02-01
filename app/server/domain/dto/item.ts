@@ -18,7 +18,6 @@ export type ItemDTO = {
   readonly thickness?: number
   readonly width?: number
   readonly supplierId: number
-  readonly supplierName: string
   readonly packageCount: Decimal
   readonly count: Decimal
   readonly tempCount: Decimal
@@ -57,8 +56,7 @@ export const ItemToDTO = (item: Item): ItemDTO => {
     length: item.length ? String(item.length.value) : item.length,
     thickness: item.thickness,
     width: item.width,
-    supplierId: item.supplier.id,
-    supplierName: item.supplier.name,
+    supplierId: item.supplierId,
     packageCount: item.packageCount,
     count: item.count,
     tempCount: item.tempCount,

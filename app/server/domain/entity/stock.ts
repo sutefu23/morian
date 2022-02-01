@@ -311,37 +311,6 @@ export class History extends Entity<HistoryProps> implements HistoryProps {
   public static getInstance(
     props: HistoryProps
   ): History | InvalidArgumentError {
-    const status = ((addCount, reduceCount) => {
-      if (addCount && !reduceCount) {
-        return Status.入庫
-      } else if (!addCount && reduceCount) {
-        return Status.出庫
-      } else {
-        return new InvalidArgumentError(
-          '入庫数出庫数どちらかに値が入ってる必要があります'
-        )
-      }
-    })(props.addCount, props.reduceCount)
-
-    if (status instanceof Error) {
-      return status as InvalidArgumentError
-    }
-
-    const isTemp = ((status) => {
-      switch (status) {
-        case Status.入庫:
-          return false
-        case Status.出庫:
-          return false
-        default:
-          return new InvalidArgumentError('unknown stock status is given.')
-      }
-    })(props.status)
-
-    if (isTemp instanceof Error) {
-      return isTemp as InvalidArgumentError
-    }
-
-    return new this({ ...props, isTemp, status })
+        return new this({ ...props })
   }
 }

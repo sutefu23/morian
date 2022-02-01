@@ -102,11 +102,6 @@ export class ItemService {
     }
     const historyData = await this.historyService.createHistory(history)
     if (historyData instanceof Error) {
-      const res = await this.itemRepository.delete(data.id)
-      if (res instanceof Error) {
-        console.error(res)
-        return new Error('Itemデータの削除に失敗しました。手動で行ってください')
-      }
       return historyData as Error
     }
 
