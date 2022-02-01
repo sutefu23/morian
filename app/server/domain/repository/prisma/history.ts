@@ -10,6 +10,8 @@ import { dbModelToEntity } from '../mapper/history'
 import { dbModelToEntity as dbModelToItemEntity } from '../mapper/item'
 import { buildWhereStatement } from './common'
 import { HistoryDTO } from '$/domain/dto/history'
+import { UpdateHistoryData } from '$/domain/service/stock'
+import { StockReason } from '$/domain/init/master'
 
 export class HistoryRepository implements IHistoryRepository {
   readonly prisma: PrismaClient
@@ -58,7 +60,7 @@ export class HistoryRepository implements IHistoryRepository {
   }
 
   async create(
-    entity: HistoryDTO,
+    entity: UpdateHistoryData,
     itemField: ITEM_FIELD
   ): Promise<History | ValidationError | FieldNotFoundError> {
     const maxOrder = await this.prisma.history.aggregate({
@@ -66,6 +68,9 @@ export class HistoryRepository implements IHistoryRepository {
         order: true
       }
     })
+    const reasons = StockReason.filter((r) => r.name === entity.reason)
+    if (reasons.length === 0) return Error('理由パラメーターが見つかりません')
+
     const createParam = {
       ...entity,
       item: {
@@ -75,7 +80,7 @@ export class HistoryRepository implements IHistoryRepository {
       },
       reason: {
         connect: {
-          id: entity.reasonId
+          id: reasons[0].id
         }
       },
       editUser: {
@@ -86,11 +91,9 @@ export class HistoryRepository implements IHistoryRepository {
       order: (maxOrder._max.order ?? 0) + 1,
       reduceCount: entity.reduceCount.toString(),
       addCount: entity.addCount.toString(),
-      id: undefined,
       itemId: undefined,
       editUserId: undefined,
       bookUserId: undefined,
-      reasonId: undefined,
       bookDate: undefined
     }
     const bookParam = (() => {

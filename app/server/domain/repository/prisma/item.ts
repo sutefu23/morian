@@ -1,5 +1,5 @@
 import { IItemRepository, Query } from '../interface'
-import { Item } from '@domain/entity/stock'
+import { Item, lotNoType } from '@domain/entity/stock'
 import { Prisma, PrismaClient, Item as ItemModel } from '@prisma/client'
 import {
   ValidationError,
@@ -7,7 +7,6 @@ import {
   RepositoryNotFoundError
 } from '@domain/type/error'
 import { dbModelToEntity } from '../mapper/item'
-import { buildWhereStatement } from './common'
 import { ItemDTO } from '@domain/dto/item'
 import { UpdateItemData } from '$/domain/service/stock'
 
@@ -16,6 +15,9 @@ export class ItemRepository implements IItemRepository {
 
   constructor() {
     this.prisma = new PrismaClient()
+  }
+  findMany(query: Query<ItemDTO> | Query<ItemDTO>[]): Promise<Error | Item[]> {
+    throw new Error('Method not implemented.')
   }
 
   async findById(id: number) {
@@ -32,6 +34,15 @@ export class ItemRepository implements IItemRepository {
     return newItem
   }
 
+  async delete(id: number): Promise<Item | Error> {
+    const result = await this.prisma.item.delete({
+      where: {
+        id
+      }
+    })
+    const deleteItem = await dbModelToEntity(result)
+    return deleteItem
+  }
   async create(
     entity: UpdateItemData
   ): Promise<Item | ValidationError | FieldNotFoundError> {
@@ -104,14 +115,15 @@ export class ItemRepository implements IItemRepository {
     const newItem = await dbModelToEntity(result)
     return newItem
   }
-  async findMany(query: Query<ItemDTO> | Query<ItemDTO>[]): Promise<Item[]> {
-    const criteria = buildWhereStatement(query)
-    const result = await this.prisma.$queryRaw<ItemModel[]>(
-      Prisma.sql`SELECT * FROM Item`
-    )
-    const histories = (await Promise.all(
-      result.map((h) => dbModelToEntity(h))
-    )) as Item[]
-    return histories
+
+  async findByLotNo(lotNo: string): Promise<Item | null | Error> {
+    const result = await this.prisma.item.findUnique({
+      where: {
+        lotNo
+      }
+    })
+    if (!result) return null
+    const history = dbModelToEntity(result)
+    return history
   }
 }

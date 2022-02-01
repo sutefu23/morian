@@ -36,7 +36,7 @@ export const dbModelToEntity = async (
     return new FieldNotFoundError('ユーザーが見つかりません')
   }
   const editUserName = user.name
-
+  const note = model.note ?? ''
   const bookUserName = await (async () => {
     if (!model.bookUserId) {
       return null
@@ -60,7 +60,8 @@ export const dbModelToEntity = async (
     reduceCount,
     addCount,
     reason,
-    bookUserName
+    bookUserName,
+    note
   })
 
   return history

@@ -2,6 +2,7 @@ import dotenv from 'dotenv'
 
 dotenv.config()
 
+const HOST = process.env.HOST ?? 'localhost:3000'
 const API_JWT_SECRET = process.env.API_JWT_SECRET ?? ''
 const API_SERVER_PORT = +(process.env.API_SERVER_PORT ?? '8080')
 const API_BASE_PATH = process.env.API_BASE_PATH ?? ''
@@ -16,6 +17,7 @@ const REDIS_POST = process.env.REDIS_POST ?? '6379'
 const NODE_ENV = process.env.NODE_ENV ?? 'development'
 
 export {
+  HOST,
   API_JWT_SECRET,
   API_SERVER_PORT,
   API_BASE_PATH,

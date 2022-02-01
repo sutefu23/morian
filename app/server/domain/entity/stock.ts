@@ -75,12 +75,13 @@ export class lengthType extends ValueObject<number | '乱尺'> {
   }
   static getInstance(val: number | string): lengthType | ValidationError {
     if (
-      !/^[-]?([1-9]\d*|0)(\.\d+)?$/g.test(String(val)) ||
-      String(val) != '乱尺'
+      !/^[-]?([1-9]\d*|0)(\.\d+)?$/g.test(String(val)) 
     ) {
-      return new ValidationError(
-        'lengthは数値あるいは「乱尺」という言葉だけが許可されています。'
-      )
+      if(String(val) != '乱尺'){
+        return new ValidationError(
+          'lengthは数値あるいは「乱尺」という言葉だけが許可されています。'
+        )
+      }
     }
     return new this(val as number | '乱尺')
   }

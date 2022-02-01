@@ -1,17 +1,15 @@
-import { defineHooks } from './user/$relay';
+import { defineHooks } from './me/$relay';
+import { UserRepository } from '$/domain/repository/prisma/user'
+import { AuthService } from '$/domain/service/auth';
 
 export type AdditionalRequest = {
    user: {
      id: number
   }
 }
-
-export default defineHooks(() => ({
+export default defineHooks((fastify) => ({
   onRequest: (request, reply) =>{
-    if(request.url !== '/login'){
-      request.jwtVerify().catch((err) => {
-        reply.redirect('/login')
-      })
-    }
+    console.log(request.headers)
+ 
   }
 }));

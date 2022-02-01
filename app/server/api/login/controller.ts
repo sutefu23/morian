@@ -2,7 +2,7 @@ import { defineController } from './$relay'
 import { AuthService } from '$/domain/service/auth'
 import { UserRepository } from '$/domain/repository/prisma/user'
 
-const authService = new AuthService(new UserRepository)
+const authService = AuthService.getInstance(new UserRepository)
 export default defineController((fastify) => ({
   post: async ({ body }) => {
     return await authService.isValidUser(body.id, body.pass) === true

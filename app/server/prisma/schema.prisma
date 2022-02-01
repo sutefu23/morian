@@ -122,7 +122,7 @@ model Grade {
 
 model History {
   id          Int      @id @default(autoincrement())
-  note        String //備考
+  note        String? //備考
   date        DateTime
   reasonId    Int
   reason      Reason   @relation(fields: [reasonId], references: [id]) //理由
