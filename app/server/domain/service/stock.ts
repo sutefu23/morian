@@ -16,7 +16,6 @@ import { InvalidArgumentError, ValidationError } from '../type/error'
 import { ItemDTO, ItemToDTO } from '../dto/item'
 import { HistoryDTO, HistoryToDTO } from '../dto/history'
 import { Decimal } from 'decimal.js'
-import { StockReason } from '../init/master'
 import { HistoryRepository } from '../repository/prisma/history'
 import { AuthService } from './auth'
 
@@ -72,7 +71,7 @@ export class ItemService {
     return data
   }
 
-  async createItem(item: UpdateItemData) {
+  async issueItem(item: UpdateItemData) {
     const hasLotNo = await this.findLotNo(item.lotNo)
     if (hasLotNo instanceof Error) {
       return hasLotNo as Error
@@ -84,12 +83,13 @@ export class ItemService {
     if (data instanceof Error) {
       return data as Error
     }
-    
+
     const editUser = AuthService.user()
-    if(!editUser){
-      return new Error("認証されたユーザーが見つかりません。")
+    if (!editUser) {
+      return new Error('認証されたユーザーが見つかりません。')
     }
-    const history = {
+
+    const 発注詳細 = {
       itemId: data.id,
       note: data.note,
       date: new Date(),
@@ -100,7 +100,8 @@ export class ItemService {
       editUserId: editUser.id,
       isTemp: true
     }
-    const historyData = await this.historyService.createHistory(history)
+
+    const historyData = await this.historyService.createHistory(発注詳細)
     if (historyData instanceof Error) {
       return historyData as Error
     }
@@ -108,12 +109,42 @@ export class ItemService {
     const itemDto = ItemToDTO(data)
     return itemDto
   }
-
-  async issueItem(item: UpdateItemData) {
+  async registerItem(item: UpdateItemData) {
+    //仕入
+    const hasLotNo = await this.findLotNo(item.lotNo)
+    if (hasLotNo instanceof Error) {
+      return hasLotNo as Error
+    }
+    if (hasLotNo) {
+      return new Error('ロットNoが既に存在します。')
+    }
     const data = await this.itemRepository.create(item)
     if (data instanceof Error) {
       return data as Error
     }
+
+    const editUser = AuthService.user()
+    if (!editUser) {
+      return new Error('認証されたユーザーが見つかりません。')
+    }
+
+    const 仕入詳細 = {
+      itemId: data.id,
+      note: data.note,
+      date: new Date(),
+      status: Status.入庫,
+      reason: 入庫理由.発注,
+      reduceCount: new Decimal(0),
+      addCount: data.count,
+      editUserId: editUser.id,
+      isTemp: false
+    }
+
+    const historyData = await this.historyService.createHistory(仕入詳細)
+    if (historyData instanceof Error) {
+      return historyData as Error
+    }
+
     const itemDto = ItemToDTO(data)
     return itemDto
   }

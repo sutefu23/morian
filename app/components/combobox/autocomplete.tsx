@@ -55,7 +55,8 @@ export function Autocomplete<T extends Record<string, unknown>>(props: Autocompl
           <Search2Icon color="gray.500" />
         </InputLeftElement>
         <Input {...inputProps} ref={inputRef} size="md"
-        onKeyPress={(e) => keyEnter(e)}/>
+        onKeyPress={(e) => keyEnter(e)}
+        />
         <InputRightElement>
           {props.loadingState === "loading" ||
           props.loadingState === "filtering" ? (

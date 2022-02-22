@@ -10,6 +10,7 @@ export interface DatepickerProps {
   position?: "relative" | "absolute";
   startDateIcon?: ReactNode;
   endDateIcon?: ReactNode;
+  value?: Date
 }
 
 export const Datepicker = (props: DatepickerProps) => {

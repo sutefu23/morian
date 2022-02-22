@@ -3,14 +3,32 @@ import type {
   AlertStatus
 } from '@chakra-ui/react'
 import StatusBar from "~/components/feedback/statusBar";
-export const useModalHook = (
-  props: {status: AlertStatus, message: string}
-) => {
+
+import { atom , selector } from 'recoil'
+
+type StatusBarPropType = {status: AlertStatus, message: string}
+
+const statusBarPropsAtom = atom<StatusBarPropType[]>({
+  key: 'statusBarPropsAtom',
+  default: [],
+});
+
+// const myApiValueSelector = selector<StatusBarPropType[]>({
+//   key: 'statusBarPropsSelector',
+//   get: ({get}) => {
+//     const currValue = get(statusBarPropsAtom)
+//   },
+//   set: ({set, get}, newValue) => {
+//     const oldValue = get(statusBarPropsAtom)
+//     set(statusBarPropsAtom, [...oldValue, newValue])
+//   }
+// })
+
+export const useStatusBar = (props: StatusBarPropType) => {
   const { status, message } = props;
   const [ isOpen, setIsOpen ] = useState<boolean>(false);
+  
 
-
-   //useRef is good for preserving the identity of things -- without this handeOnRequestChange would be a new fn every render!
   const handleOnRequestClose = useRef((force = false) => setIsOpen(force)).current;
 
   const Status = useMemo(() => {

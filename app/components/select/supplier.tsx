@@ -5,11 +5,11 @@ import { Autocomplete, Item } from "~/components/combobox/autocomplete"
 import { useAsyncList } from "react-stately";
 
 type Props = { 
-  onSelect: (event:React.Key) => void;
+  onSelect: (event:React.Key) => void
   required?: boolean
 }
 
-const select = ({ onSelect, required, }:Props) => {
+const select = ({ onSelect, required}:Props) => {
 
   const onSelectionChange = (key:React.Key) => {
     onSelect(key)

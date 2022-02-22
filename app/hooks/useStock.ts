@@ -3,7 +3,7 @@ import { UpdateItemData } from '~/server/domain/service/stock'
 import { Decimal } from 'decimal.js'
 import { Units } from '~/server/domain/init/master'
 import { apiClient } from '~/utils/apiClient'
-import { parseCookies } from 'nookies'
+import { 入庫理由 } from '~/server/domain/entity/stock'
 
 export type EditUpdataItemData = Partial<UpdateItemData>
 
@@ -16,14 +16,14 @@ const defaultData = {
   length: undefined,
   thickness: undefined,
   width: undefined,
-  packageCount: new Decimal(0),
+  packageCount: undefined,
   warehouseId: undefined,
   arrivalExpectedDate: '',
-  cost: new Decimal(0),
+  cost: undefined,
   costUnitId: undefined,
-  count: new Decimal(0),
+  count: undefined,
   unitId: undefined,
-  costPackageCount: new Decimal(0),
+  costPackageCount: undefined,
   enable: true
 }
 
@@ -51,25 +51,34 @@ const useStock = () => {
   const [stockData, setStockData] = useState<EditUpdataItemData>(defaultData)
 
   const updateField = useCallback(
-    <K extends keyof UpdateItemData>(key: K, val: UpdateItemData[K]): void => {
+    <K extends keyof EditUpdataItemData>(
+      key: K,
+      val: EditUpdataItemData[K]
+    ): void => {
       setStockData({ ...stockData, ...{ [key]: val } })
     },
     [stockData]
   )
 
   const calcCostPackageCount = useCallback(() => {
-    if (stockData?.costUnitId && stockData.width && stockData.thickness) {
-      const { width, length, thickness } = stockData
+    if (
+      stockData?.costUnitId &&
+      stockData.width &&
+      stockData.thickness &&
+      stockData.packageCount
+    ) {
+      const { width, length, thickness, packageCount } = stockData
       if (length === '乱尺' || !length) return
 
       const unit = Units.find((u) => u.id === stockData.costUnitId)?.name
       const costPackageCount = (() => {
+        Decimal.set({ precision: 2, rounding: Decimal.ROUND_HALF_UP })
         const thousand = new Decimal(1000)
         const tubo = new Decimal(3.3)
         const dWidth = new Decimal(width)
         const dLength = new Decimal(length)
         const dThickness = new Decimal(thickness)
-
+        const dPackageCount = new Decimal(packageCount)
         switch (unit) {
           case '㎥': // 幅/1000*長さ/1000*厚み/1000
             return dWidth
@@ -77,7 +86,10 @@ const useStock = () => {
               .mul(dLength.dividedBy(thousand))
               .mul(dThickness.dividedBy(thousand))
           case '平米': // 幅/1000*長さ/1000
-            return dWidth.dividedBy(thousand).mul(dLength.dividedBy(thousand))
+            return dWidth
+              .dividedBy(thousand)
+              .mul(dLength.dividedBy(thousand))
+              .mul(dPackageCount)
           case '坪': // 幅/1000*長さ/1000/3.3
             return dWidth
               .dividedBy(thousand)
@@ -120,16 +132,24 @@ const useStock = () => {
       return null
     }
 
-    const { lotNo, itemTypeId, woodSpeciesId, gradeId, length } = data
-    if (!lotNo || !itemTypeId || !woodSpeciesId || !gradeId) {
-      console.error(
-        'checkValidStock lotNo or itemTypeId or woodSpeciesId or gradeId is null'
-      )
+    const { lotNo, itemTypeId, woodSpeciesId, length } = data
+    if (!lotNo) {
+      alert('ロットNoは必須です。')
       return null
     }
+    if (!itemTypeId) {
+      alert('材種は必須です。')
+      return null
+    }
+    if (!woodSpeciesId) {
+      alert('樹種は必須です。')
+      return null
+    }
+
     const validLength = checkValidLength(length)
 
     if (!validLength) {
+      alert('長さは必須です。')
       console.error('checkValidStock validLength is null')
       return null
     }
@@ -137,6 +157,19 @@ const useStock = () => {
     const { width, thickness, supplierId } = data
     if (!width || !thickness || !supplierId) {
       console.error('checkValidStock width or thickness or supplierId is null')
+      return null
+    }
+    if (!width) {
+      alert('幅は必須です。')
+      return null
+    }
+    if (!thickness) {
+      alert('厚みは必須です。')
+      return null
+    }
+    console.log(supplierId)
+    if (!supplierId) {
+      alert('仕入先は必須です。')
       return null
     }
 
@@ -150,33 +183,44 @@ const useStock = () => {
       costUnitId
     } = data
 
-    if (
-      !packageCount ||
-      !count ||
-      !unitId ||
-      !warehouseId ||
-      !costPackageCount ||
-      !cost ||
-      !costUnitId
-    ) {
-      console.error(
-        'checkValidStock packageCount or count or unitId or warehouseId or costPackageCount or cost or costUnitId is null'
-      )
+    if (!packageCount) {
+      alert('入数は必須です。')
       return null
     }
-
+    if (!count) {
+      alert('数量は必須です。')
+      return null
+    }
+    if (!unitId) {
+      alert('単位は必須です。')
+      return null
+    }
+    if (!warehouseId) {
+      alert('倉庫は必須です。')
+      return null
+    }
+    if (!costPackageCount) {
+      alert('原価単位数量は必須です。')
+      return null
+    }
+    if (!cost) {
+      alert('原価単位数量は必須です。')
+      return null
+    }
+    if (!costUnitId) {
+      alert('原価単位は必須です。')
+      return null
+    }
     const { manufacturer, enable } = data
     if (!enable) {
       console.error('checkValidStock enable is null')
       return null
     }
-
     return {
       ...data,
       lotNo,
       itemTypeId,
       woodSpeciesId,
-      gradeId,
       thickness,
       length: validLength,
       width,
@@ -193,7 +237,6 @@ const useStock = () => {
       enable
     }
   }
-
   const checkValidLength = (length: unknown): number | '乱尺' | null => {
     if (isFinite(Number(length))) {
       return Number(length)
@@ -210,22 +253,26 @@ const useStock = () => {
     setStockData(demoData)
   }
 
-  const postStock = useCallback(async () => {
-    console.debug(JSON.stringify(stockData))
-    const postStockData = checkValidStock(stockData)
-    if (!postStockData) {
-      console.error('postStockData is not valid')
+  const postStock = useCallback(
+    async (status: 入庫理由.仕入 | 入庫理由.発注) => {
+      const postStockData = checkValidStock(stockData)
+      if (!postStockData) {
+        console.error('postStockData is not valid')
+        return
+      }
+      await apiClient.stock.post({
+        body: {
+          data: postStockData,
+          status: status
+        }
+      })
+
+      alert('登録しました')
+      window.location.reload()
       return
-    }
-    const cookies = parseCookies()
-
-    await apiClient.stock.post({
-      body: postStockData,
-      headers: { authorization: cookies.token }
-    })
-    alert('登録しました')
-
-  }, [stockData])
+    },
+    [stockData]
+  )
 
   return {
     stockData,

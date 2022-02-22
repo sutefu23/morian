@@ -1,52 +1,16 @@
-import { HStack, Box, VStack, InputGroup, InputLeftAddon} from "@chakra-ui/react"
-import { WoodSpeciesSelect, ItemTypeSelect, SupplierSelect } from "~/components/select/"
-import StatusBar from "~/components/feedback/statusBar"
 import usePageTitle from '~/hooks/usePageTitle'
-import useUser from "~/hooks/useUser"
-
-export interface Item {
-  label: string;
-  value: string;
-}
+import "~/utils/string"
+import "~/utils/number"
+import RegisterForm from "~/components/form/register"
+import { 入庫理由 } from "~/server/domain/entity/stock"
 
 const Register = () => {
   const { setTitle } = usePageTitle()
-  setTitle("発注")
-  const { user } = useUser()
-  if(user && user.id !== 1){
-    return <StatusBar status="error" message="発注権限のあるユーザーではありません"/>
-  } 
-  
+  setTitle("新規発注")
+
   return (
     <>
-    <VStack>
-      <HStack>
-        <SupplierSelect onSelect={() => { return}}/>
-      </HStack>
-    </VStack>
-    <VStack>
-      <HStack>
-        <Box>
-          <InputGroup>
-            <InputLeftAddon>ロットNo</InputLeftAddon>
-            <WoodSpeciesSelect onSelect={() => { return}}/>
-          </InputGroup>
-        </Box>
-        <Box>
-          <InputGroup>
-            <InputLeftAddon>樹種</InputLeftAddon>
-            <WoodSpeciesSelect onSelect={() => { return}}/>
-          </InputGroup>
-        </Box>
-        <Box>
-          <InputGroup>
-            <InputLeftAddon>材種</InputLeftAddon>
-            <ItemTypeSelect onSelect={() => { return}}/>
-          </InputGroup>
-        </Box>
-
-      </HStack>
-    </VStack>
+    <RegisterForm status={入庫理由.発注}/>
     </>
   )
 }

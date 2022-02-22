@@ -1,7 +1,7 @@
-import { AuthHeader } from '$/types'
 import { ItemDTO } from '@domain/dto/item'
 import { Query } from '$/domain/repository/interface'
 import { UpdateItemData } from '$/domain/service/stock'
+import { 入庫理由 } from '$/domain/entity/stock'
 
 export type Methods = {
   get: {
@@ -10,8 +10,7 @@ export type Methods = {
     status: 200
   }
   post: {
-    reqHeaders: AuthHeader
-    reqBody: UpdateItemData
+    reqBody: { data: UpdateItemData; status: 入庫理由.仕入 | 入庫理由.発注 }
     resBody: ItemDTO
     status: 201
   }
