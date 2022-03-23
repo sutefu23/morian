@@ -158,6 +158,7 @@ export class ItemService {
     const itemDto = ItemToDTO(data)
     return itemDto
   }
+
   async findItemById(id: number) {
     const data = await this.itemRepository.findById(id)
     if (data instanceof Error) {
@@ -183,6 +184,7 @@ export class ItemService {
     })()
     return item.map((i) => ItemToDTO(i))
   }
+
 }
 
 export class HistoryService {
