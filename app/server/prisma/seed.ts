@@ -52,6 +52,15 @@ async function seed() {
     ]
   })
   
+  await prisma.deliveryPlace.createMany({
+    data: [
+      {id:1 , name: "モリアン",address:"", order: 1},
+      {id:2 , name: "本社工場",address:"", order: 2},
+      {id:3 , name: "京都日吉工場",address:"京都府南丹市日吉町佐々江道奥谷６５－１", order: 3},
+      {id:4 , name: "指定場所",address:"", order: 4}
+    ]
+  })
+  
   console.log("seeder: finish!")
   process.exit(0)
 }

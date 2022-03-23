@@ -130,6 +130,7 @@ model Warehouse {
 model DeliveryPlace {
   id    Int    @id @default(autoincrement())
   name  String @unique
+  address String
   order Int    @unique
   issue  Issue[] @relation("issueDeliveryPlace")
 }

@@ -172,7 +172,7 @@ export class WarehouseRepository implements IWarehouseRepository {
 
 export class DeliveryPlaceRepository implements IDeliveryPlaceRepository {
   async update(id: number, entity: Partial<DeliveryPlaceType>): Promise<DeliveryPlaceType | Error> {
-    const result = await prisma.warehouse.update(
+    const result = await prisma.deliveryPlace.update(
       {where: {id}, data: entity}
     )
     if(!result?.id || !result?.name || !result?.order){
@@ -181,12 +181,13 @@ export class DeliveryPlaceRepository implements IDeliveryPlaceRepository {
     const data = {
       id: result.id,
       name: result.name,
+      address: result.address,
       order: result.order
     }
     return data
   }
   async create(entity: DeliveryPlaceType): Promise<DeliveryPlaceType|FieldNotFoundError> {
-    const result = await prisma.warehouse.create(
+    const result = await prisma.deliveryPlace.create(
       {data: entity}
     )
     if(!result?.id || !result?.name || !result?.order){
@@ -195,13 +196,14 @@ export class DeliveryPlaceRepository implements IDeliveryPlaceRepository {
     const data = {
       id: result.id,
       name: result.name,
+      address: result.address,
       order: result.order
     }
     return data
   }
 
   async findById(id: number): Promise<DeliveryPlaceType|FieldNotFoundError> {
-    const result = await prisma.warehouse.findUnique({
+    const result = await prisma.deliveryPlace.findUnique({
       where: {
         id
       }
@@ -212,13 +214,14 @@ export class DeliveryPlaceRepository implements IDeliveryPlaceRepository {
     const data = {
       id: result.id,
       name: result.name,
+      address: result.address,
       order: result.order
     }
     return data
   }
 
   async findAll():Promise<DeliveryPlaceType[]|FieldNotFoundError>{
-    const result = await prisma.warehouse.findMany()
+    const result = await prisma.deliveryPlace.findMany()
     if(!result){
       return new FieldNotFoundError("データが見つかりません")
     }
