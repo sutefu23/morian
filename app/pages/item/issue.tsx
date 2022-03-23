@@ -1,5 +1,5 @@
 import { HStack, Box, VStack, InputGroup, InputLeftAddon, Divider, InputRightAddon, Input,  Select, Button } from "@chakra-ui/react"
-import { WoodSpeciesSelect, ItemTypeSelect, SupplierSelect, GradeSelect, UnitSelect } from "~/components/select/"
+import { WoodSpeciesSelect, ItemTypeSelect, SupplierSelect, GradeSelect, UnitSelect, DeliveryPlaceSelect } from "~/components/select/"
 import Footer from "~/components/Footer"
 import { InputLabel } from "@material-ui/core"
 import useStock from "~/hooks/useStock"
@@ -72,14 +72,12 @@ const Register = () => {
         <Box>
           <InputGroup>
             <InputLeftAddon bgColor="blue.100">納入場所</InputLeftAddon>
-            <Select placeholder='選択してください。' onChange={(e) => {
-              setAddressDisabled(e.currentTarget.value === "住所指定")
-            }}>
-              <option value='モリアン引取'>モリアン引取</option>
-              <option value='本社工場'>本社工場</option>
-              <option value='日吉工場'>日吉工場</option>
-              <option value='住所指定'>住所指定</option>
-            </Select>
+            <DeliveryPlaceSelect required onSelect={(e) => { 
+              updateField<"woodSpeciesId">("woodSpeciesId", Number(e.target.value))
+              // update 納入住所
+            }}
+              value={stockData?.woodSpeciesId}
+            />
           </InputGroup>
         </Box>
         <Box w="40vw">
