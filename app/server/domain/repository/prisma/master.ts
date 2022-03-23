@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client"
-import { GradeType, UnitType, WarehouseType, ReasonType, ItemTypeType, WoodSpeciesType,入庫理由, 出庫理由 } from "@domain/entity/stock"
-import { IGradeRepository, IReasonRepository, ISpeciesRepository, IUnitRepository, IWarehouseRepository, IItemTypeRepository } from "../interface"
+import { GradeType, UnitType, WarehouseType, DeliveryPlaceType, ReasonType, ItemTypeType, WoodSpeciesType,入庫理由, 出庫理由 } from "@domain/entity/stock"
+import { IGradeRepository, IReasonRepository, ISpeciesRepository, IUnitRepository, IWarehouseRepository, IDeliveryPlaceRepository, IItemTypeRepository } from "../interface"
 import { FieldNotFoundError } from "$/domain/type/error"
 
 const prisma = new PrismaClient()
@@ -169,6 +169,63 @@ export class WarehouseRepository implements IWarehouseRepository {
     return result
   }
 }
+
+export class DeliveryPlaceRepository implements IDeliveryPlaceRepository {
+  async update(id: number, entity: Partial<DeliveryPlaceType>): Promise<DeliveryPlaceType | Error> {
+    const result = await prisma.warehouse.update(
+      {where: {id}, data: entity}
+    )
+    if(!result?.id || !result?.name || !result?.order){
+      return new FieldNotFoundError("データが見つかりません")
+    }
+    const data = {
+      id: result.id,
+      name: result.name,
+      order: result.order
+    }
+    return data
+  }
+  async create(entity: DeliveryPlaceType): Promise<DeliveryPlaceType|FieldNotFoundError> {
+    const result = await prisma.warehouse.create(
+      {data: entity}
+    )
+    if(!result?.id || !result?.name || !result?.order){
+      return new FieldNotFoundError("データが見つかりません")
+    }
+    const data = {
+      id: result.id,
+      name: result.name,
+      order: result.order
+    }
+    return data
+  }
+
+  async findById(id: number): Promise<DeliveryPlaceType|FieldNotFoundError> {
+    const result = await prisma.warehouse.findUnique({
+      where: {
+        id
+      }
+    })
+    if(!result?.id || !result?.name || !result?.order){
+      return new FieldNotFoundError("データが見つかりません")
+    }
+    const data = {
+      id: result.id,
+      name: result.name,
+      order: result.order
+    }
+    return data
+  }
+
+  async findAll():Promise<DeliveryPlaceType[]|FieldNotFoundError>{
+    const result = await prisma.warehouse.findMany()
+    if(!result){
+      return new FieldNotFoundError("データが見つかりません")
+    }
+    return result
+  }
+}
+
 
 export class ReasonRepository implements IReasonRepository {
   async update(id: number, entity: Partial<ReasonType>): Promise<FieldNotFoundError | ReasonType> {

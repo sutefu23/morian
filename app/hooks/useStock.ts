@@ -253,6 +253,22 @@ const useStock = () => {
     setStockData(demoData)
   }
 
+  const fetchOrderSheet = useCallback(async () => {
+    const postStockData = checkValidStock(stockData)
+    if (!postStockData) {
+      console.error('postStockData is not valid')
+      return
+    }
+    await apiClient.stock.post({
+      body: {
+        data: postStockData,
+        status: status
+      }
+    })
+
+    alert('登録しました')
+  }, [stockData])
+
   const postStock = useCallback(
     async (status: 入庫理由.仕入 | 入庫理由.発注) => {
       const postStockData = checkValidStock(stockData)
@@ -280,6 +296,7 @@ const useStock = () => {
     calcCostPackageCount,
     costPerUnit,
     totalPrice,
+    fetchOrderSheet,
     postStock,
     useDemo
   }

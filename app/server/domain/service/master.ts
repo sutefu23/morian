@@ -1,6 +1,6 @@
 
-import { GradeType, UnitType, WarehouseType, WoodSpeciesType, ReasonType, ItemTypeType } from "@domain/entity/stock"
-import { IGradeRepository, IUnitRepository,ISpeciesRepository, IWarehouseRepository, IReasonRepository, IItemTypeRepository } from "@domain/repository/interface"
+import { GradeType, UnitType, WarehouseType, WoodSpeciesType, ReasonType, ItemTypeType, DeliveryPlaceType } from "@domain/entity/stock"
+import { IGradeRepository, IUnitRepository,ISpeciesRepository, IWarehouseRepository, IReasonRepository, IItemTypeRepository, IDeliveryPlaceRepository } from "@domain/repository/interface"
 import { FieldNotFoundError } from "$/domain/type/error"
 
 export class GradeService {
@@ -54,6 +54,32 @@ export class UnitService {
     return data
   }}
 
+export class DeliveryPlaceService {
+  private warehouseRepository :IDeliveryPlaceRepository
+  constructor(warehouseRepository: IDeliveryPlaceRepository){
+    this.warehouseRepository = warehouseRepository
+  }
+  async createDeliveryPlace(entity: DeliveryPlaceType): Promise<DeliveryPlaceType|FieldNotFoundError> {
+    const data = await this.warehouseRepository.create(entity)
+    return data
+  }
+
+  async updateDeliveryPlace(id: number, entity: Partial<DeliveryPlaceType>): Promise<DeliveryPlaceType|FieldNotFoundError> {
+    const data = await this.warehouseRepository.update(id, entity)
+    return data
+  }
+
+  async findDeliveryPlaceById(id: number): Promise<DeliveryPlaceType|FieldNotFoundError> {
+    const data = await this.warehouseRepository.findById(id)
+    return data
+  }
+
+  async getDeliveryPlaceList():Promise<DeliveryPlaceType[]|FieldNotFoundError>{
+    const data = await this.warehouseRepository.findAll()
+    return data
+  }
+}
+
 export class WarehouseService {
   private warehouseRepository :IWarehouseRepository
   constructor(warehouseRepository: IWarehouseRepository){
@@ -79,6 +105,7 @@ export class WarehouseService {
     return data
   }
 }
+
 
 export class ReasonService {
   private reasonRepository :IReasonRepository

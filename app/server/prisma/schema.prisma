@@ -13,6 +13,19 @@ model Task {
   done  Boolean @default(false)
 }
 
+model Issue {//発注情報
+  id    Int     @id @default(autoincrement())
+  managedId  String //管理ID
+  date   DateTime
+  user   User @relation(name: "issueUser", fields: [userId], references: [id])
+  userId Int
+  deliveryPlace DeliveryPlace @relation(name: "issueDeliveryPlace", fields: [deliveryPlaceId], references: [id])
+  deliveryPlaceId Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+
 // ユーザー
 model User {
   id          Int       @id
@@ -20,6 +33,7 @@ model User {
   UserPass    UserPass?
   editHistory History[] @relation("editUser")
   bookHistory History[] @relation("bookUser")
+  issue       Issue[]   @relation("issueUser")
   enable      Boolean   @default(true)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -112,6 +126,14 @@ model Warehouse {
   order Int    @unique
   item  Item[]
 }
+
+model DeliveryPlace {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  order Int    @unique
+  issue  Issue[] @relation("issueDeliveryPlace")
+}
+
 
 model Grade {
   id    Int    @id @default(autoincrement())

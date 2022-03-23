@@ -54,7 +54,7 @@ export function Autocomplete<T extends Record<string, unknown>>(props: Autocompl
         <InputLeftElement>
           <Search2Icon color="gray.500" />
         </InputLeftElement>
-        <Input {...inputProps} ref={inputRef} size="md"
+        <Input {...inputProps} w="27vw" ref={inputRef} size="md"
         onKeyPress={(e) => keyEnter(e)}
         />
         <InputRightElement>

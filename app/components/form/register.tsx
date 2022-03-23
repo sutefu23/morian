@@ -1,5 +1,5 @@
 import { HStack, Box, VStack, InputGroup, InputLeftAddon, Input, Spacer, Button, } from "@chakra-ui/react"
-import { WoodSpeciesSelect, ItemTypeSelect, SupplierSelect, GradeSelect, UnitSelect, WarehouseSelect, ReasonSelect } from "~/components/select/"
+import { WoodSpeciesSelect, ItemTypeSelect, SupplierSelect, GradeSelect, UnitSelect, WarehouseSelect } from "~/components/select/"
 import Footer from "~/components/Footer"
 import { InputLabel } from "@material-ui/core"
 import useStock from "~/hooks/useStock"
@@ -10,7 +10,7 @@ import { 入庫理由 } from "~/server/domain/entity/stock"
 
 const RegisterForm = ({status}: { status: 入庫理由.発注 | 入庫理由.仕入}) => {
 
-  const { stockData, updateField, calcCostPackageCount, costPerUnit, totalPrice, postStock, useDemo } = useStock()
+  const { stockData, updateField, calcCostPackageCount, costPerUnit, totalPrice, postStock, fetchOrderSheet, useDemo } = useStock()
 
   return (
     <>
@@ -212,6 +212,13 @@ const RegisterForm = ({status}: { status: 入庫理由.発注 | 入庫理由.仕
           }
           >登録</Button>
         </Box>
+        { status === 入庫理由.発注 && 
+            <Box>
+            <Button ml={50} w={100} bgColor="blue.200"
+              onClick={fetchOrderSheet}
+            >発注書</Button>
+          </Box>        
+        }
         <Box>
           <Button ml={50} w={100} bgColor="red.200"
             onClick={useDemo}

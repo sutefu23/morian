@@ -7,6 +7,7 @@ import {
   WoodSpeciesType,
   UnitType,
   WarehouseType,
+  DeliveryPlaceType,
   ReasonType,
   ITEM_FIELD,
   ItemTypeType
@@ -113,6 +114,13 @@ export type IWarehouseRepository = Omit<
   'findAll'
 > &
   Required<Pick<IMasterRepository<WarehouseType>, 'findAll'>>
+
+ export type IDeliveryPlaceRepository = Omit<
+  IMasterRepository<DeliveryPlaceType>,
+  'findAll'
+> &
+  Required<Pick<IMasterRepository<DeliveryPlaceType>, 'findAll'>>
+
 export type IReasonRepository = Omit<IMasterRepository<ReasonType>, 'findAll'> &
   Required<Pick<IMasterRepository<ReasonType>, 'findAll'>>
 export type ISpeciesRepository = Omit<

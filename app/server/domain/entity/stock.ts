@@ -28,6 +28,7 @@ export type UnitType = Master
 export type WoodSpeciesType = Master
 export type WarehouseType = Master
 export type GradeType = Master
+export type DeliveryPlaceType = Master
 
 export type specType = string
 
