@@ -42,23 +42,3 @@ export interface IssueItemProps {
   readonly costUnitName : string // 原価単位
   readonly costUnitId :number 
 }
-
-export class Issue extends Entity<IssueProps> implements IssueProps {
-  readonly managedId: string
-  readonly date: Date
-  readonly userId: number
-  readonly userName: string
-  readonly supplierId: number
-  readonly supplierName: string
-  readonly supplierManagerName: string
-  readonly expectDeliveryDate: string
-  readonly deliveryPlaceId: number
-  readonly deliveryPlaceName: string
-  readonly deliveryAddress: string
-  readonly ReceiveingStaff: string
-  readonly IssueItems: IssueItemProps[]
-  private constructor(props: IssueProps) {
-    super(props)
-  }
-
-}

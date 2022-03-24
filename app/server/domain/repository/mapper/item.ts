@@ -81,7 +81,6 @@ export const dbModelToEntity = async (
   const manufacturer = model.manufacturer ?? undefined
   const note = model.note ?? undefined
   const defectiveNote = model.defectiveNote ?? undefined
-  const arrivalExpectedDate = model.arrivalExpectedDate ?? undefined
 
   const newItem = {
     ...model,
@@ -106,7 +105,6 @@ export const dbModelToEntity = async (
     manufacturer,
     note,
     defectiveNote,
-    arrivalExpectedDate
   }
   return newItem
 }

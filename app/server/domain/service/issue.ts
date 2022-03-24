@@ -1,9 +1,23 @@
 import { PrismaClient } from "@prisma/client"
-import { Issue } from "../entity/issue";
-const prismaClient = new PrismaClient();
+import { IssueProps } from "../entity/issue";
+const prisma = new PrismaClient();
 
-const createIssue = (issueData: Issue) => {
-  prismaClient.issue.create({
+export const createIssue = async (issueData: IssueProps) => {
+  return await prisma.issue.create({
     data: issueData
   })
 }
+
+export const fetchIssues = async () => {
+  return await prisma.issue.findMany({
+    include:{
+      issueItem: true
+    }
+  })
+}
+
+// export const exchangeStock = async (issueData: Issue ) => {
+//   await prisma.item.create({
+//     data : issueData
+//   })
+// }
