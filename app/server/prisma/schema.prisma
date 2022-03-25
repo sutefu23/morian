@@ -26,7 +26,9 @@ model Issue {//発注情報
   deliveryPlace DeliveryPlace @relation(name: "issueDeliveryPlace", fields: [deliveryPlaceId], references: [id])
   deliveryPlaceId Int
   deliveryAddress String
-  ReceiveingStaff String
+  receiveingStaff String
+  issueNote String //発注備考
+  innerNote String // 内部備考
   issueItem   IssueItem[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -48,11 +50,9 @@ model IssueItem {
   thickness     Int? // 寸法（厚）
   packageCount       Decimal // 入数
   costPackageCount       Decimal // 原価単位数量
-  count         Decimal // 在庫数量
-  tempCount     Decimal // 仮想在庫数量
+  count         Decimal // 数量
   unit          Unit      @relation(name: "issueItemUnit",fields: [unitId], references: [id]) // 単位
   unitId        Int
-  arrivalExpectedDate   String? // 入荷予定日
   cost          Decimal // 原価
   costUnit      Unit      @relation(name: "issueItemCostUnit",fields: [costUnitId], references: [id]) // 原価単位
   costUnitId    Int       

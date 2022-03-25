@@ -262,7 +262,7 @@ const useStock = () => {
     await apiClient.stock.post({
       body: {
         data: postStockData,
-        status: status
+        status: 入庫理由.仕入
       }
     })
 

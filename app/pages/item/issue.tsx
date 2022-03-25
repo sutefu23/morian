@@ -2,20 +2,29 @@ import { HStack, Box, VStack, InputGroup, InputLeftAddon, Divider, InputRightAdd
 import { WoodSpeciesSelect, ItemTypeSelect, SupplierSelect, GradeSelect, UnitSelect, DeliveryPlaceSelect } from "~/components/select/"
 import Footer from "~/components/Footer"
 import { InputLabel } from "@material-ui/core"
-import useStock from "~/hooks/useStock"
+import useIssue from "~/hooks/useIssue"
 import { Decimal } from "decimal.js"
 import usePageTitle from '~/hooks/usePageTitle'
 import "~/utils/string"
 import "~/utils/number"
-import { 入庫理由 } from "~/server/domain/entity/stock"
 import { useState } from "react"
+import { IssueProps } from "$/domain/entity/issue"
 
 const Register = () => {
   const { setTitle } = usePageTitle()
   setTitle("在庫発注")
   
-  const { stockData, updateField, calcCostPackageCount, costPerUnit, totalPrice, postStock, fetchOrderSheet } = useStock()
-  const [ addressDisabled, setAddressDisabled ] = useState<boolean>(false)
+  const { 
+    issueData,
+    updateField,
+    addItemData,
+    deleteItemData,
+    updateItemField,
+    calcCostPackageCount,
+    costPerUnit,
+    totalPrice,
+    postIssue,
+    fetchOrderSheet } = useIssue()
   return (
     <>
     <form
@@ -27,8 +36,8 @@ const Register = () => {
             <InputLeftAddon bgColor="blue.100" aria-required>管理番号</InputLeftAddon>
             <Input required
               placeholder="半角英数字のみ可"
-              onChange={(e) => { updateField<"lotNo">("lotNo", e.target.value.toNarrowCase())}}
-              value={stockData?.lotNo}
+              onChange={(e) => { updateField<"managedId">("managedId", e.target.value.toNarrowCase())}}
+              value={issueData?.managedId}
             />
           </InputGroup>
         </Box>
@@ -38,8 +47,8 @@ const Register = () => {
             <Input required
               type="date"
               placeholder="半角英数字のみ可"
-              onChange={(e) => { updateField<"lotNo">("lotNo", e.target.value.toNarrowCase())}}
-              value={stockData?.lotNo}
+              onChange={(e) => { updateField<"date">("date", new Date(e.target.value))}}
+              value={String(issueData?.date)}
             />
           </InputGroup>
         </Box>
@@ -53,8 +62,8 @@ const Register = () => {
         </Box>
         <Box>
           <InputGroup>
-            <InputLeftAddon bgColor="blue.100" aria-required>先方担当者</InputLeftAddon>
-            <Input placeholder="自由入力" onChange={(e) => { updateField<"spec">("spec", e.target.value)}}/>
+            <InputLeftAddon bgColor="blue.100">先方担当者</InputLeftAddon>
+            <Input placeholder="自由入力" onChange={(e) => { updateField<"supplierManagerName">("supplierManagerName", e.target.value)}}/>
             <InputRightAddon>様</InputRightAddon>
           </InputGroup>
         </Box>
@@ -62,8 +71,8 @@ const Register = () => {
           <InputGroup>
             <InputLeftAddon bgColor="blue.100">希望納期</InputLeftAddon>
             <Input 
-              onChange={(e) => { updateField<"lotNo">("lotNo", e.target.value.toNarrowCase())}}
-              value={stockData?.lotNo}
+              onChange={(e) => { updateField<"expectDeliveryDate">("expectDeliveryDate", e.target.value.toNarrowCase())}}
+              value={issueData?.expectDeliveryDate}
             />
           </InputGroup>
         </Box>
@@ -71,27 +80,27 @@ const Register = () => {
       <HStack>
         <Box>
           <InputGroup>
-            <InputLeftAddon bgColor="blue.100">納入場所</InputLeftAddon>
+            <InputLeftAddon bgColor="blue.100" aria-required>納入場所</InputLeftAddon>
             <DeliveryPlaceSelect required onSelect={(e) => { 
-              updateField<"woodSpeciesId">("woodSpeciesId", Number(e.target.value))
+              updateField<"deliveryPlaceId">("deliveryPlaceId", Number(e.target.value))
               // update 納入住所
             }}
-              value={stockData?.woodSpeciesId}
+              value={issueData?.deliveryPlaceId}
             />
           </InputGroup>
         </Box>
         <Box w="40vw">
           <InputGroup>
             <InputLeftAddon bgColor="blue.100">納入住所</InputLeftAddon>
-            <Input disabled={addressDisabled} onChange={(e) => { updateField<"note">("note", e.target.value)}}/>
+            <Input onChange={(e) => { updateField<"deliveryAddress">("deliveryAddress", e.target.value)}}/>
           </InputGroup>
         </Box>
         <Box>
           <InputGroup>
             <InputLeftAddon bgColor="blue.100">受取担当</InputLeftAddon>
             <Input 
-              onChange={(e) => { updateField<"lotNo">("lotNo", e.target.value.toNarrowCase())}}
-              value={stockData?.lotNo}
+              onChange={(e) => { updateField<"receiveingStaff">("receiveingStaff", e.target.value.toNarrowCase())}}
+              value={issueData?.receiveingStaff}
             />
           </InputGroup>
         </Box>
@@ -99,126 +108,162 @@ const Register = () => {
       <HStack>
         <Box width="75vw" >
           <InputGroup>
-            <InputLeftAddon bgColor="blue.100">備考</InputLeftAddon>
-            <Input onChange={(e) => { updateField<"note">("note", e.target.value)}}/>
+            <InputLeftAddon bgColor="blue.100">発注書備考</InputLeftAddon>
+            <Input onChange={(e) => { updateField<"issueNote">("issueNote", e.target.value)}}/>
+          </InputGroup>
+        </Box>
+      </HStack>
+      <HStack>
+        <Box width="75vw" >
+          <InputGroup>
+            <InputLeftAddon bgColor="blue.300">内部備考</InputLeftAddon>
+            <Input onChange={(e) => { updateField<"innerNote">("innerNote", e.target.value)}}/>
           </InputGroup>
         </Box>
       </HStack>
     </VStack>
     <Divider mb="4"/>
-    <VStack align="left" pl="10">
-      <HStack>
-        <Box>
-          <InputGroup>
-            <InputLeftAddon aria-required>樹種</InputLeftAddon>
-            <WoodSpeciesSelect required onSelect={(e) => { updateField<"woodSpeciesId">("woodSpeciesId", Number(e.target.value))}}
-              value={stockData?.woodSpeciesId}
-            />
-          </InputGroup>
-        </Box>
-        <Box>
-          <InputGroup>
-            <InputLeftAddon aria-required>材種</InputLeftAddon>
-            <ItemTypeSelect required 
-            value={stockData?.itemTypeId}
-            onSelect={(e) => { updateField<"itemTypeId">("itemTypeId", Number(e.target.value))}}/>
-          </InputGroup>
-        </Box>
-      </HStack>
-      <HStack>
-        <Box>
-          <InputGroup>
-            <InputLeftAddon aria-required>グレード</InputLeftAddon>
-            <GradeSelect value={stockData.gradeId} onSelect={(e) => { updateField<"gradeId">("gradeId", Number(e.target.value))}}/>
-          </InputGroup>
-        </Box>
-        <Box>
-          <InputGroup>
-            <InputLeftAddon>仕様</InputLeftAddon>
-            <Input placeholder="自由入力" onChange={(e) => { updateField<"spec">("spec", e.target.value)}}/>
-          </InputGroup>
-        </Box>
-      </HStack>
-      <HStack>
-        <Box>
-          <InputGroup>
-            <InputLeftAddon aria-required>長さｘ厚みｘ幅</InputLeftAddon>
-            <Input placeholder="長さ" value={stockData.length} onChange={(e) => { updateField<"length">("length", e.target.value as number | "乱尺")}}/>
-            <InputLabel style={{fontSize:"1.2em", marginTop:"10px"}}>ｘ</InputLabel>
-            <Input placeholder="厚み" type="number" value={stockData.thickness} onChange={(e) => { updateField<"thickness">("thickness", Number(e.target.value))}}/>
-            <InputLabel style={{fontSize:"1.2em", marginTop:"10px"}}>ｘ</InputLabel>
-            <Input placeholder="幅" type="number" value={stockData.width} onChange={(e) => { updateField<"width">("width", Number(e.target.value))}}/>
-          </InputGroup>
-        </Box>
-        <Box>
-          <InputGroup>
-            <InputLeftAddon aria-required>入数</InputLeftAddon>
-            <Input required type="number" 
-            value={stockData.packageCount?.toString()}
-            placeholder="数字" onChange={(e) => {
-              updateField<"packageCount">("packageCount", e.target.value ? new Decimal(e.target.value): undefined)}}/>
-          </InputGroup>
-        </Box>
-      </HStack>
-      <HStack>
-        <Box>
-          <InputGroup>
-            <InputLeftAddon aria-required>原価</InputLeftAddon>
-            <Input required type="number" 
-            value={stockData.cost?.toString()}
-            placeholder="数字" onChange={(e) => { updateField<"cost">("cost", e.target.value ? new Decimal(e.target.value): undefined)}}/>
-            <InputLabel style={{fontSize:"1.5em", marginTop:"10px"}}>/</InputLabel>
-            <UnitSelect required 
-            value={stockData.costUnitId}
-            onSelect={(e) => { updateField<"costUnitId">("costUnitId", Number(e.target.value)) }}/>
-          </InputGroup>
-        </Box>
-        <Box>
-          <InputGroup>
-            <InputLeftAddon aria-required>数量</InputLeftAddon>
-            <Input required 
-            value={stockData.count?.toString()}
-            type="number" placeholder="数字" onChange={(e) => { updateField<"count">("count", e.target.value ? new Decimal(e.target.value): undefined)}}/>
-            <UnitSelect required 
-            value={stockData.unitId}
-            onSelect={(e) => { updateField<"unitId">("unitId", Number(e.target.value)) }}/>
-          </InputGroup>
-        </Box>
-        <Box>
-          <InputGroup>
-            <InputLeftAddon aria-required>原価単位数量</InputLeftAddon>
-            <Input required placeholder="原価算出基準となる数量" step="0.001" value={stockData.costPackageCount?.toString()} onChange={(e) => { updateField<"costPackageCount">("costPackageCount", e.target.value ? new Decimal(e.target.value): undefined)}}/>
-            <Button onClick={() => {
-              const computedValue = calcCostPackageCount()
-              if(computedValue){
-                updateField<"costPackageCount">("costPackageCount",computedValue)
-              }
-            }
-            }>計算</Button>
-          </InputGroup>
-        </Box>
-      </HStack>
-    </VStack>
+      {
+        issueData.issueItems &&
+        issueData.issueItems.map((item, index) => (
+          <VStack align="left" pl="10" mb="10" key={index}>
+            <HStack>
+              <Box>
+                <InputGroup>
+                  <InputLeftAddon aria-required>樹種</InputLeftAddon>
+                  <WoodSpeciesSelect required onSelect={(e) => { updateItemField<"woodSpeciesId">(index, "woodSpeciesId", Number(e.target.value))}}
+                    value={item?.woodSpeciesId}
+                  />
+                </InputGroup>
+              </Box>
+              <Box>
+                <InputGroup>
+                  <InputLeftAddon aria-required>材種</InputLeftAddon>
+                  <ItemTypeSelect required 
+                  value={item?.itemTypeId}
+                  onSelect={(e) => { updateItemField<"itemTypeId">(index, "itemTypeId", Number(e.target.value))}}/>
+                </InputGroup>
+              </Box>
+              <Box>
+                <Button 
+                bgColor="red.100"
+                ml="10"
+                onClick={() => {
+                  if(confirm("こちらの明細を削除しますか？")){
+                    deleteItemData(index)
+                  }
+                }
+                }
+                >行削除</Button>
+              </Box>
+            </HStack>
+            <HStack>
+              <Box>
+                <InputGroup>
+                  <InputLeftAddon aria-required>グレード</InputLeftAddon>
+                  <GradeSelect value={item?.gradeId} onSelect={(e) => { updateItemField<"gradeId">(index, "gradeId", Number(e.target.value))}}/>
+                </InputGroup>
+              </Box>
+              <Box>
+                <InputGroup>
+                  <InputLeftAddon>仕様</InputLeftAddon>
+                  <Input placeholder="自由入力" onChange={(e) => { updateItemField<"spec">(index, "spec", e.target.value)}}/>
+                </InputGroup>
+              </Box>
+            </HStack>
+            <HStack>
+              <Box>
+                <InputGroup>
+                  <InputLeftAddon aria-required>長さｘ厚みｘ幅</InputLeftAddon>
+                  <Input placeholder="長さ" value={item?.length} onChange={(e) => { updateItemField<"length">(index, "length", e.target.value)}}/>
+                  <InputLabel style={{fontSize:"1.2em", marginTop:"10px"}}>ｘ</InputLabel>
+                  <Input placeholder="厚み" type="number" value={item?.thickness} onChange={(e) => { updateItemField<"thickness">(index, "thickness", Number(e.target.value))}}/>
+                  <InputLabel style={{fontSize:"1.2em", marginTop:"10px"}}>ｘ</InputLabel>
+                  <Input placeholder="幅" type="number" value={item?.width} onChange={(e) => { updateItemField<"width">(index, "width", Number(e.target.value))}}/>
+                </InputGroup>
+              </Box>
+              <Box>
+                <InputGroup>
+                  <InputLeftAddon aria-required>入数</InputLeftAddon>
+                  <Input required type="number" 
+                  value={String(item?.packageCount)}
+                  placeholder="数字" onChange={(e) => {
+                    updateItemField<"packageCount">(index, "packageCount", e.target.value ? new Decimal(e.target.value): undefined)}}/>
+                </InputGroup>
+              </Box>
+            </HStack>
+            <HStack>
+              <Box>
+                <InputGroup>
+                  <InputLeftAddon aria-required>原価</InputLeftAddon>
+                  <Input required type="number" 
+                  value={String(item?.cost)}
+                  placeholder="数字" onChange={(e) => { updateItemField<"cost">(index, "cost", e.target.value ? new Decimal(e.target.value): undefined)}}/>
+                  <InputLabel style={{fontSize:"1.5em", marginTop:"10px"}}>/</InputLabel>
+                  <UnitSelect required 
+                  value={item?.costUnitId}
+                  onSelect={(e) => { updateItemField<"costUnitId">(index, "costUnitId", Number(e.target.value)) }}/>
+                </InputGroup>
+              </Box>
+              <Box>
+                <InputGroup>
+                  <InputLeftAddon aria-required>数量</InputLeftAddon>
+                  <Input required 
+                  value={String(item?.count)}
+                  type="number" placeholder="数字" onChange={(e) => { updateItemField<"count">(index, "count", e.target.value ? new Decimal(e.target.value): undefined)}}/>
+                  <UnitSelect required 
+                  value={item?.unitId}
+                  onSelect={(e) => { updateItemField<"unitId">(index, "unitId", Number(e.target.value)) }}/>
+                </InputGroup>
+              </Box>
+              <Box>
+                <InputGroup>
+                  <InputLeftAddon aria-required>原価単位数量</InputLeftAddon>
+                  <Input required placeholder="原価算出基準となる数量" step="0.001" value={String(item?.costPackageCount ? item.costPackageCount : '')} onChange={(e) => { updateItemField<"costPackageCount">(index, "costPackageCount", e.target.value ? new Decimal(e.target.value): undefined)}}/>
+                  <Button onClick={() => {
+                    const computedValue = calcCostPackageCount(item)
+                    if(computedValue){
+                      updateItemField<"costPackageCount">(index, "costPackageCount",computedValue)
+                    }
+                  }
+                  }>計算</Button>
+                </InputGroup>
+              </Box>
+            </HStack>
+          </VStack>
+        ))
+      }
+      <Box textAlign="left">
+      <Button ml="50" w={80} bgColor="green.100"
+        onClick={() => addItemData()}
+        >行追加</Button>
+      </Box>      
 
     <Footer>
     <HStack>
         <Box>
           <InputGroup>
             <InputLeftAddon>最小単位当たりの原価</InputLeftAddon>
-            <Input align="right" readOnly value={costPerUnit().toYenFormatKanji() }/>
+            <Input align="right" readOnly value={
+              0
+              // costPerUnit().toYenFormatKanji()
+               }/>
           </InputGroup>
         </Box>
         <Box>
           <InputGroup>
             <InputLeftAddon aria-required>在庫金額</InputLeftAddon>
-            <Input align="right" readOnly value={totalPrice().toYenFormatKanji()}/>
+            <Input align="right" readOnly value={
+              0
+              // totalPrice().toYenFormatKanji()
+              }/>
           </InputGroup>
         </Box>
         <Box>
-          <Button type='submit' ml={50} w={100} bgColor="green.200"
+          <Button type='submit' ml={50} w={100} bgColor="green.400"
           onClick={async (e) => {
             e.preventDefault()
-            await postStock(入庫理由.仕入)
+            await postIssue()
             }
           }
           >登録</Button>

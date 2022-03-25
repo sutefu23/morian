@@ -1,5 +1,4 @@
 import { User } from './user'
-import { Entity } from '../type/entity'
 import { Supplier } from '@prisma/client'
 import { Decimal } from 'decimal.js'
 
@@ -16,8 +15,10 @@ export interface IssueProps {
   readonly deliveryPlaceId : number
   readonly deliveryPlaceName: string
   readonly deliveryAddress : string
-  readonly ReceiveingStaff : string
-  readonly IssueItems: IssueItemProps[]
+  readonly receiveingStaff : string
+  readonly issueNote: string
+  readonly innerNote: string
+  readonly issueItems: IssueItemProps[]
 }
 
 export interface IssueItemProps {
@@ -33,8 +34,7 @@ export interface IssueItemProps {
   readonly thickness? :number // 寸法（厚）
   readonly packageCount:Decimal // 入数
   readonly costPackageCount:Decimal // 原価単位数量
-  readonly count:Decimal // 在庫数量
-  readonly tempCount:Decimal // 仮想在庫数量
+  readonly count:Decimal // 数量
   readonly unitName:string // 単位
   readonly unitId:number
   readonly arrivalExpectedDate? :string // 入荷予定日

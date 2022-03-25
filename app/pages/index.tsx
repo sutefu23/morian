@@ -8,14 +8,17 @@ import {
   Tr,
   Th,
   Td,
+  HStack,
 } from "@chakra-ui/react"
+import Footer from "~/components/Footer"
 import { useRouter } from 'next/router'
+import usePageTitle from '~/hooks/usePageTitle'
 
 
 const Home = () => {
   const router = useRouter()
-  const lotNo = ''
-
+  const { setTitle } = usePageTitle()
+  setTitle("入荷状況")
   return (
     <>
     <div className={styles.container}>
@@ -31,7 +34,7 @@ const Home = () => {
             <Th>仕入先</Th>
             <Th>希望納期</Th>
             <Th>納入場所</Th>
-            <Th>備考</Th>
+            <Th>内部備考</Th>
             <Th>樹種</Th>
             <Th>材種</Th>
             <Th>グレード</Th>
@@ -43,20 +46,72 @@ const Home = () => {
         </Thead>
         <Tbody>
           <Tr>
-            <Td>21/4/1</Td>
-            <Td>バラ出荷</Td>
-            <Td>見積番号ｘｘｘｘ</Td>
-            <Td>1000</Td>
+            <Td>MR-742-１</Td>
+            <Td>北材商事株式会社</Td>
+            <Td>2月上旬</Td>
+            <Td>本社入れ</Td>
+            <Td>節有を含む</Td>
+            <Td>タモ</Td>
+            <Td>フリー板</Td>
+            <Td>Aグレード</Td>
+            <Td>ウレタン塗装</Td>
+            <Td>4200*500*20</Td>
+            <Td>1.2㎡</Td>
+            <Td>4㎥
+            <Button ml="5" bgColor="blue.100"
+              onClick={(e) => {
+                e.preventDefault()
+                }
+              }
+            >入庫</Button>
+            </Td>
+          </Tr>
+          <Tr>
+            <Td>MR-742-１</Td>
+            <Td>北材商事株式会社</Td>
+            <Td>2月上旬</Td>
+            <Td>倉庫入れ</Td>
             <Td></Td>
-            <Td>ケース</Td>
-            <Td>田中</Td>
-            <Td>21/2/31</Td>
-            <Td>平川</Td>
-            <Td>平川</Td>
-            <Td><Button colorScheme='blue' onClick={() => { router.push(`/history/${lotNo}`)}}>入庫</Button></Td>
+            <Td>欅</Td>
+            <Td>フローリング</Td>
+            <Td>乱尺</Td>
+            <Td>ウレタン塗装</Td>
+            <Td>1800*500*20</Td>
+            <Td>1.2㎡</Td>
+            <Td>30束
+            <Button ml="5" bgColor="blue.100"
+              onClick={(e) => {
+                e.preventDefault()
+                }
+              }
+            >入庫</Button>
+            </Td>
+          </Tr>
+          <Tr>
+            <Td>MR-742-１</Td>
+            <Td>日本アクセス</Td>
+            <Td>月上旬</Td>
+            <Td>本社入れ</Td>
+            <Td>節有を含む</Td>
+            <Td>タモ</Td>
+            <Td>フリー板</Td>
+            <Td>B</Td>
+            <Td>無塗装</Td>
+            <Td>4200*500*30</Td>
+            <Td>1.3㎡</Td>
+            <Td>2㎥
+              <Button ml="5" bgColor="blue.100"
+              onClick={(e) => {
+                e.preventDefault()
+                }
+              }
+              >入庫</Button>
+            </Td>
           </Tr>
         </Tbody>
       </Table>
+      <Footer>
+    </Footer>
     </div>
     </>
   )

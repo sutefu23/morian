@@ -55,6 +55,11 @@ const Sidebar = () => {
   })
   const mainLinks:Link[] = [
     {
+      key: "top",
+      name: "TOP",
+      path: "/"
+    },
+    {
       key: "listItem",
       name: "商品一覧",
       children: itemLinks,
