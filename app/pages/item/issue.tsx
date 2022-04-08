@@ -7,8 +7,9 @@ import { Decimal } from "decimal.js"
 import usePageTitle from '~/hooks/usePageTitle'
 import "~/utils/string"
 import "~/utils/number"
-import { useState } from "react"
-import { IssueProps } from "$/domain/entity/issue"
+import { useEffect } from 'react'
+import { useRouter } from 'next/router';
+import dayjs from 'dayjs'
 
 const Register = () => {
   const { setTitle } = usePageTitle()
@@ -24,7 +25,28 @@ const Register = () => {
     costPerUnit,
     totalPrice,
     postIssue,
+    useDemo,
     fetchOrderSheet } = useIssue()
+
+    const router = useRouter();
+  
+    const pageChangeHandler = () => {
+      if(Number(issueData.issueItems?.length) > 0){
+        const answer = window.confirm('内容がリセットされます、本当にページ遷移しますか？');
+        if(!answer) {
+          // eslint-disable-next-line no-throw-literal
+          throw 'Abort route change. Please ignore this error.'
+        }  
+      }
+    };
+    
+    useEffect(() => {
+      router.events.on('routeChangeStart', pageChangeHandler);
+      return () => {
+        router.events.off('routeChangeStart', pageChangeHandler)
+      };
+    }, []);
+
   return (
     <>
     <form
@@ -47,8 +69,10 @@ const Register = () => {
             <Input required
               type="date"
               placeholder="半角英数字のみ可"
-              onChange={(e) => { updateField<"date">("date", new Date(e.target.value))}}
-              value={String(issueData?.date)}
+              onChange={(e) => { 
+                updateField<"date">("date", new Date(e.target.value))
+              }}
+              value={issueData.date ? dayjs(issueData.date as Date).format('YYYY-MM-DD'): undefined}
             />
           </InputGroup>
         </Box>
@@ -71,8 +95,8 @@ const Register = () => {
           <InputGroup>
             <InputLeftAddon bgColor="blue.100">希望納期</InputLeftAddon>
             <Input 
-              onChange={(e) => { updateField<"expectDeliveryDate">("expectDeliveryDate", e.target.value.toNarrowCase())}}
-              value={issueData?.expectDeliveryDate}
+              onChange={(e) => { updateField<"expectDeliveryDate">("expectDeliveryDate", e.target.value)}}
+              value={issueData.expectDeliveryDate}
             />
           </InputGroup>
         </Box>
@@ -84,8 +108,10 @@ const Register = () => {
             <DeliveryPlaceSelect required onSelect={(e) => { 
               updateField<"deliveryPlaceId">("deliveryPlaceId", Number(e.target.value))
               // update 納入住所
+              const {options, selectedIndex} = e.target
+              updateField<"deliveryPlaceName">("deliveryPlaceName", options[selectedIndex].innerHTML)
             }}
-              value={issueData?.deliveryPlaceId}
+              value={issueData.deliveryPlaceId}
             />
           </InputGroup>
         </Box>
@@ -99,8 +125,8 @@ const Register = () => {
           <InputGroup>
             <InputLeftAddon bgColor="blue.100">受取担当</InputLeftAddon>
             <Input 
-              onChange={(e) => { updateField<"receiveingStaff">("receiveingStaff", e.target.value.toNarrowCase())}}
-              value={issueData?.receiveingStaff}
+              onChange={(e) => { updateField<"receiveingStaff">("receiveingStaff", e.target.value)}}
+              value={issueData.receiveingStaff}
             />
           </InputGroup>
         </Box>
@@ -131,8 +157,12 @@ const Register = () => {
               <Box>
                 <InputGroup>
                   <InputLeftAddon aria-required>樹種</InputLeftAddon>
-                  <WoodSpeciesSelect required onSelect={(e) => { updateItemField<"woodSpeciesId">(index, "woodSpeciesId", Number(e.target.value))}}
-                    value={item?.woodSpeciesId}
+                  <WoodSpeciesSelect required onSelect={(e) => { 
+                    updateItemField<"woodSpeciesId">(index, "woodSpeciesId", Number(e.target.value))
+                    const {options, selectedIndex} = e.target
+                    updateItemField<"woodSpeciesName">(index, "woodSpeciesName", options[selectedIndex].innerHTML)
+                  }}
+                    value={item.woodSpeciesId}
                   />
                 </InputGroup>
               </Box>
@@ -140,8 +170,12 @@ const Register = () => {
                 <InputGroup>
                   <InputLeftAddon aria-required>材種</InputLeftAddon>
                   <ItemTypeSelect required 
-                  value={item?.itemTypeId}
-                  onSelect={(e) => { updateItemField<"itemTypeId">(index, "itemTypeId", Number(e.target.value))}}/>
+                  value={item.itemTypeId}
+                  onSelect={(e) => { 
+                    updateItemField<"itemTypeId">(index, "itemTypeId", Number(e.target.value))
+                    const {options, selectedIndex} = e.target
+                    updateItemField<"itemTypeName">(index, "itemTypeName", options[selectedIndex].innerHTML)
+                    }}/>
                 </InputGroup>
               </Box>
               <Box>
@@ -161,7 +195,11 @@ const Register = () => {
               <Box>
                 <InputGroup>
                   <InputLeftAddon aria-required>グレード</InputLeftAddon>
-                  <GradeSelect value={item?.gradeId} onSelect={(e) => { updateItemField<"gradeId">(index, "gradeId", Number(e.target.value))}}/>
+                  <GradeSelect value={item.gradeId} onSelect={(e) => { 
+                    updateItemField<"gradeId">(index, "gradeId", Number(e.target.value))
+                    const {options, selectedIndex} = e.target;
+                    updateItemField<"gradeName">(index, "gradeName", options[selectedIndex].innerHTML)
+                    }}/>
                 </InputGroup>
               </Box>
               <Box>
@@ -175,18 +213,18 @@ const Register = () => {
               <Box>
                 <InputGroup>
                   <InputLeftAddon aria-required>長さｘ厚みｘ幅</InputLeftAddon>
-                  <Input placeholder="長さ" value={item?.length} onChange={(e) => { updateItemField<"length">(index, "length", e.target.value)}}/>
+                  <Input placeholder="長さ" value={item.length} onChange={(e) => { updateItemField<"length">(index, "length", e.target.value)}}/>
                   <InputLabel style={{fontSize:"1.2em", marginTop:"10px"}}>ｘ</InputLabel>
-                  <Input placeholder="厚み" type="number" value={item?.thickness} onChange={(e) => { updateItemField<"thickness">(index, "thickness", Number(e.target.value))}}/>
+                  <Input placeholder="厚み" type="number" value={item.thickness} onChange={(e) => { updateItemField<"thickness">(index, "thickness", Number(e.target.value))}}/>
                   <InputLabel style={{fontSize:"1.2em", marginTop:"10px"}}>ｘ</InputLabel>
-                  <Input placeholder="幅" type="number" value={item?.width} onChange={(e) => { updateItemField<"width">(index, "width", Number(e.target.value))}}/>
+                  <Input placeholder="幅" type="number" value={item.width} onChange={(e) => { updateItemField<"width">(index, "width", Number(e.target.value))}}/>
                 </InputGroup>
               </Box>
               <Box>
                 <InputGroup>
                   <InputLeftAddon aria-required>入数</InputLeftAddon>
                   <Input required type="number" 
-                  value={String(item?.packageCount)}
+                  value={String(item.packageCount)}
                   placeholder="数字" onChange={(e) => {
                     updateItemField<"packageCount">(index, "packageCount", e.target.value ? new Decimal(e.target.value): undefined)}}/>
                 </InputGroup>
@@ -197,29 +235,33 @@ const Register = () => {
                 <InputGroup>
                   <InputLeftAddon aria-required>原価</InputLeftAddon>
                   <Input required type="number" 
-                  value={String(item?.cost)}
+                  value={String(item.cost)}
                   placeholder="数字" onChange={(e) => { updateItemField<"cost">(index, "cost", e.target.value ? new Decimal(e.target.value): undefined)}}/>
                   <InputLabel style={{fontSize:"1.5em", marginTop:"10px"}}>/</InputLabel>
                   <UnitSelect required 
-                  value={item?.costUnitId}
-                  onSelect={(e) => { updateItemField<"costUnitId">(index, "costUnitId", Number(e.target.value)) }}/>
+                  value={item.costUnitId}
+                  onSelect={(e) => { 
+                    updateItemField<"costUnitId">(index, "costUnitId", Number(e.target.value)) 
+                    const {options, selectedIndex} = e.target
+                    updateItemField<"costUnitName">(index, "costUnitName", options[selectedIndex].innerHTML)
+                    }}/>
                 </InputGroup>
               </Box>
               <Box>
                 <InputGroup>
                   <InputLeftAddon aria-required>数量</InputLeftAddon>
                   <Input required 
-                  value={String(item?.count)}
+                  value={String(item.count)}
                   type="number" placeholder="数字" onChange={(e) => { updateItemField<"count">(index, "count", e.target.value ? new Decimal(e.target.value): undefined)}}/>
                   <UnitSelect required 
-                  value={item?.unitId}
+                  value={item.unitId}
                   onSelect={(e) => { updateItemField<"unitId">(index, "unitId", Number(e.target.value)) }}/>
                 </InputGroup>
               </Box>
               <Box>
                 <InputGroup>
                   <InputLeftAddon aria-required>原価単位数量</InputLeftAddon>
-                  <Input required placeholder="原価算出基準となる数量" step="0.001" value={String(item?.costPackageCount ? item.costPackageCount : '')} onChange={(e) => { updateItemField<"costPackageCount">(index, "costPackageCount", e.target.value ? new Decimal(e.target.value): undefined)}}/>
+                  <Input required placeholder="原価算出基準となる数量" step="0.001" value={String(item.costPackageCount ? item.costPackageCount : '')} onChange={(e) => { updateItemField<"costPackageCount">(index, "costPackageCount", e.target.value ? new Decimal(e.target.value): undefined)}}/>
                   <Button onClick={() => {
                     const computedValue = calcCostPackageCount(item)
                     if(computedValue){
@@ -230,6 +272,25 @@ const Register = () => {
                 </InputGroup>
               </Box>
             </HStack>
+            <HStack justifyContent="center">
+            <Box>
+            <InputGroup>
+              <InputLeftAddon>最小単位当たりの原価</InputLeftAddon>
+              <Input align="right" readOnly value={
+                costPerUnit(item).toYenFormatKanji()
+                }/>
+            </InputGroup>
+          </Box>
+          <Box>
+            <InputGroup>
+              <InputLeftAddon aria-required>在庫金額</InputLeftAddon>
+              <Input align="right" readOnly value={
+                totalPrice(item).toYenFormatKanji()
+                }/>
+            </InputGroup>
+          </Box>
+            </HStack>
+
           </VStack>
         ))
       }
@@ -241,24 +302,6 @@ const Register = () => {
 
     <Footer>
     <HStack>
-        <Box>
-          <InputGroup>
-            <InputLeftAddon>最小単位当たりの原価</InputLeftAddon>
-            <Input align="right" readOnly value={
-              0
-              // costPerUnit().toYenFormatKanji()
-               }/>
-          </InputGroup>
-        </Box>
-        <Box>
-          <InputGroup>
-            <InputLeftAddon aria-required>在庫金額</InputLeftAddon>
-            <Input align="right" readOnly value={
-              0
-              // totalPrice().toYenFormatKanji()
-              }/>
-          </InputGroup>
-        </Box>
         <Box>
           <Button type='submit' ml={50} w={100} bgColor="green.400"
           onClick={async (e) => {
@@ -273,6 +316,11 @@ const Register = () => {
               onClick={fetchOrderSheet}
             >発注書</Button>
           </Box>    
+          <Box>
+          <Button ml={50} w={100} bgColor="red.200"
+            onClick={useDemo}
+          >デモ</Button>
+        </Box>
       </HStack>
     </Footer>
     </form>

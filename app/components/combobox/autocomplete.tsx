@@ -27,8 +27,8 @@ export function Autocomplete<T extends Record<string, unknown>>(props: Autocompl
   const { contains } = useFilter({ sensitivity: "base" });
   const state = useComboBoxState({ ...props, defaultFilter: contains });
   
-  const keyEnter = useCallback((e:React.KeyboardEvent) =>{
-    if (e.key === "Enter" && props.inputValue && props.onInputChange){ 
+  const keyEnter = useCallback((e:React.CompositionEvent) =>{
+    if (props.inputValue && props.onInputChange){ 
       props.onInputChange(props.inputValue)
     }
   },[props.inputValue, props.onInputChange])
@@ -55,7 +55,8 @@ export function Autocomplete<T extends Record<string, unknown>>(props: Autocompl
           <Search2Icon color="gray.500" />
         </InputLeftElement>
         <Input {...inputProps} w="27vw" ref={inputRef} size="md"
-        onKeyPress={(e) => keyEnter(e)}
+        onCompositionStart={(e) => keyEnter(e)}
+        onCompositionEnd={(e) => keyEnter(e)}
         />
         <InputRightElement>
           {props.loadingState === "loading" ||

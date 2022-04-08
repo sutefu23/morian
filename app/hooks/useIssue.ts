@@ -3,7 +3,7 @@ import { IssueItemProps, IssueProps } from '$/domain/entity/issue'
 import { Decimal } from 'decimal.js'
 import { Units } from '~/server/domain/init/master'
 import { apiClient } from '~/utils/apiClient'
-import { DeepPartial } from '@chakra-ui/react'
+import { DeepPartial } from '~/types/DeepPartial.spec'
 
 export type EditIssueData = DeepPartial<IssueProps>
 export type EditIssueItemData = DeepPartial<IssueItemProps>
@@ -14,7 +14,7 @@ const defaultItemData = {
   woodSpeciesName :'',
   woodSpeciesId :undefined,
   spec:'', //仕様
-  grade :'',
+  gradeName :'',
   gradeId :undefined,
   length:'', // 寸法（長さ）
   width :undefined, // 寸法（幅）
@@ -32,7 +32,7 @@ const defaultItemData = {
 
 const defaultData = {
   managedId: '',
-  date: undefined,
+  date: new Date(),
   userId: undefined,
   userName: '',
   supplierId :undefined,
@@ -71,7 +71,7 @@ const demoData = {
       woodSpeciesName :'桧',
       woodSpeciesId :1,
       spec:'ウレタン塗装', //仕様
-      grade :'Aグレード',
+      gradeName :'Aグレード',
       gradeId :1,
       length:"2000", // 寸法（長さ）
       width :200, // 寸法（幅）
@@ -178,18 +178,18 @@ const useIssue = () => {
 
   const costPerUnit = useCallback(
     //最小単位当たりの原価
-    (issueItem: IssueItemProps) => {
+    (issueItem) => {
       if (!issueItem?.cost || !issueItem?.costPackageCount) return 0
       return Number(issueItem.cost) * Number(issueItem.costPackageCount)
     },
-    [issueData.issueItems]
+    []
   )
 
   const totalPrice = useCallback((issueItem) => {
     if (!issueItem?.count) return 0
     const perUnit = costPerUnit(issueItem)
     return perUnit * Number(issueItem?.count)
-  }, [issueData.issueItems, costPerUnit])
+  }, [ costPerUnit])
 
   const checkValidIssue = (
     issue: EditIssueData | undefined
@@ -329,9 +329,7 @@ const useIssue = () => {
       return
     }
     await apiClient.issue.post({
-      body: {
-        data: postIssueData,
-      }
+      body: postIssueData,
     })
 
     alert('登録しました')
@@ -345,9 +343,7 @@ const useIssue = () => {
         return
       }
       await apiClient.issue.post({
-        body: {
-          data: postIssueData,
-        }
+        body: postIssueData,
       })
 
       alert('登録しました')

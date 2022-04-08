@@ -3,6 +3,7 @@ import {
   Box,
   Spacer,
   Text,
+  Button,
   Heading,
 } from '@chakra-ui/react'
 import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons'
@@ -39,7 +40,7 @@ const Navibar = () => {
         isOpenSidebar ?      
         <CloseIcon onClick={() => setIsOpenSidebar(false)}></CloseIcon>
         :
-        <HamburgerIcon cursor="pointer" onClick={() => setIsOpenSidebar(true)}></HamburgerIcon>
+        <HamburgerIcon  w={8} h={8} cursor="pointer" onClick={() => setIsOpenSidebar(true)}></HamburgerIcon>
 
       }
     </Box>
@@ -51,9 +52,10 @@ const Navibar = () => {
       <Spacer/> 
     }
     <Box p='4'>
-      <Text>ログイン：{user?.name}</Text>
-      {/* <Text borderBottom={"solid 1px"} cursor={"pointer"}
-      onClick={() => {handleLogout()}}>ログアウト</Text> */}
+      ユーザー：{user?.name}
+      {<Button
+      ml={5}
+      onClick={() => {handleLogout()}}>ログアウト</Button>}
     </Box>
   </Flex>
   )

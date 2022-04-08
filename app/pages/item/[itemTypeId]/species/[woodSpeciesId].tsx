@@ -14,7 +14,7 @@ const WoodSpeciesPage = () => {
   const router = useRouter()
   const { setTitle } = usePageTitle()
   const { itemTypeId, woodSpeciesId } = router.query
-  const lotNo = ''
+  const lotNo = '155-1'
   setTitle("レッドシダー　フローリング 一覧")
   return (
     <>
@@ -36,16 +36,16 @@ const WoodSpeciesPage = () => {
       </Thead>
       <Tbody>
         <Tr>
-          <Td>21/4/1</Td>
-          <Td>バラ出荷</Td>
-          <Td>見積番号ｘｘｘｘ</Td>
-          <Td>1000</Td>
-          <Td></Td>
-          <Td>ケース</Td>
-          <Td>田中</Td>
+          <Td>HM-1522</Td>
+          <Td>Aグレード</Td>
+          <Td>塗装</Td>
+          <Td>北材商事</Td>
+          <Td>10</Td>
+          <Td>4200*500*25</Td>
           <Td>21/2/31</Td>
-          <Td>平川</Td>
-          <Td>平川</Td>
+          <Td>本社</Td>
+          <Td>250,000/㎥</Td>
+          <Td>10㎥</Td>
           <Td><Button colorScheme='blue' onClick={() => { router.push(`/history/${lotNo}`)}}>詳細</Button></Td>
         </Tr>
       </Tbody>

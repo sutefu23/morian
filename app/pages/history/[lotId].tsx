@@ -1,33 +1,15 @@
 import { useRouter } from 'next/router'
-import { Heading, HStack, Box, VStack, InputGroup, Input, InputLeftAddon
-  ,Table, Thead, Tbody, Tfoot, Tr, Th, Td,} from "@chakra-ui/react"
+import { Table, Thead, Tbody, Tr, Th, Td,} from "@chakra-ui/react"
+import usePageTitle from '~/hooks/usePageTitle'
 
 const HistoryListPage = () => {
   const router = useRouter()
   const { lotId } = router.query
-
+  const { setTitle } = usePageTitle()
+  setTitle(`${lotId} レッドシダー フローリング 在庫一覧`)
   return (
     <>
-    <VStack bgColor="aliceblue">
-    <Heading as="h1" size="md" mt="1" >
-        在庫一覧
-      </Heading>
-      <HStack width="95vw">
-        <Box>
-          <InputGroup>
-            <InputLeftAddon>樹種</InputLeftAddon>
-            <Input value="レッドシダー" readOnly/>
-          </InputGroup>
-        </Box>
-        <Box>
-          <InputGroup>
-            <InputLeftAddon>材種</InputLeftAddon>
-            <Input value="フローリング" readOnly/>
-          </InputGroup>
-        </Box>
-      </HStack>
-    </VStack>
-    <Table variant="striped" colorScheme="gray" size='sm' w="150vw">
+    <Table variant="striped" colorScheme="gray" w="150vw">
       <Thead>
         <Th>ロット番号</Th>
         <Th>樹種</Th>

@@ -8,17 +8,14 @@ import {
   Tr,
   Th,
   Td,
-  HStack,
 } from "@chakra-ui/react"
 import Footer from "~/components/Footer"
-import { useRouter } from 'next/router'
 import usePageTitle from '~/hooks/usePageTitle'
 
 
 const Home = () => {
-  const router = useRouter()
   const { setTitle } = usePageTitle()
-  setTitle("入荷状況")
+  setTitle("TOP (入荷状況)")
   return (
     <>
     <div className={styles.container}>
@@ -42,6 +39,7 @@ const Home = () => {
             <Th>寸法</Th>
             <Th>入数</Th>
             <Th>数量</Th>
+            <Th></Th>
           </Tr>
         </Thead>
         <Tbody>
@@ -57,7 +55,8 @@ const Home = () => {
             <Td>ウレタン塗装</Td>
             <Td>4200*500*20</Td>
             <Td>1.2㎡</Td>
-            <Td>4㎥
+            <Td>4㎥</Td>
+            <Td>
             <Button ml="5" bgColor="blue.100"
               onClick={(e) => {
                 e.preventDefault()
@@ -78,7 +77,8 @@ const Home = () => {
             <Td>ウレタン塗装</Td>
             <Td>1800*500*20</Td>
             <Td>1.2㎡</Td>
-            <Td>30束
+            <Td>30束</Td>
+            <Td>
             <Button ml="5" bgColor="blue.100"
               onClick={(e) => {
                 e.preventDefault()
@@ -99,7 +99,8 @@ const Home = () => {
             <Td>無塗装</Td>
             <Td>4200*500*30</Td>
             <Td>1.3㎡</Td>
-            <Td>2㎥
+            <Td>2㎥</Td>
+            <Td>
               <Button ml="5" bgColor="blue.100"
               onClick={(e) => {
                 e.preventDefault()

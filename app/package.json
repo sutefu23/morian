@@ -39,6 +39,7 @@
     "chakra-ui-autocomplete": "^1.4.5",
     "chakra-ui-simple-autocomplete": "^1.0.0",
     "class-validator": "^0.13.1",
+    "dayjs": "^1.11.0",
     "decimal.js": "^10.3.1",
     "formik": "^2.2.9",
     "formik-chakra-ui": "^1.6.0",

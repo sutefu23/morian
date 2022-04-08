@@ -5,7 +5,6 @@ const theme = extendTheme({
         global: {
             body: {
                 fontFamily: "'游ゴシック体', YuGothic, '游ゴシック', 'Yu Gothic', 'メイリオ', 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', sans-serif",
-                fontSize: "0.8125rem",
                 lineHeight: "1.5",
             },
         },

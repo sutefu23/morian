@@ -17,7 +17,7 @@ export default defineHooks((fastify) => ({
       }
       const me = await Auth.getUserFromToken(token as string, fastify.jwt.decode)   
       if(!me){
-        throw Error("認証ユーザーが見つかりません")
+        reply.status(401)
       }
     }
   }

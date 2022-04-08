@@ -92,7 +92,7 @@ const Sidebar = () => {
     },
   ]
   const ButtonLinks = (props: {links: Link[]}) => 
-    (<React.Fragment>
+    (<>
       {props.links.map(link => (
         !link.children?
         <Button
@@ -127,7 +127,7 @@ const Sidebar = () => {
         </Accordion>
       ))
       }
-    </React.Fragment>
+    </>
     )
   return (
     <Drawer
