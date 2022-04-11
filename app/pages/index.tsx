@@ -8,12 +8,15 @@ import {
   Tr,
   Th,
   Td,
+  useDisclosure,
 } from "@chakra-ui/react"
 import Footer from "~/components/Footer"
+import BottomDrawer from '~/components/drawer/bottomDrawer'
 import usePageTitle from '~/hooks/usePageTitle'
 import { apiClient }from '~/utils/apiClient'
 import { useEffect, useState } from 'react'
 import { IssueProps } from '~/server/domain/entity/issue'
+import Register from './item/register'
 
 const Home = () => {
   const { setTitle } = usePageTitle()
@@ -28,6 +31,7 @@ const Home = () => {
     })()
   }, [])
 
+  const {isOpen, onOpen, onClose} = useDisclosure()
   return (
     <>
     <div className={styles.container}>
@@ -76,6 +80,7 @@ const Home = () => {
                   <Button ml="5" bgColor="blue.100"
                     onClick={(e) => {
                       e.preventDefault()
+                      onOpen()
                       }
                     }
                   >入庫</Button>
@@ -87,7 +92,10 @@ const Home = () => {
         </Tbody>
       </Table>
       <Footer>
-    </Footer>
+        <BottomDrawer title="入庫登録" isOpen={isOpen} onClose={onClose}>
+          <Register></Register>
+        </BottomDrawer>
+      </Footer>
     </div>
     </>
   )

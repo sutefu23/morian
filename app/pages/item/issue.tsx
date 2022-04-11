@@ -1,4 +1,4 @@
-import { HStack, Box, VStack, InputGroup, InputLeftAddon, Divider, InputRightAddon, Input,  Select, Button } from "@chakra-ui/react"
+import { HStack, Box, VStack, InputGroup, InputLeftAddon, Divider, InputRightAddon, Input, Button } from "@chakra-ui/react"
 import { WoodSpeciesSelect, ItemTypeSelect, SupplierSelect, GradeSelect, UnitSelect, DeliveryPlaceSelect } from "~/components/select/"
 import Footer from "~/components/Footer"
 import { InputLabel } from "@material-ui/core"
@@ -11,7 +11,7 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/router';
 import dayjs from 'dayjs'
 
-const Register = () => {
+const RegisterIssue = () => {
   const { setTitle } = usePageTitle()
   setTitle("在庫発注")
   
@@ -195,7 +195,7 @@ const Register = () => {
               <Box>
                 <InputGroup>
                   <InputLeftAddon aria-required>グレード</InputLeftAddon>
-                  <GradeSelect value={item.gradeId} onSelect={(e) => { 
+                  <GradeSelect value={item.gradeId ?? undefined} onSelect={(e) => { 
                     updateItemField<"gradeId">(index, "gradeId", Number(e.target.value))
                     const {options, selectedIndex} = e.target;
                     updateItemField<"gradeName">(index, "gradeName", options[selectedIndex].innerHTML)
@@ -213,11 +213,11 @@ const Register = () => {
               <Box>
                 <InputGroup>
                   <InputLeftAddon aria-required>長さｘ厚みｘ幅</InputLeftAddon>
-                  <Input placeholder="長さ" value={item.length} onChange={(e) => { updateItemField<"length">(index, "length", e.target.value)}}/>
+                  <Input placeholder="長さ" value={item.length ?? undefined} onChange={(e) => { updateItemField<"length">(index, "length", e.target.value)}}/>
                   <InputLabel style={{fontSize:"1.2em", marginTop:"10px"}}>ｘ</InputLabel>
-                  <Input placeholder="厚み" type="number" value={item.thickness} onChange={(e) => { updateItemField<"thickness">(index, "thickness", Number(e.target.value))}}/>
+                  <Input placeholder="厚み" type="number" value={item.thickness?? undefined} onChange={(e) => { updateItemField<"thickness">(index, "thickness", Number(e.target.value))}}/>
                   <InputLabel style={{fontSize:"1.2em", marginTop:"10px"}}>ｘ</InputLabel>
-                  <Input placeholder="幅" type="number" value={item.width} onChange={(e) => { updateItemField<"width">(index, "width", Number(e.target.value))}}/>
+                  <Input placeholder="幅" type="number" value={item.width ?? undefined} onChange={(e) => { updateItemField<"width">(index, "width", Number(e.target.value))}}/>
                 </InputGroup>
               </Box>
               <Box>
@@ -328,4 +328,4 @@ const Register = () => {
   )
 }
 
-export default Register
+export default RegisterIssue

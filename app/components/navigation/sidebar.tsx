@@ -130,7 +130,7 @@ const Sidebar = () => {
     </>
     )
   return (
-    <Drawer
+  <Drawer
     isOpen={isOpen}
     placement='left'
     onClose={() => setIsOpen(false)}
