@@ -3,8 +3,13 @@ import { IssueProps } from "../entity/issue";
 import { Item } from "../entity/stock";
 const prisma = new PrismaClient();
 
+export type getQuery = {
+  id?: number
+  isStored?: boolean,
+}
+
 export const createIssue = async (issueData: IssueProps) => {
-  return await prisma.issue.create({
+ const data = await prisma.issue.create({
     data: {
       ...issueData,
       date: new Date(issueData.date),
@@ -15,14 +20,21 @@ export const createIssue = async (issueData: IssueProps) => {
       },
     }
   })
+  return data
 }
 
-export const fetchIssues = async () => {
-  return await prisma.issue.findMany({
+export const fetchIssues = async (query:getQuery) => {
+  const data = await prisma.issue.findMany({
+    where: {id: query?.id},
     include:{
-      issueItems: true
+      issueItems:  {
+        where: {
+          isStored: query?.isStored,
+        },
+      },
     }
   })
+  return data
 }
 
 // export const exchangeStock = async (issueData: Issue ) => {

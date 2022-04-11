@@ -11,11 +11,23 @@ import {
 } from "@chakra-ui/react"
 import Footer from "~/components/Footer"
 import usePageTitle from '~/hooks/usePageTitle'
-
+import { apiClient }from '~/utils/apiClient'
+import { useEffect, useState } from 'react'
+import { IssueProps } from '~/server/domain/entity/issue'
 
 const Home = () => {
   const { setTitle } = usePageTitle()
   setTitle("TOP (入荷状況)")
+
+  const [issues, setIssues] = useState<IssueProps[]>();
+  useEffect(() => {
+    (async() => {
+      const response = await apiClient.issue.get({query: { isStored: false}})
+      const data = await response.body
+      setIssues(data)
+    })()
+  }, [])
+
   return (
     <>
     <div className={styles.container}>
@@ -43,72 +55,35 @@ const Home = () => {
           </Tr>
         </Thead>
         <Tbody>
-          <Tr>
-            <Td>MR-742-１</Td>
-            <Td>北材商事株式会社</Td>
-            <Td>2月上旬</Td>
-            <Td>本社入れ</Td>
-            <Td>節有を含む</Td>
-            <Td>タモ</Td>
-            <Td>フリー板</Td>
-            <Td>Aグレード</Td>
-            <Td>ウレタン塗装</Td>
-            <Td>4200*500*20</Td>
-            <Td>1.2㎡</Td>
-            <Td>4㎥</Td>
-            <Td>
-            <Button ml="5" bgColor="blue.100"
-              onClick={(e) => {
-                e.preventDefault()
-                }
-              }
-            >入庫</Button>
-            </Td>
-          </Tr>
-          <Tr>
-            <Td>MR-742-１</Td>
-            <Td>北材商事株式会社</Td>
-            <Td>2月上旬</Td>
-            <Td>倉庫入れ</Td>
-            <Td></Td>
-            <Td>欅</Td>
-            <Td>フローリング</Td>
-            <Td>乱尺</Td>
-            <Td>ウレタン塗装</Td>
-            <Td>1800*500*20</Td>
-            <Td>1.2㎡</Td>
-            <Td>30束</Td>
-            <Td>
-            <Button ml="5" bgColor="blue.100"
-              onClick={(e) => {
-                e.preventDefault()
-                }
-              }
-            >入庫</Button>
-            </Td>
-          </Tr>
-          <Tr>
-            <Td>MR-742-１</Td>
-            <Td>日本アクセス</Td>
-            <Td>月上旬</Td>
-            <Td>本社入れ</Td>
-            <Td>節有を含む</Td>
-            <Td>タモ</Td>
-            <Td>フリー板</Td>
-            <Td>B</Td>
-            <Td>無塗装</Td>
-            <Td>4200*500*30</Td>
-            <Td>1.3㎡</Td>
-            <Td>2㎥</Td>
-            <Td>
-              <Button ml="5" bgColor="blue.100"
-              onClick={(e) => {
-                e.preventDefault()
-                }
-              }
-              >入庫</Button>
-            </Td>
-          </Tr>
+            {
+              issues &&
+              issues.map((issue) => (
+                issue.issueItems.map((item, i) => (
+                  <Tr key={i}>
+                  <Td>{issue.managedId}</Td>
+                  <Td>{issue.supplierName}</Td>
+                  <Td>{issue.expectDeliveryDate}</Td>
+                  <Td>{issue.deliveryPlaceName}</Td>
+                  <Td>{issue.innerNote}</Td>
+                  <Td>{item.woodSpeciesName}</Td>
+                  <Td>{item.itemTypeName}</Td>
+                  <Td>{item.gradeName}</Td>
+                  <Td>{item.spec}</Td>
+                  <Td>{item.length}{(item.thickness)?`*${item.thickness}`:""}{(item.width)?`*${item.width}`:""}</Td>
+                  <Td>{item.packageCount}</Td>
+                  <Td>{item.count}{item.unitName}</Td>
+                  <Td>
+                  <Button ml="5" bgColor="blue.100"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      }
+                    }
+                  >入庫</Button>
+                  </Td>
+                  </Tr>
+                ))
+              ))
+            }
         </Tbody>
       </Table>
       <Footer>

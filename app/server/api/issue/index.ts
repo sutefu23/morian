@@ -1,9 +1,14 @@
-import { Issue } from "@prisma/client"
+import { getQuery } from "$/domain/service/issue"
+import { Issue, IssueItem } from "@prisma/client"
 import { IssueProps } from "domain/entity/issue"
+
 
 export type Methods = {
   get: {
-    resBody: Issue[]
+    query: getQuery,
+    resBody: (Issue & {
+      issueItems: IssueItem[];
+  })[]
   },
   post: {
     reqBody: IssueProps

@@ -65,6 +65,7 @@ model IssueItem {
   costUnit      Unit      @relation(name: "issueItemCostUnit",fields: [costUnitId], references: [id]) // 原価単位
   costUnitId    Int
   costUnitName  String
+  isStored      Boolean   @default(false)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }

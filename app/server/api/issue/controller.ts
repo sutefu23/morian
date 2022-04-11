@@ -1,9 +1,10 @@
 import { createIssue, fetchIssues } from 'domain/service/issue'
 import { defineController } from './$relay'
 
+
 export default defineController(() => ({
-  get: async () => {
-    const issues = await fetchIssues()
+  get: async (req) => {
+    const issues = await fetchIssues(req.query)
     return { status: 200, body: issues }
   },
   post: async ({ body }) => {
