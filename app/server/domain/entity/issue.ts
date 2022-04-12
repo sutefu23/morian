@@ -23,9 +23,10 @@ export interface IssueProps {
 export interface IssueItemProps {
   readonly itemTypeId:number
   readonly itemTypeName: string
-  readonly woodSpeciesName :string // 樹種
-  readonly woodSpeciesId :number
+  readonly woodSpeciesName :string | null // 樹種
+  readonly woodSpeciesId :number | null
   readonly spec:string | null //仕様
+  readonly manufacturer:string | null //製造元
   readonly gradeId :number | null
   readonly gradeName :string | null
   readonly length:string | null // 寸法（長さ）

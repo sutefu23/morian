@@ -81,7 +81,10 @@ const RegisterIssue = () => {
         <Box>
           <InputGroup>
             <InputLeftAddon bgColor="blue.100" aria-required>仕入先</InputLeftAddon>
-            <SupplierSelect  onSelect={ (key) => { updateField<"supplierId">("supplierId", Number(key))}}/>
+            <SupplierSelect  
+              onSelect={ (key) => { updateField<"supplierId">("supplierId", Number(key))}}
+              defaultKey={issueData.supplierId}  
+            />
           </InputGroup>
         </Box>
         <Box>
@@ -162,7 +165,7 @@ const RegisterIssue = () => {
                     const {options, selectedIndex} = e.target
                     updateItemField<"woodSpeciesName">(index, "woodSpeciesName", options[selectedIndex].innerHTML)
                   }}
-                    value={item.woodSpeciesId}
+                    value={item.woodSpeciesId??undefined}
                   />
                 </InputGroup>
               </Box>
@@ -206,6 +209,12 @@ const RegisterIssue = () => {
                 <InputGroup>
                   <InputLeftAddon>仕様</InputLeftAddon>
                   <Input placeholder="自由入力" onChange={(e) => { updateItemField<"spec">(index, "spec", e.target.value)}}/>
+                </InputGroup>
+              </Box>
+              <Box>
+                <InputGroup>
+                  <InputLeftAddon>製造元</InputLeftAddon>
+                  <Input placeholder="自由入力" onChange={(e) => { updateItemField<"manufacturer">(index, "manufacturer", e.target.value)}}/>
                 </InputGroup>
               </Box>
             </HStack>

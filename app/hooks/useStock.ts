@@ -4,14 +4,16 @@ import { Decimal } from 'decimal.js'
 import { Units } from '~/server/domain/init/master'
 import { apiClient } from '~/utils/apiClient'
 import { 入庫理由 } from '~/server/domain/entity/stock'
+import { atom , useRecoilState } from 'recoil'
 
 export type EditUpdataItemData = Partial<UpdateItemData>
 
-const defaultData = {
+const defaultData:EditUpdataItemData = {
   lotNo: '',
   woodSpeciesId: undefined,
   itemTypeId: undefined,
   supplierId: undefined,
+  supplierName: undefined,
   gradeId: undefined,
   length: undefined,
   thickness: undefined,
@@ -32,6 +34,7 @@ const demoData = {
   woodSpeciesId: 1,
   itemTypeId: 2,
   supplierId: 1,
+  supplierName: "北材商事",
   gradeId: 1,
   length: 5000,
   thickness: 50,
@@ -47,8 +50,13 @@ const demoData = {
   enable: true
 }
 
+const stockDataAtom = atom({
+  key: 'stockDataAtom',
+  default: defaultData,
+});
+
 const useStock = () => {
-  const [stockData, setStockData] = useState<EditUpdataItemData>(defaultData)
+  const [stockData, setStockData] = useRecoilState<EditUpdataItemData>(stockDataAtom)
 
   const updateField = useCallback(
     <K extends keyof EditUpdataItemData>(
@@ -154,8 +162,8 @@ const useStock = () => {
       return null
     }
 
-    const { width, thickness, supplierId } = data
-    if (!width || !thickness || !supplierId) {
+    const { width, thickness, supplierId, supplierName } = data
+    if (!width || !thickness || !supplierId || !supplierName) {
       console.error('checkValidStock width or thickness or supplierId is null')
       return null
     }
@@ -167,12 +175,14 @@ const useStock = () => {
       alert('厚みは必須です。')
       return null
     }
-    console.log(supplierId)
     if (!supplierId) {
       alert('仕入先は必須です。')
       return null
     }
-
+    if (!supplierName) {
+      alert('仕入先名は必須です。')
+      return null
+    }
     const {
       packageCount,
       count,
@@ -225,6 +235,7 @@ const useStock = () => {
       length: validLength,
       width,
       supplierId,
+      supplierName,
       packageCount,
       count,
       unitId,
@@ -262,7 +273,6 @@ const useStock = () => {
     await apiClient.stock.post({
       body: {
         data: postStockData,
-        status: 入庫理由.仕入
       }
     })
 
@@ -270,7 +280,7 @@ const useStock = () => {
   }, [stockData])
 
   const postStock = useCallback(
-    async (status: 入庫理由.仕入 | 入庫理由.発注) => {
+    async (issueId?:number) => {
       const postStockData = checkValidStock(stockData)
       if (!postStockData) {
         console.error('postStockData is not valid')
@@ -279,7 +289,7 @@ const useStock = () => {
       await apiClient.stock.post({
         body: {
           data: postStockData,
-          status: status
+          issueId
         }
       })
 
@@ -292,6 +302,7 @@ const useStock = () => {
 
   return {
     stockData,
+    setStockData,
     updateField,
     calcCostPackageCount,
     costPerUnit,

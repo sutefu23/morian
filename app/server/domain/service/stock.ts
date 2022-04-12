@@ -25,10 +25,11 @@ export type UpdateItemData = {
   readonly woodSpeciesId: number
   readonly gradeId?: number
   readonly spec?: string
-  readonly length: number | '乱尺'
+  readonly length: number | string
   readonly thickness: number
   readonly width: number
   readonly supplierId: number
+  readonly supplierName: string
   readonly packageCount: Decimal
   readonly count: Decimal
   readonly tempCount: Decimal
@@ -109,7 +110,7 @@ export class ItemService {
     const itemDto = ItemToDTO(data)
     return itemDto
   }
-  async registerItem(item: UpdateItemData) {
+  async registerItem(item: UpdateItemData, issueId?: number) {
     //仕入
     const hasLotNo = await this.findLotNo(item.lotNo)
     if (hasLotNo instanceof Error) {
@@ -170,6 +171,7 @@ export class ItemService {
     const itemDto = ItemToDTO(data)
     return itemDto
   }
+
   async findManyItem(query: Query<ItemDTO> | Query<ItemDTO>[]) {
     const data = await this.itemRepository.findMany(query)
     if (data instanceof Error) {
@@ -224,6 +226,7 @@ export class HistoryService {
     }
     return HistoryToDTO(data)
   }
+  
   async getHistoryList(itemId: number) {
     const data = await this.historyRepository.findMany({
       field: 'itemId',

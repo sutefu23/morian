@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { apiClient } from '~/utils/apiClient'
 import { Supplier } from '~/server/domain/entity/stock'
 import { Autocomplete, Item } from "~/components/combobox/autocomplete"
@@ -7,10 +7,22 @@ import { useAsyncList } from "react-stately";
 type Props = { 
   onSelect: (event:React.Key) => void
   required?: boolean
+  defaultKey?: number
 }
 
-const select = ({ onSelect, required}:Props) => {
+const select = ({ onSelect, required, defaultKey}:Props) => {
 
+  useEffect(() => {
+    (async() => {
+      if(defaultKey){
+        const response = await apiClient.supplier._id(defaultKey).get()
+        const data = await response.body
+        if(data){
+          list.setFilterText(data.name)
+        }
+      }
+    })()
+  }, [])
   const onSelectionChange = (key:React.Key) => {
     onSelect(key)
   };

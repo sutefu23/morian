@@ -127,6 +127,7 @@ export class Item extends Entity<ItemProps> implements ItemProps {
   readonly thickness?: number
   readonly width?: number
   readonly supplierId: Supplier['id']
+  readonly supplierName: Supplier['name']
   readonly packageCount: Decimal
   readonly count: Decimal
   readonly unit: UnitType

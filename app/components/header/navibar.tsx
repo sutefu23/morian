@@ -33,7 +33,7 @@ const Navibar = () => {
     return <></>
   }
   return (
-    <Flex justifyContent="space-between">
+    <Flex justifyContent="space-between" bgColor="blue.50">
     <Box p='4' >
       
       {
@@ -45,8 +45,8 @@ const Navibar = () => {
       }
     </Box>
     {title ?
-      <Heading as="h1" size="md" mt="4" >
-          {title}
+      <Heading as="h1" size="md" mt="6" ml="20">
+        {title}
       </Heading>
       :
       <Spacer/> 

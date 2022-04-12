@@ -9,11 +9,32 @@ import {
   Td,
 } from "@chakra-ui/react"
 import usePageTitle from '~/hooks/usePageTitle'
+import { useEffect, useState } from 'react'
+import { apiClient } from '~/utils/apiClient'
+import { ItemDTO } from '~/server/domain/dto/item'
+import dayjs from 'dayjs'
+import { SupplierDTO } from '~/server/domain/dto/supplier'
 
 const WoodSpeciesPage = () => {
   const router = useRouter()
   const { setTitle } = usePageTitle()
   const { itemTypeId, woodSpeciesId } = router.query
+  const [ stocks, setStocks ] = useState<ItemDTO[]>([])
+  useEffect(() => {
+    if(!woodSpeciesId || !itemTypeId){
+      return 
+    }
+    (async() => {
+      const response = await apiClient.stock.get({query:
+        [
+          {field:"woodSpeciesId", operator:"=", value: woodSpeciesId as string },
+          {field:"itemTypeId", operator:"=", value: itemTypeId as string }
+        ]})
+      const data = await response.body
+      setStocks(data)
+    })()
+  }, [])
+  
   const lotNo = '155-1'
   setTitle("レッドシダー　フローリング 一覧")
   return (
@@ -35,19 +56,21 @@ const WoodSpeciesPage = () => {
         </Tr>
       </Thead>
       <Tbody>
-        <Tr>
-          <Td>HM-1522</Td>
-          <Td>Aグレード</Td>
-          <Td>塗装</Td>
-          <Td>北材商事</Td>
-          <Td>10</Td>
-          <Td>4200*500*25</Td>
-          <Td>21/2/31</Td>
-          <Td>本社</Td>
-          <Td>250,000/㎥</Td>
-          <Td>10㎥</Td>
+        {stocks.map((stock) => (
+          <Tr key={stock.id}>
+          <Td>{stock.lotNo}</Td>
+          <Td>{stock.gradeName}</Td>
+          <Td>{stock.spec}</Td>
+          <Td>{stock.supplierId}</Td>
+          <Td>{stock.packageCount}</Td>
+          <Td>{stock.length}{(stock.thickness)?`*${stock.thickness}`:""}{(stock.width)?`*${stock.width}`:""}</Td>
+          <Td>{dayjs(stock.arrivalDate).format('YY/MM/DD')}</Td>
+          <Td>{stock.warehouseName}</Td>
+          <Td>{stock.cost}/{stock.costUnitName}</Td>
+          <Td>{stock.tempCount} {stock.unitName}</Td>
           <Td><Button colorScheme='blue' onClick={() => { router.push(`/history/${lotNo}`)}}>詳細</Button></Td>
         </Tr>
+        ))}
       </Tbody>
     </Table>
 

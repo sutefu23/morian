@@ -11,18 +11,25 @@ import {
   useDisclosure,
 } from "@chakra-ui/react"
 import Footer from "~/components/Footer"
+import RightDrawer from '~/components/drawer/rightDrawer'
 import BottomDrawer from '~/components/drawer/bottomDrawer'
 import usePageTitle from '~/hooks/usePageTitle'
 import { apiClient }from '~/utils/apiClient'
 import { useEffect, useState } from 'react'
 import { IssueProps } from '~/server/domain/entity/issue'
 import Register from './item/register'
+import useStock from '~/hooks/useStock'
+import { Decimal } from 'decimal.js'
+import IssueDetail from "./item/issueDetail"
 
 const Home = () => {
   const { setTitle } = usePageTitle()
   setTitle("TOP (入荷状況)")
 
-  const [issues, setIssues] = useState<IssueProps[]>();
+  const [issues, setIssues] = useState<IssueProps[]>()
+  const [issueIndex, setIssueIndex ] = useState<number>(0)
+  const [itemIndex, setItemIndex ] = useState<number>(0)
+
   useEffect(() => {
     (async() => {
       const response = await apiClient.issue.get({query: { isStored: false}})
@@ -31,7 +38,10 @@ const Home = () => {
     })()
   }, [])
 
-  const {isOpen, onOpen, onClose} = useDisclosure()
+  const { setStockData } = useStock()
+
+  const {isOpen: isRightOpen, onOpen: onRightOpen, onClose: onRightClose} = useDisclosure()
+  const {isOpen: isBottomOpen, onOpen: onBottomOpen, onClose: onBottomClose} = useDisclosure()
   return (
     <>
     <div className={styles.container}>
@@ -40,6 +50,7 @@ const Home = () => {
       <aside>
         <Sidebar></Sidebar>
       </aside>
+
       <Table variant="striped" colorScheme="gray" >
         <Thead>
           <Tr>
@@ -61,10 +72,18 @@ const Home = () => {
         <Tbody>
             {
               issues &&
-              issues.map((issue) => (
-                issue.issueItems.map((item, i) => (
-                  <Tr key={i}>
-                  <Td>{issue.managedId}</Td>
+              issues.map((issue, i) => (
+                issue.issueItems.map((item, j) => (
+                  <Tr key={j}>
+                  <Td>
+                    <Button onClick={() => {
+                      setIssueIndex(i)
+                      setItemIndex(j)
+                      onRightOpen()
+                      }}>
+                    {issue.managedId}
+                    </Button>
+                    </Td>
                   <Td>{issue.supplierName}</Td>
                   <Td>{issue.expectDeliveryDate}</Td>
                   <Td>{issue.deliveryPlaceName}</Td>
@@ -80,7 +99,28 @@ const Home = () => {
                   <Button ml="5" bgColor="blue.100"
                     onClick={(e) => {
                       e.preventDefault()
-                      onOpen()
+                      setStockData({
+                        lotNo: "",
+                        woodSpeciesId: item.woodSpeciesId?? undefined,
+                        itemTypeId: item.itemTypeId,
+                        supplierId: issue.supplierId,
+                        gradeId: item.gradeId ?? undefined,
+                        length: item.length ?? undefined,
+                        thickness: item.thickness ?? undefined,
+                        width: item.width ?? undefined,
+                        packageCount: new Decimal(item.packageCount.toString()) ?? undefined,
+                        spec: item.spec ?? undefined,
+                        manufacturer: item.manufacturer ?? undefined,
+                        warehouseId: undefined,
+                        arrivalDate: undefined,
+                        cost: new Decimal(item.cost.toString()),
+                        costUnitId: item.costUnitId,
+                        count: new Decimal(item.count.toString()),
+                        unitId: item.unitId,
+                        costPackageCount: new Decimal(item.costPackageCount.toString()),
+                        enable: true
+                      })
+                      onBottomOpen()
                       }
                     }
                   >入庫</Button>
@@ -91,9 +131,23 @@ const Home = () => {
             }
         </Tbody>
       </Table>
+      <aside >
+        <RightDrawer
+        isOpen={isRightOpen} onClose={onRightClose}
+        width="30vw"
+        >
+          {
+          issues &&
+          <IssueDetail item={issues[issueIndex].issueItems[itemIndex]} issue={issues[issueIndex]}></IssueDetail>
+          }
+        </RightDrawer>
+      </aside>
       <Footer>
-        <BottomDrawer title="入庫登録" isOpen={isOpen} onClose={onClose}>
-          <Register></Register>
+        <BottomDrawer title="入庫登録" isOpen={isBottomOpen} onClose={onBottomClose} height="40vw">
+          {
+            issues &&
+           <Register issueId={issues[issueIndex].id}></Register>
+          }
         </BottomDrawer>
       </Footer>
     </div>

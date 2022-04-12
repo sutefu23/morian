@@ -5,21 +5,22 @@ type Props = {
   title?: string,
   isOpen: boolean,
   onClose: () => void,
+  height?: number | string
   children: ReactNode
 }
-const BottomDrawer = ({title, isOpen, onClose, children}:Props )=> {
+const BottomDrawer = ({title, isOpen, onClose, height, children}:Props )=> {
   return (
     <Drawer
     isOpen={isOpen}
     placement='bottom'
     onClose={onClose}
-  >
+    >
     <DrawerOverlay />
-    <DrawerContent>
+    <DrawerContent height={height}>
       <DrawerCloseButton
         onClick={onClose}
       />
-      <DrawerHeader>{title}</DrawerHeader>
+      {title && <DrawerHeader>{title}</DrawerHeader>}
 
       <DrawerBody>
         {children}

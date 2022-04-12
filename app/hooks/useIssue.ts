@@ -14,6 +14,7 @@ const defaultItemData = {
   woodSpeciesName :'',
   woodSpeciesId :undefined,
   spec:'', //仕様
+  manufacturer:'', //製造元
   gradeName :'',
   gradeId :undefined,
   length:'', // 寸法（長さ）
@@ -71,6 +72,7 @@ const demoData = {
       woodSpeciesName :'桧',
       woodSpeciesId :1,
       spec:'ウレタン塗装', //仕様
+      manufacturer:'四川工場', //製造元
       gradeName :'Aグレード',
       gradeId :1,
       length:"2000", // 寸法（長さ）

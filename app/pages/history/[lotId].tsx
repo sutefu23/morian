@@ -1,11 +1,19 @@
 import { useRouter } from 'next/router'
 import { Table, Thead, Tbody, Tr, Th, Td,} from "@chakra-ui/react"
 import usePageTitle from '~/hooks/usePageTitle'
+import { apiClient } from '~/utils/apiClient'
+import { useEffect } from 'react'
 
 const HistoryListPage = () => {
   const router = useRouter()
   const { lotId } = router.query
   const { setTitle } = usePageTitle()
+  useEffect(() => {
+    (async() => {
+      const response = await apiClient.issue.get({query: { isStored: false}})
+      const data = await response.body
+    })()
+  }, [])
   setTitle(`${lotId} レッドシダー フローリング 在庫一覧`)
   return (
     <>

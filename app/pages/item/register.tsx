@@ -7,10 +7,12 @@ import { Decimal } from "decimal.js"
 import usePageTitle from '~/hooks/usePageTitle'
 import "~/utils/string"
 import "~/utils/number"
-import { 入庫理由 } from "~/server/domain/entity/stock"
 
+type Props = {
+  issueId?: number //発注情報を入庫化する時
+}
 
-const Register = () => {
+const Register = ({issueId}:Props) => {
   const { setTitle } = usePageTitle()
   setTitle("新規在庫登録")
   
@@ -24,7 +26,7 @@ const Register = () => {
       <HStack>
         <Box>
           <InputGroup>
-            <InputLeftAddon aria-required>ロットNo</InputLeftAddon>
+            <InputLeftAddon aria-required bgColor={issueId?"red.100":undefined}>ロットNo</InputLeftAddon>
             <Input required
               placeholder="半角英数字のみ可"
               onChange={(e) => { updateField<"lotNo">("lotNo", e.target.value.toNarrowCase())}}
@@ -53,7 +55,10 @@ const Register = () => {
         <Box>
           <InputGroup>
             <InputLeftAddon aria-required>仕入先</InputLeftAddon>
-            <SupplierSelect onSelect={ (key) => {updateField<"supplierId">("supplierId", Number(key))}}/>
+            <SupplierSelect 
+              onSelect={ (key) => {updateField<"supplierId">("supplierId", Number(key))}}
+              defaultKey={stockData.supplierId}
+            />
           </InputGroup>
         </Box>
       </HStack>
@@ -67,7 +72,7 @@ const Register = () => {
         <Box>
           <InputGroup>
             <InputLeftAddon>仕様</InputLeftAddon>
-            <Input placeholder="自由入力" onChange={(e) => { updateField<"spec">("spec", e.target.value)}}/>
+            <Input placeholder="自由入力" value={stockData.spec} onChange={(e) => { updateField<"spec">("spec", e.target.value)}}/>
           </InputGroup>
         </Box>
       </HStack>
@@ -101,7 +106,7 @@ const Register = () => {
         </Box>
         <Box>
           <InputGroup>
-            <InputLeftAddon aria-required>倉庫</InputLeftAddon>
+            <InputLeftAddon aria-required bgColor={issueId?"red.100":undefined}>倉庫</InputLeftAddon>
             <WarehouseSelect required 
             value={stockData?.warehouseId}
             onSelect={(e) => { updateField<"warehouseId">("warehouseId", Number(e.target.value))}}/>
@@ -109,7 +114,7 @@ const Register = () => {
         </Box>
         <Box>
         <InputGroup>
-          <InputLeftAddon aria-required>入荷日</InputLeftAddon>
+          <InputLeftAddon aria-required bgColor={issueId?"red.100":undefined}>入荷日</InputLeftAddon>
           <Input type="date" 
           required
           value={stockData.arrivalDate?.toDateString()}
@@ -193,7 +198,7 @@ const Register = () => {
           <Button type='submit' ml={50} w={100} bgColor="green.200"
           onClick={async (e) => {
             e.preventDefault()
-            await postStock(入庫理由.仕入)
+            await postStock(issueId)
             }
           }
           >登録</Button>
