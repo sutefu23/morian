@@ -1,4 +1,4 @@
-import { createIssue, fetchIssues } from 'domain/service/issue'
+import { createIssue, fetchIssues } from '$/service/issue'
 import { defineController } from './$relay'
 
 

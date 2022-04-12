@@ -163,24 +163,21 @@ const useStock = () => {
     }
 
     const { width, thickness, supplierId, supplierName } = data
-    if (!width || !thickness || !supplierId || !supplierName) {
+    if (!width || !thickness || !supplierId) {
       console.error('checkValidStock width or thickness or supplierId is null')
-      return null
-    }
-    if (!width) {
-      alert('幅は必須です。')
-      return null
-    }
-    if (!thickness) {
-      alert('厚みは必須です。')
-      return null
-    }
-    if (!supplierId) {
-      alert('仕入先は必須です。')
-      return null
-    }
-    if (!supplierName) {
-      alert('仕入先名は必須です。')
+
+      if (!width) {
+        alert('幅は必須です。')
+        return null
+      }
+      if (!thickness) {
+        alert('厚みは必須です。')
+        return null
+      }
+      if (!supplierId) {
+        alert('仕入先は必須です。')
+        return null
+      }
       return null
     }
     const {

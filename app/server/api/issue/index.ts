@@ -1,4 +1,4 @@
-import { getQuery } from "$/domain/service/issue"
+import { getQuery } from "$/service/issue"
 import { Issue, IssueItem } from "@prisma/client"
 import { IssueProps } from "domain/entity/issue"
 

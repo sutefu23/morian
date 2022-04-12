@@ -124,7 +124,6 @@ const useIssue = () => {
       if(issueData.issueItems){
         const newItem = { ...issueData.issueItems[index], ...{ [key] : val }}
         const newItems = Object.assign([], issueData.issueItems, {[index]: newItem})
-
         setIssueData({...issueData, ...{ issueItems: newItems}})  
       }
         
@@ -357,6 +356,7 @@ const useIssue = () => {
 
   return {
     issueData,
+    setIssueData,
     updateField,
     updateItemField,
     addItemData,

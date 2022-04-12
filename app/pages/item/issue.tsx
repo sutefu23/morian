@@ -17,6 +17,7 @@ const RegisterIssue = () => {
   
   const { 
     issueData,
+    setIssueData,
     updateField,
     addItemData,
     deleteItemData,
@@ -109,10 +110,10 @@ const RegisterIssue = () => {
           <InputGroup>
             <InputLeftAddon bgColor="blue.100" aria-required>納入場所</InputLeftAddon>
             <DeliveryPlaceSelect required onSelect={(e) => { 
-              updateField<"deliveryPlaceId">("deliveryPlaceId", Number(e.target.value))
-              // update 納入住所
-              const {options, selectedIndex} = e.target
-              updateField<"deliveryPlaceName">("deliveryPlaceName", options[selectedIndex].innerHTML)
+              if(issueData.issueItems){
+                const {options, selectedIndex} = e.target
+                setIssueData({...issueData, ...{ deliveryPlaceId : Number(e.target.value), deliveryPlaceName: options[selectedIndex].innerHTML}})  
+              }
             }}
               value={issueData.deliveryPlaceId}
             />
@@ -160,10 +161,13 @@ const RegisterIssue = () => {
               <Box>
                 <InputGroup>
                   <InputLeftAddon aria-required>樹種</InputLeftAddon>
-                  <WoodSpeciesSelect required onSelect={(e) => { 
-                    updateItemField<"woodSpeciesId">(index, "woodSpeciesId", Number(e.target.value))
-                    const {options, selectedIndex} = e.target
-                    updateItemField<"woodSpeciesName">(index, "woodSpeciesName", options[selectedIndex].innerHTML)
+                  <WoodSpeciesSelect required onSelect={(e) => {
+                    if(issueData.issueItems){
+                      const {options, selectedIndex} = e.target
+                      const newItem = { ...issueData.issueItems[index], ...{ woodSpeciesId : Number(e.target.value), woodSpeciesName: options[selectedIndex].innerHTML}}
+                      const newItems = Object.assign([], issueData.issueItems, {[index]: newItem})
+                      setIssueData({...issueData, ...{ issueItems: newItems}})  
+                    }
                   }}
                     value={item.woodSpeciesId??undefined}
                   />
@@ -175,10 +179,13 @@ const RegisterIssue = () => {
                   <ItemTypeSelect required 
                   value={item.itemTypeId}
                   onSelect={(e) => { 
-                    updateItemField<"itemTypeId">(index, "itemTypeId", Number(e.target.value))
-                    const {options, selectedIndex} = e.target
-                    updateItemField<"itemTypeName">(index, "itemTypeName", options[selectedIndex].innerHTML)
-                    }}/>
+                    if(issueData.issueItems){
+                      const {options, selectedIndex} = e.target
+                      const newItem = { ...issueData.issueItems[index], ...{ itemTypeId : Number(e.target.value), itemTypeName: options[selectedIndex].innerHTML}}
+                      const newItems = Object.assign([], issueData.issueItems, {[index]: newItem})
+                      setIssueData({...issueData, ...{ issueItems: newItems}})  
+                    }
+                  }}/>
                 </InputGroup>
               </Box>
               <Box>
@@ -199,9 +206,12 @@ const RegisterIssue = () => {
                 <InputGroup>
                   <InputLeftAddon aria-required>グレード</InputLeftAddon>
                   <GradeSelect value={item.gradeId ?? undefined} onSelect={(e) => { 
-                    updateItemField<"gradeId">(index, "gradeId", Number(e.target.value))
-                    const {options, selectedIndex} = e.target;
-                    updateItemField<"gradeName">(index, "gradeName", options[selectedIndex].innerHTML)
+                    if(issueData.issueItems){
+                      const {options, selectedIndex} = e.target
+                      const newItem = { ...issueData.issueItems[index], ...{ gradeId : Number(e.target.value), gradeName: options[selectedIndex].innerHTML}}
+                      const newItems = Object.assign([], issueData.issueItems, {[index]: newItem})
+                      setIssueData({...issueData, ...{ issueItems: newItems}})  
+                    }
                     }}/>
                 </InputGroup>
               </Box>
@@ -250,9 +260,12 @@ const RegisterIssue = () => {
                   <UnitSelect required 
                   value={item.costUnitId}
                   onSelect={(e) => { 
-                    updateItemField<"costUnitId">(index, "costUnitId", Number(e.target.value)) 
-                    const {options, selectedIndex} = e.target
-                    updateItemField<"costUnitName">(index, "costUnitName", options[selectedIndex].innerHTML)
+                    if(issueData.issueItems){
+                      const {options, selectedIndex} = e.target
+                      const newItem = { ...issueData.issueItems[index], ...{ costUnitId : Number(e.target.value), costUnitName: options[selectedIndex].innerHTML}}
+                      const newItems = Object.assign([], issueData.issueItems, {[index]: newItem})
+                      setIssueData({...issueData, ...{ issueItems: newItems}})  
+                    }
                     }}/>
                 </InputGroup>
               </Box>

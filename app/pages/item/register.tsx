@@ -7,6 +7,7 @@ import { Decimal } from "decimal.js"
 import usePageTitle from '~/hooks/usePageTitle'
 import "~/utils/string"
 import "~/utils/number"
+import dayjs from "dayjs"
 
 type Props = {
   issueId?: number //発注情報を入庫化する時
@@ -117,7 +118,7 @@ const Register = ({issueId}:Props) => {
           <InputLeftAddon aria-required bgColor={issueId?"red.100":undefined}>入荷日</InputLeftAddon>
           <Input type="date" 
           required
-          value={stockData.arrivalDate?.toDateString()}
+          value={stockData.arrivalDate ? dayjs(stockData.arrivalDate).format('YYYY-MM-DD'): undefined}
           onChange={(e) => { 
             updateField<"arrivalDate">("arrivalDate", e.target.valueAsDate ?? undefined)}}/>
         </InputGroup>

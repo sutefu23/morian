@@ -1,6 +1,6 @@
 import { ValidationError, FieldNotFoundError } from '@domain/type/error'
 import { ItemTypes, WoodSpecies } from '@domain/init/master'
-import { Item as EntityItem, lotNoType, lengthType } from '@domain/entity/stock'
+import { Item as EntityItem, lotNoType, lengthType, Supplier } from '@domain/entity/stock'
 import { Item as PrismaItem } from '$prisma/client'
 import { PrismaClient } from '@prisma/client'
 import { Decimal } from 'decimal.js'
@@ -23,7 +23,18 @@ export const dbModelToEntity = async (
   if (!supplierId) {
     throw new FieldNotFoundError('supplierIdが見つかりません。')
   }
-
+  const supplierName = (() => {
+    if(supplierId && !model.supplierName){
+      prisma.supplier.findUnique({
+        where: { id: supplierId }
+      }) 
+    }else{
+      return model.supplierName
+    }
+  })()
+  if (!supplierName) {
+    throw new FieldNotFoundError('supplierNameが見つかりません。')
+  }
   const woodSpecies = WoodSpecies.find(
     (item) => item.id === model.woodSpeciesId
   )
@@ -94,6 +105,7 @@ export const dbModelToEntity = async (
     woodSpecies: woodSpecies,
     lotNo: lotNo,
     supplierId,
+    supplierName,
     length,
     width,
     thickness,
