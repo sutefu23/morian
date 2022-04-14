@@ -5,7 +5,7 @@ import { Autocomplete, Item } from "~/components/combobox/autocomplete"
 import { useAsyncList } from "react-stately";
 
 type Props = { 
-  onSelect: (event:React.Key) => void
+  onSelect: (selected: {id: number, name: string}) => void
   required?: boolean
   defaultKey?: number
 }
@@ -16,15 +16,21 @@ const select = ({ onSelect, required, defaultKey}:Props) => {
     (async() => {
       if(defaultKey){
         const response = await apiClient.supplier._id(defaultKey).get()
-        const data = await response.body
+        const data = response.body
         if(data){
           list.setFilterText(data.name)
         }
       }
     })()
   }, [])
-  const onSelectionChange = (key:React.Key) => {
-    onSelect(key)
+  const onSelectionChange = async (key:React.Key) => {
+    const response = await apiClient.supplier._id(Number(key)).get()
+    if(response.body){
+      onSelect({
+        id : response.body?.id,
+        name: response.body?.name
+      })  
+    }
   };
 
   const list = useAsyncList<Supplier>({

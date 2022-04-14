@@ -3,7 +3,6 @@ import {
   Tr,
   Th,
   Td,
-  useDisclosure,
 } from "@chakra-ui/react"
 import { IssueItemProps, IssueProps } from "~/server/domain/entity/issue"
 

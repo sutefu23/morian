@@ -17,7 +17,7 @@ const Register = ({issueId}:Props) => {
   const { setTitle } = usePageTitle()
   setTitle("新規在庫登録")
   
-  const { stockData, updateField, calcCostPackageCount, costPerUnit, totalPrice, postStock, useDemo } = useStock()
+  const { stockData, setStockData, updateField, calcCostPackageCount, costPerUnit, totalPrice, postStock, useDemo } = useStock()
 
   return (
     <>
@@ -57,7 +57,8 @@ const Register = ({issueId}:Props) => {
           <InputGroup>
             <InputLeftAddon aria-required>仕入先</InputLeftAddon>
             <SupplierSelect 
-              onSelect={ (key) => {updateField<"supplierId">("supplierId", Number(key))}}
+              onSelect={ (selected) => {
+                setStockData({...stockData, supplierId: selected.id, supplierName: selected.name})}}
               defaultKey={stockData.supplierId}
             />
           </InputGroup>

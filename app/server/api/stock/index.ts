@@ -1,10 +1,10 @@
 import { ItemDTO } from '@domain/dto/item'
 import { Query } from '$/domain/repository/interface'
 import { UpdateItemData } from '$/domain/service/stock'
-
+import { GetParam } from '$/domain/service/stock'
 export type Methods = {
   get: {
-    query: Query<ItemDTO> | Query<ItemDTO>[]
+    query: GetParam
     resBody: ItemDTO[]
     status: 200
   }

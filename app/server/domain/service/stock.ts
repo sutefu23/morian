@@ -60,6 +60,11 @@ export type UpdateHistoryData = {
   readonly isTemp: boolean
 }
 
+export type GetParam = {
+  woodSpeciesId? : number,
+  itemTypeId? : number
+}
+
 export class ItemService {
   private itemRepository: IItemRepository
   private historyService: HistoryService
@@ -172,7 +177,13 @@ export class ItemService {
     return itemDto
   }
 
-  async findManyItem(query: Query<ItemDTO> | Query<ItemDTO>[]) {
+  async findManyItem(param: GetParam) {
+    const margedQuery:(Query<ItemDTO>|undefined)[] = 
+    [
+      param.woodSpeciesId ? {field:"woodSpeciesId", operator:"=", value: param?.woodSpeciesId }: undefined,
+      param.itemTypeId ? {field:"itemTypeId", operator:"=", value: param?.itemTypeId }: undefined
+    ]
+    const query = margedQuery.filter((item): item is NonNullable<typeof item> => item != null)
     const data = await this.itemRepository.findMany(query)
     if (data instanceof Error) {
       return data as Error

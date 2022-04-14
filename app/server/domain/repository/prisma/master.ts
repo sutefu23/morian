@@ -349,7 +349,7 @@ export class WoodSpeciesRepository implements ISpeciesRepository {
 
 export class ItemTypeRepository implements IItemTypeRepository {
   async update(id: number, entity: Partial<ItemTypeType>): Promise<ItemTypeType | Error> {
-    const result = await prisma.species.update(
+    const result = await prisma.itemType.update(
       {where: {id}, data: entity}
     )
     if(!result?.id || !result?.name || !result?.order){
@@ -363,7 +363,7 @@ export class ItemTypeRepository implements IItemTypeRepository {
     return data
   }
   async create(entity: ItemTypeType): Promise<ItemTypeType|FieldNotFoundError> {
-    const result = await prisma.species.create(
+    const result = await prisma.itemType.create(
       {data: entity}
     )
     if(!result?.id || !result?.name || !result?.order){
@@ -378,7 +378,7 @@ export class ItemTypeRepository implements IItemTypeRepository {
   }
 
   async findById(id: number): Promise<ItemTypeType|FieldNotFoundError> {
-    const result = await prisma.species.findUnique({
+    const result = await prisma.itemType.findUnique({
       where: {
         id
       }

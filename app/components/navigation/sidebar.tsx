@@ -20,35 +20,40 @@ import { apiClient } from '~/utils/apiClient'
 import router from 'next/router'
 import StatusBar from '~/components/feedback/statusBar'
 import useSidebar from '~/hooks/useSidebar'
-interface Link {
+type Link = {
   key: number|string
   name: string
   path?: string
   children?: Link[] 
-}
+}|undefined
 
 
 const Sidebar = () => {
   const { data: itemTypes, error: itemTypeErr } = useAspidaQuery(apiClient.master.itemType)
   const { data: species, error : speciesErr } = useAspidaQuery(apiClient.master.species)
+  const { data: existItemGroup, error : existItemGroupErr } = useAspidaQuery(apiClient.itemList.existGroups)
 
   const { isOpen, setIsOpen } = useSidebar()
   if (itemTypeErr) return <StatusBar status="error" message="商品の取得に失敗しました。"/>
   if (speciesErr) return <StatusBar status="error" message="樹種の取得に失敗しました。"/>
+  if (existItemGroupErr) return <StatusBar status="error" message="商品グループの取得に失敗しました。"/>
 
   if (!species?.length || !itemTypes?.length) return <div>loading...</div>
-
-  const itemLinks: Link[] = itemTypes.map(i => {
-    const childLinks : Link[] = species.map(s => (
-      {
-        key: s.id,
-        name: s.name,
-        path: `/item/${i.id}/species/${s.id}`,
-      }
-    ))
+  const itemLinks: Link[] = itemTypes.map(item => {
+    const woodSpecies = existItemGroup?.filter(group => group.itemTypeId === item.id).map(i => i.woodSpeciesId)
+    if(!woodSpecies) return
+    const childLinks : Link[] = woodSpecies.map(id => {
+      const specie = species.find((s) => s.id === id)
+      if(!specie) return
+      return {
+        key: specie.id,
+        name: specie.name,
+        path: `/item/${item.id}/species/${specie.id}`,
+      }  
+    })
     return {
-      key: i.id,
-      name: i.name,
+      key: item.id,
+      name: item.name,
       path: "",
       children: childLinks
     }
@@ -94,22 +99,22 @@ const Sidebar = () => {
   const ButtonLinks = (props: {links: Link[]}) => 
     (<>
       {props.links.map(link => (
-        !link.children?
+        !link?.children?
         <Button
         mt="1" 
         w="100%"
         bgColor="transparent"
         border="solid 2px #eee"
-        key={link.key}
-        onClick={() => {link.path && router.push(link.path)}}>
-          {link.name}
+        key={link?.key}
+        onClick={() => {link?.path && router.push(link.path)}}>
+          {link?.name}
         </Button>
         :
         <Accordion allowToggle
           defaultIndex={
-            link.key==='listItem'?0:-1
+            link?.key==='listItem'?0:-1
           }
-          key={link.key}
+          key={link?.key}
         >
           <AccordionItem>
             <AccordionButton>

@@ -1,5 +1,8 @@
+import { getQuery } from "$/service/itemList"
+import { Item } from "@prisma/client"
 export type Methods = {
   get: {
-    resBody: string
+    query: getQuery,
+    resBody: Item[]
   }
 }

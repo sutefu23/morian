@@ -2,22 +2,143 @@ import { useRouter } from 'next/router'
 import { Table, Thead, Tbody, Tr, Th, Td,} from "@chakra-ui/react"
 import usePageTitle from '~/hooks/usePageTitle'
 import { apiClient } from '~/utils/apiClient'
-import { useEffect } from 'react'
+import { HStack, Box, VStack, InputGroup, InputLeftAddon, Input, Spacer, Button, } from "@chakra-ui/react"
+import { useAspidaQuery } from '@aspida/react-query'
+import { InputLabel } from "@material-ui/core"
+import useStock from '~/hooks/useStock'
+import dayjs from 'dayjs'
 
 const HistoryListPage = () => {
   const router = useRouter()
   const { lotId } = router.query
   const { setTitle } = usePageTitle()
-  useEffect(() => {
-    (async() => {
-      const response = await apiClient.issue.get({query: { isStored: false}})
-      const data = await response.body
-    })()
-  }, [])
-  setTitle(`${lotId} レッドシダー フローリング 在庫一覧`)
+
+  const { data: item } = useAspidaQuery(apiClient.historyList, {query: {
+    lotNo: String(lotId)
+  }})
+  const { updateField } = useStock()
+
+  const { data: units, } = useAspidaQuery(apiClient.master.unit)
+  const { data: grades } = useAspidaQuery(apiClient.master.grade)
+  const { data: warehouses } = useAspidaQuery(apiClient.master.warehouse)
+  const { data: itemType } = useAspidaQuery(apiClient.master.itemType._id(Number(item?.itemTypeId)))
+  const { data: woodSpecies } = useAspidaQuery(apiClient.master.species._id(Number(item?.woodSpeciesId)))
+  setTitle(`${lotId} ${woodSpecies?.name} ${itemType?.name} 在庫一覧`)
+  const scale = `${item?.length} * ${item?.thickness}* ${item?.width}`
   return (
     <>
-    <Table variant="striped" colorScheme="gray" w="150vw">
+      <VStack align="left" pl="10">
+      <HStack>
+        <Box>
+          <InputGroup>
+            <InputLeftAddon>グレード</InputLeftAddon>
+            <Input readOnly
+              value={item?.gradeId ?? undefined}
+            />
+          </InputGroup>
+        </Box>
+        <Box>
+          <InputGroup>
+            <InputLeftAddon>仕様</InputLeftAddon>
+            <Input readOnly
+              value={item?.spec ?? undefined}
+            />
+          </InputGroup>
+        </Box>
+        <Box>
+          <InputGroup>
+            <InputLeftAddon>仕入先</InputLeftAddon>
+            <Input readOnly
+              value={item?.supplierName ?? undefined}
+            />
+          </InputGroup>
+        </Box>
+      </HStack>
+      <HStack>
+        <Box>
+          <InputGroup>
+            <InputLeftAddon>寸法</InputLeftAddon>
+            <Input readOnly
+              value={scale}
+            />
+          </InputGroup>
+        </Box>
+        <Box>
+          <InputGroup>
+            <InputLeftAddon>入数</InputLeftAddon>
+            <Input readOnly w="4em"
+              value={item?.packageCount ? Number(item.costPackageCount): undefined}
+            />
+          </InputGroup>
+        </Box>
+      </HStack>
+      <HStack>
+        <Box>
+          <InputGroup>
+          <InputLeftAddon>製造元</InputLeftAddon>
+          <Input readOnly
+              value={item?.manufacturer ?? undefined}
+            />
+          </InputGroup>
+        </Box>
+        <Box>
+          <InputGroup>
+            <InputLeftAddon>倉庫</InputLeftAddon>
+            <Input readOnly
+              value={item?.warehouseId ?? undefined}
+            />
+          </InputGroup>
+        </Box>
+        <Box>
+        <InputGroup>
+          <InputLeftAddon>入荷日</InputLeftAddon>
+            <Input readOnly
+              value={item?.arrivalDate ? dayjs(item.arrivalDate).format("YY/MM/DD"):undefined}
+            />
+        </InputGroup>
+        </Box>
+      </HStack>
+      <HStack>
+        <Box>
+          <InputGroup>
+            <InputLeftAddon>原価</InputLeftAddon>
+            <Input readOnly
+              value={item?.cost ? Number(item.cost): undefined}
+            />
+            <InputLabel style={{fontSize:"1.5em", marginTop:"10px"}}>/</InputLabel>
+            <Input readOnly
+              value={item?.costUnitId ?? undefined}
+            />
+          </InputGroup>
+        </Box>
+        <Box>
+          <InputGroup>
+            <InputLeftAddon>数量</InputLeftAddon>
+            <Input readOnly
+              value={item?.count ? Number(item.count): undefined}
+            />
+          </InputGroup>
+        </Box>
+      </HStack>
+        <Spacer/>
+      <HStack>
+        <Box width="75vw" >
+          <InputGroup>
+            <InputLeftAddon>備考</InputLeftAddon>
+            <Input onChange={(e) => { updateField<"note">("note", e.target.value)}}/>
+          </InputGroup>
+        </Box>
+      </HStack>
+      <HStack>
+        <Box width="75vw" >
+          <InputGroup>
+            <InputLeftAddon>不良品備考</InputLeftAddon>
+            <Input placeholder="割れなど傷品としての備考" onChange={(e) => { updateField<"defectiveNote">("defectiveNote", e.target.value)}}/>
+          </InputGroup>
+        </Box>
+      </HStack>
+    </VStack>
+    <Table variant="striped" colorScheme="gray">
       <Thead>
         <Th>ロット番号</Th>
         <Th>樹種</Th>

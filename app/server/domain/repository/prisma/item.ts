@@ -1,6 +1,6 @@
 import { IItemRepository, Query } from '../interface'
 import { Item } from '@domain/entity/stock'
-import { PrismaClient } from '@prisma/client'
+import { Prisma, PrismaClient, Item as ItemModel } from '@prisma/client'
 import {
   ValidationError,
   FieldNotFoundError,
@@ -9,6 +9,7 @@ import {
 import { dbModelToEntity } from '../mapper/item'
 import { ItemDTO } from '@domain/dto/item'
 import { UpdateItemData } from '$/domain/service/stock'
+import { buildWhereStatement } from './common'
 
 export class ItemRepository implements IItemRepository {
   readonly prisma: PrismaClient
@@ -16,8 +17,18 @@ export class ItemRepository implements IItemRepository {
   constructor() {
     this.prisma = new PrismaClient()
   }
-  findMany(query: Query<ItemDTO> | Query<ItemDTO>[]): Promise<Error | Item[]> {
-    throw new Error('Method not implemented.')
+  async findMany(query: Query<ItemDTO> | Query<ItemDTO>[]): Promise<Error | Item[]> {
+    const criteria = buildWhereStatement(query)
+
+    const result = await this.prisma.$queryRaw<ItemModel[]>(
+      Prisma.sql`SELECT * FROM Item WHERE ${criteria}`
+    )
+    console.log(result)
+
+    const items = (await Promise.all(
+      result.map((h) => dbModelToEntity(h))
+    )) as Item[]
+    return items
   }
 
   async findById(id: number) {

@@ -83,7 +83,10 @@ const RegisterIssue = () => {
           <InputGroup>
             <InputLeftAddon bgColor="blue.100" aria-required>仕入先</InputLeftAddon>
             <SupplierSelect  
-              onSelect={ (key) => { updateField<"supplierId">("supplierId", Number(key))}}
+              onSelect={
+                (selected) => {
+                  setIssueData({...issueData, supplierId: selected.id, supplierName: selected.name})}
+              }
               defaultKey={issueData.supplierId}  
             />
           </InputGroup>

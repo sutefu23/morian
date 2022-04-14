@@ -9,34 +9,31 @@ import {
   Td,
 } from "@chakra-ui/react"
 import usePageTitle from '~/hooks/usePageTitle'
-import { useEffect, useState } from 'react'
 import { apiClient } from '~/utils/apiClient'
-import { ItemDTO } from '~/server/domain/dto/item'
 import dayjs from 'dayjs'
-import { SupplierDTO } from '~/server/domain/dto/supplier'
+import { useAspidaQuery } from '@aspida/react-query'
 
 const WoodSpeciesPage = () => {
   const router = useRouter()
   const { setTitle } = usePageTitle()
   const { itemTypeId, woodSpeciesId } = router.query
-  const [ stocks, setStocks ] = useState<ItemDTO[]>([])
-  useEffect(() => {
-    if(!woodSpeciesId || !itemTypeId){
-      return 
-    }
-    (async() => {
-      const response = await apiClient.stock.get({query:
-        [
-          {field:"woodSpeciesId", operator:"=", value: woodSpeciesId as string },
-          {field:"itemTypeId", operator:"=", value: itemTypeId as string }
-        ]})
-      const data = await response.body
-      setStocks(data)
-    })()
-  }, [])
-  
-  const lotNo = '155-1'
-  setTitle("レッドシダー　フローリング 一覧")
+
+
+  if(!woodSpeciesId || !itemTypeId){
+    return <><p>Loading...</p></>
+  }
+  const { data: stocks } = useAspidaQuery(apiClient.itemList, {query: {
+    woodSpeciesId: Number(woodSpeciesId),
+    itemTypeId: Number(itemTypeId)
+  }})
+
+  const { data: units, } = useAspidaQuery(apiClient.master.unit)
+  const { data: grades } = useAspidaQuery(apiClient.master.grade)
+  const { data: warehouses } = useAspidaQuery(apiClient.master.warehouse)
+  const { data: itemType } = useAspidaQuery(apiClient.master.itemType._id(Number(itemTypeId)))
+  const { data: woodSpecies } = useAspidaQuery(apiClient.master.species._id(Number(woodSpeciesId)))
+
+  setTitle(`${woodSpecies?.name} ${itemType?.name}`)
   return (
     <>
     <Table variant="striped" colorScheme="gray" >
@@ -56,19 +53,19 @@ const WoodSpeciesPage = () => {
         </Tr>
       </Thead>
       <Tbody>
-        {stocks.map((stock) => (
+        {stocks && stocks.map((stock) => (
           <Tr key={stock.id}>
           <Td>{stock.lotNo}</Td>
-          <Td>{stock.gradeName}</Td>
+          <Td>{grades?.find(g => g.id === stock.gradeId)?.name}</Td>
           <Td>{stock.spec}</Td>
-          <Td>{stock.supplierId}</Td>
+          <Td>{stock.supplierName}</Td>
           <Td>{stock.packageCount}</Td>
           <Td>{stock.length}{(stock.thickness)?`*${stock.thickness}`:""}{(stock.width)?`*${stock.width}`:""}</Td>
-          <Td>{dayjs(stock.arrivalDate).format('YY/MM/DD')}</Td>
-          <Td>{stock.warehouseName}</Td>
-          <Td>{stock.cost}/{stock.costUnitName}</Td>
-          <Td>{stock.tempCount} {stock.unitName}</Td>
-          <Td><Button colorScheme='blue' onClick={() => { router.push(`/history/${lotNo}`)}}>詳細</Button></Td>
+          <Td>{stock.arrivalDate?dayjs(stock.arrivalDate).format('YY/MM/DD'):""}</Td>
+          <Td>{warehouses?.find(w => w.id === stock.warehouseId)?.name }</Td>
+          <Td>{stock.cost}/{units?.find(u => u.id === stock.costUnitId)?.name}</Td>
+          <Td>{stock.tempCount} {units?.find(u => u.id === stock.unitId)?.name}</Td>
+          <Td><Button colorScheme='blue' onClick={() => { router.push(`/history/${stock.lotNo}`)}}>詳細</Button></Td>
         </Tr>
         ))}
       </Tbody>

@@ -1,8 +1,9 @@
+import { getHistoryList } from '$/service/historyList'
 import { defineController } from './$relay'
-import { getItemList } from "service/itemList"
+
 export default defineController(() => ({
   get: async ({query}) => {
-    const data = await getItemList(query)
+    const data = await getHistoryList(query)
     if(data instanceof Error){
       return { status: 400, body: data.message}
     }
