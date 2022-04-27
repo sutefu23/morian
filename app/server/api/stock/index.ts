@@ -9,7 +9,7 @@ export type Methods = {
     status: 200
   }
   post: {
-    reqBody: { data: UpdateItemData; issueId?: number }
+    reqBody: { data: UpdateItemData }
     resBody: ItemDTO
     status: 201
   }

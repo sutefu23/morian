@@ -21,6 +21,7 @@ export interface IssueProps {
 }
 
 export interface IssueItemProps {
+  readonly id: number
   readonly itemTypeId:number
   readonly itemTypeName: string
   readonly woodSpeciesName :string | null // 樹種
@@ -40,4 +41,5 @@ export interface IssueItemProps {
   readonly cost :Prisma.Decimal // 原価
   readonly costUnitName : string // 原価単位
   readonly costUnitId :number 
+  readonly isStored: boolean
 }

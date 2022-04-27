@@ -1,9 +1,8 @@
-import { useCallback, useState } from 'react'
+import { useCallback} from 'react'
 import { UpdateItemData } from '~/server/domain/service/stock'
 import { Decimal } from 'decimal.js'
 import { Units } from '~/server/domain/init/master'
 import { apiClient } from '~/utils/apiClient'
-import { 入庫理由 } from '~/server/domain/entity/stock'
 import { atom , useRecoilState } from 'recoil'
 
 export type EditUpdataItemData = Partial<UpdateItemData>
@@ -277,21 +276,20 @@ const useStock = () => {
   }, [stockData])
 
   const postStock = useCallback(
-    async (issueId?:number) => {
+    async () => {
       const postStockData = checkValidStock(stockData)
       if (!postStockData) {
         console.error('postStockData is not valid')
         return
       }
+
       await apiClient.stock.post({
         body: {
           data: postStockData,
-          issueId
         }
       })
 
       alert('登録しました')
-      window.location.reload()
       return
     },
     [stockData]

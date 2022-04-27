@@ -29,12 +29,11 @@ const IssueDetail = ({issue, item}:Props) => {
     <Tr><Th>仕様</Th><Td>{item.spec}</Td></Tr>
     <Tr><Th>製造元</Th><Td>{item.manufacturer}</Td></Tr>
     <Tr><Th>グレード</Th><Td>{item.gradeName} </Td></Tr>
-    <Tr><Th> 寸法</Th><Td>{item.length}{(item.thickness)?`*${item.thickness}`:""}{(item.width)?`*${item.width}`:""}</Td></Tr>
-    <Tr><Th> 入数</Th><Td>{item.packageCount}</Td></Tr>
-    <Tr><Th> 原価単位数量</Th><Td>{item.costPackageCount}</Td></Tr>
-    <Tr><Th> 数量</Th><Td>{item.count} {item.unitName}</Td></Tr>
-    <Tr><Th> 入荷予定日</Th><Td>{item.arrivalExpectedDate} </Td></Tr>
-    <Tr><Th> 原価</Th><Td>{item.cost} {item.costUnitName}</Td></Tr>
+    <Tr><Th>寸法</Th><Td>{item.length}{(item.thickness)?`*${item.thickness}`:""}{(item.width)?`*${item.width}`:""}</Td></Tr>
+    <Tr><Th>入数</Th><Td>{item.packageCount}</Td></Tr>
+    <Tr><Th>原価単位数量</Th><Td>{item.costPackageCount}</Td></Tr>
+    <Tr><Th>数量</Th><Td>{item.count} {item.unitName}</Td></Tr>
+    <Tr><Th>原価</Th><Td>{item.cost} {item.costUnitName}</Td></Tr>
     </Table>
   )
 }

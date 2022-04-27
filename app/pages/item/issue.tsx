@@ -315,7 +315,7 @@ const RegisterIssue = () => {
             <Box>
             <InputGroup>
               <InputLeftAddon>最小単位当たりの原価</InputLeftAddon>
-              <Input align="right" readOnly value={
+              <Input textAlign="right" readOnly value={
                 costPerUnit(item).toYenFormatKanji()
                 }/>
             </InputGroup>
@@ -323,7 +323,7 @@ const RegisterIssue = () => {
           <Box>
             <InputGroup>
               <InputLeftAddon aria-required>在庫金額</InputLeftAddon>
-              <Input align="right" readOnly value={
+              <Input textAlign="right" readOnly value={
                 totalPrice(item).toYenFormatKanji()
                 }/>
             </InputGroup>

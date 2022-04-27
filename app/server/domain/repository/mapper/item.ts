@@ -86,6 +86,7 @@ export const dbModelToEntity = async (
   const count = new Decimal(model.count.toString())
   const tempCount = new Decimal(model.tempCount.toString())
 
+  const issueItemId = model.issueItemId ?? undefined
   const arrivalDate = model.arrivalDate ?? undefined
   const width = model.width ?? undefined
   const thickness = model.thickness ?? undefined
@@ -95,6 +96,7 @@ export const dbModelToEntity = async (
 
   const newItem = {
     ...model,
+    issueItemId,
     cost,
     packageCount,
     costPackageCount,

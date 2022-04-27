@@ -18,10 +18,14 @@ import { HistoryDTO, HistoryToDTO } from '../dto/history'
 import { Decimal } from 'decimal.js'
 import { HistoryRepository } from '../repository/prisma/history'
 import { AuthService } from './auth'
+import { PrismaClient } from '@prisma/client'
+
+const prisma = new PrismaClient()
 
 export type UpdateItemData = {
   readonly lotNo: string
   readonly itemTypeId: number
+  readonly issueItemId?: number
   readonly woodSpeciesId: number
   readonly gradeId?: number
   readonly spec?: string
@@ -115,7 +119,7 @@ export class ItemService {
     const itemDto = ItemToDTO(data)
     return itemDto
   }
-  async registerItem(item: UpdateItemData, issueId?: number) {
+  async registerItem(item: UpdateItemData) {
     //仕入
     const hasLotNo = await this.findLotNo(item.lotNo)
     if (hasLotNo instanceof Error) {
@@ -133,7 +137,13 @@ export class ItemService {
     if (!editUser) {
       return new Error('認証されたユーザーが見つかりません。')
     }
-
+    await prisma.issueItem.update({
+      where: {
+        id:item.issueItemId
+      },
+      data:{isStored:true}
+    })
+  
     const 仕入詳細 = {
       itemId: data.id,
       note: data.note,

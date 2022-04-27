@@ -5,7 +5,6 @@ import { Units } from '~/server/domain/init/master'
 import { apiClient } from '~/utils/apiClient'
 import { DeepPartial } from '~/types/DeepPartial.spec'
 import produce from "immer"
-import useUser from './useUser'
 
 export type EditIssueData = DeepPartial<IssueProps>
 export type EditIssueItemData = DeepPartial<IssueItemProps>
@@ -30,8 +29,6 @@ const defaultItemData = {
   cost :undefined,
   costUnitName : "", // 原価単位
   costUnitId :1 ,
-  issueNote:"",
-  innerNote:""
 }
 
 const defaultData = {
@@ -47,6 +44,10 @@ const defaultData = {
   deliveryPlaceName: '',
   deliveryAddress : '',
   receiveingStaff : '',
+  issueNote:"",
+  innerNote:"",
+  isStored:false,
+  isDraft:true,
   issueItems: [
     defaultItemData
   ]
@@ -68,6 +69,8 @@ const demoData = {
   issueNote : '納品書を1枚入れてください。',
   innerNote : 'キズアリ。2月中旬予定',
   receiveingStaff : '田中',
+  isStored:false,
+  isDraft:true,
   issueItems: [
     {
       itemTypeName: '集成材',

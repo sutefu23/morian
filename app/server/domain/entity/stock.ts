@@ -11,7 +11,7 @@ export class lotNoType extends ValueObject<string> {
 
   static getInstance(val: string): lotNoType | ValidationError {
     if (!/^[A-Z]+-([0-9]|-)+$/gu.test(val)) {
-      return new ValidationError('lotNoの形式が正しくありません。英語-数字')
+      return new ValidationError('lotNoの形式が正しくありません。英語-数字'+ val)
     }
     return new this(val)
   }
@@ -91,6 +91,7 @@ export class lengthType extends ValueObject<number | '乱尺'> {
 export interface ItemProps {
   readonly id: number
   readonly lotNo: lotNoType
+  readonly issueItemId?: number
   readonly itemType: ItemTypeType
   readonly woodSpecies: WoodSpeciesType
   readonly grade?: GradeType
@@ -118,6 +119,7 @@ export interface ItemProps {
 export class Item extends Entity<ItemProps> implements ItemProps {
   readonly lotNo: lotNoType
   readonly itemType: ItemTypeType
+  readonly issueItemId?: number
   readonly woodSpecies: WoodSpeciesType
   readonly grade?: GradeType
   readonly spec?: string

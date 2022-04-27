@@ -104,6 +104,7 @@ const Home = () => {
                         woodSpeciesId: item.woodSpeciesId?? undefined,
                         itemTypeId: item.itemTypeId,
                         supplierId: issue.supplierId,
+                        supplierName: issue.supplierName,
                         gradeId: item.gradeId ?? undefined,
                         length: item.length ?? undefined,
                         thickness: item.thickness ?? undefined,
@@ -118,6 +119,7 @@ const Home = () => {
                         count: new Decimal(item.count.toString()),
                         unitId: item.unitId,
                         costPackageCount: new Decimal(item.costPackageCount.toString()),
+                        issueItemId: item.id,
                         enable: true
                       })
                       onBottomOpen()
@@ -146,7 +148,7 @@ const Home = () => {
         <BottomDrawer title="入庫登録" isOpen={isBottomOpen} onClose={onBottomClose} height="40vw">
           {
             issues &&
-           <Register issueId={issues[issueIndex].id}></Register>
+           <Register isFromIssue={true}></Register>
           }
         </BottomDrawer>
       </Footer>

@@ -9,7 +9,6 @@ export type getQuery = {
 }
 
 export const createIssue = async (issueData: IssueProps) => {
-  console.log(issueData.issueItems)
   const data = await prisma.issue.create({
     data: {
       ...issueData,

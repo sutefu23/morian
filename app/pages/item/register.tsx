@@ -10,10 +10,10 @@ import "~/utils/number"
 import dayjs from "dayjs"
 
 type Props = {
-  issueId?: number //発注情報を入庫化する時
+  isFromIssue?: boolean //発注情報を入庫化する時
 }
 
-const Register = ({issueId}:Props) => {
+const Register = ({isFromIssue}:Props) => {
   const { setTitle } = usePageTitle()
   setTitle("新規在庫登録")
   
@@ -27,7 +27,7 @@ const Register = ({issueId}:Props) => {
       <HStack>
         <Box>
           <InputGroup>
-            <InputLeftAddon aria-required bgColor={issueId?"red.100":undefined}>ロットNo</InputLeftAddon>
+            <InputLeftAddon aria-required bgColor={isFromIssue?"red.100":undefined}>ロットNo</InputLeftAddon>
             <Input required
               placeholder="半角英数字のみ可"
               onChange={(e) => { updateField<"lotNo">("lotNo", e.target.value.toNarrowCase())}}
@@ -108,7 +108,7 @@ const Register = ({issueId}:Props) => {
         </Box>
         <Box>
           <InputGroup>
-            <InputLeftAddon aria-required bgColor={issueId?"red.100":undefined}>倉庫</InputLeftAddon>
+            <InputLeftAddon aria-required bgColor={isFromIssue?"red.100":undefined}>倉庫</InputLeftAddon>
             <WarehouseSelect required 
             value={stockData?.warehouseId}
             onSelect={(e) => { updateField<"warehouseId">("warehouseId", Number(e.target.value))}}/>
@@ -116,7 +116,7 @@ const Register = ({issueId}:Props) => {
         </Box>
         <Box>
         <InputGroup>
-          <InputLeftAddon aria-required bgColor={issueId?"red.100":undefined}>入荷日</InputLeftAddon>
+          <InputLeftAddon aria-required bgColor={isFromIssue?"red.100":undefined}>入荷日</InputLeftAddon>
           <Input type="date" 
           required
           value={stockData.arrivalDate ? dayjs(stockData.arrivalDate).format('YYYY-MM-DD'): undefined}
@@ -187,20 +187,20 @@ const Register = ({issueId}:Props) => {
         <Box>
           <InputGroup>
             <InputLeftAddon>最小単位当たりの原価</InputLeftAddon>
-            <Input align="right" readOnly value={costPerUnit().toYenFormatKanji() }/>
+            <Input textAlign="right" readOnly value={costPerUnit().toYenFormatKanji() }/>
           </InputGroup>
         </Box>
         <Box>
           <InputGroup>
             <InputLeftAddon aria-required>在庫金額</InputLeftAddon>
-            <Input align="right" readOnly value={totalPrice().toYenFormatKanji()}/>
+            <Input textAlign="right" readOnly value={totalPrice().toYenFormatKanji()}/>
           </InputGroup>
         </Box>
         <Box>
           <Button type='submit' ml={50} w={100} bgColor="green.200"
           onClick={async (e) => {
             e.preventDefault()
-            await postStock(issueId)
+            await postStock()
             }
           }
           >登録</Button>

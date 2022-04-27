@@ -4,6 +4,7 @@ import { Item, lotNoType, lengthType } from '@domain/entity/stock'
 export type ItemDTO = {
   readonly id: number
   readonly lotNo: string
+  readonly issueItemId?: number
   readonly itemTypeId: number
   readonly itemTypeName: string
   readonly itemTypeOrder: number
@@ -44,6 +45,7 @@ export const ItemToDTO = (item: Item): ItemDTO => {
   return {
     id: item.id,
     lotNo: item.lotNo.value,
+    issueItemId: item.issueItemId,
     itemTypeId: item.itemType.id,
     itemTypeName: item.itemType.name,
     itemTypeOrder: item.itemType.order,
