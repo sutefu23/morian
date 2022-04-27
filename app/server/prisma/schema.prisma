@@ -47,7 +47,6 @@ model IssueItem {
   woodSpecies   Species?   @relation(name:"issueItemWoodSpecies", fields: [woodSpeciesId], references: [id]) // 樹種
   woodSpeciesId Int?
   woodSpeciesName String?
-  arrivalExpectedDate String?
   spec          String? //仕様
   manufacturer  String? // 製造元
   grade         Grade?      @relation(name: "issueItemGrade", fields: [gradeId], references: [id]) // グレード

@@ -33,7 +33,7 @@ const Navibar = () => {
     return <></>
   }
   return (
-    <Flex justifyContent="space-between" bgColor="blue.50">
+    <Flex justifyContent="space-between" bgColor="blue.50" mb="10px">
     <Box p='4' >
       
       {

@@ -43,7 +43,7 @@ const defaultData = {
   deliveryPlaceId : undefined,
   deliveryPlaceName: '',
   deliveryAddress : '',
-  ReceiveingStaff : '',
+  receiveingStaff : '',
   issueItems: [
     defaultItemData
   ]
@@ -51,7 +51,7 @@ const defaultData = {
 
 
 const demoData = {
-  managedId: 'MR-742-１',
+  managedId: 'MR-742-1',
   date: new Date('2022-2-10'),
   userId: 1,
   userName: '森庵充久',
@@ -83,7 +83,6 @@ const demoData = {
       count: new Decimal(1), // 在庫数量
       unitName:"㎥", // 単位
       unitId:1,
-      arrivalExpectedDate :"2月頃", // 入荷予定日
       cost : new Decimal(10000),
       costUnitName : "㎥", // 原価単位
       costUnitId :1 
@@ -106,7 +105,7 @@ const useIssue = () => {
 
   const addItemData = useCallback(() => {
     const newIndex = Number(issueData.issueItems?.length) +  1
-    const newItems = Object.assign([], issueData.issueItems, {[newIndex]: defaultItemData})
+    const newItems = [...issueData.issueItems??[], {[newIndex]: defaultItemData}]
     setIssueData({...issueData, ...{ issueItems: newItems}})  
   }, [issueData.issueItems])
   
@@ -150,6 +149,7 @@ const useIssue = () => {
         const dLength = new Decimal(length)
         const dThickness = new Decimal(thickness)
         const dPackageCount = new Decimal(String(packageCount))
+        console.log(unit)
         switch (unit) {
           case '㎥': // 幅/1000*長さ/1000*厚み/1000
             return dWidth
@@ -165,6 +165,7 @@ const useIssue = () => {
             return dWidth
               .dividedBy(thousand)
               .mul(dLength.dividedBy(thousand))
+              .mul(dPackageCount)
               .dividedBy(tubo)
 
           default:
@@ -215,6 +216,19 @@ const useIssue = () => {
       alert('納入場所は必須です。')
       return null
     }
+    if(issue.issueItems === undefined || issue.issueItems.length === 0){
+      alert("明細が存在しません")
+      return null
+    }
+
+    for (let i = 0; i < issue.issueItems?.length; i++) {
+      const item = issue.issueItems[i]
+      if(!checkValidItem(item)){
+        alert(`${i+1}番目の明細に未入力項目があります。`)
+        return null
+      }     
+    }
+
     return issue
   }
 
