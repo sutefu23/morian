@@ -37,7 +37,6 @@ export interface IssueItemProps {
   readonly count:Prisma.Decimal // 数量
   readonly unitName:string // 単位
   readonly unitId:number
-  readonly arrivalExpectedDate :string | null // 入荷予定日
   readonly cost :Prisma.Decimal // 原価
   readonly costUnitName : string // 原価単位
   readonly costUnitId :number 

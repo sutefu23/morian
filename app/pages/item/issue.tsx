@@ -10,6 +10,7 @@ import "~/utils/number"
 import { useEffect } from 'react'
 import { useRouter } from 'next/router';
 import dayjs from 'dayjs'
+import useUser from "~/hooks/useUser"
 
 const RegisterIssue = () => {
   const { setTitle } = usePageTitle()
@@ -30,7 +31,13 @@ const RegisterIssue = () => {
     fetchOrderSheet } = useIssue()
 
     const router = useRouter();
-  
+    const { user } = useUser()
+    useEffect(() => {
+      if(user){
+        setIssueData({...issueData, ...{userId: user.id, userName: user.name}})
+      }
+    },[user])
+
     const pageChangeHandler = () => {
       if(Number(issueData.issueItems?.length) > 0){
         const answer = window.confirm('内容がリセットされます、本当にページ遷移しますか？');
@@ -237,9 +244,9 @@ const RegisterIssue = () => {
                   <InputLeftAddon aria-required>長さｘ厚みｘ幅</InputLeftAddon>
                   <Input placeholder="長さ" value={item.length ?? undefined} onChange={(e) => { updateItemField<"length">(index, "length", e.target.value)}}/>
                   <InputLabel style={{fontSize:"1.2em", marginTop:"10px"}}>ｘ</InputLabel>
-                  <Input placeholder="厚み" type="number" value={item.thickness?? undefined} onChange={(e) => { updateItemField<"thickness">(index, "thickness", Number(e.target.value))}}/>
+                  <Input placeholder="厚み" type="number" value={item.thickness?? undefined} onChange={(e) => { updateItemField<"thickness">(index, "thickness", (e.target.value)?Number(e.target.value):undefined)}}/>
                   <InputLabel style={{fontSize:"1.2em", marginTop:"10px"}}>ｘ</InputLabel>
-                  <Input placeholder="幅" type="number" value={item.width ?? undefined} onChange={(e) => { updateItemField<"width">(index, "width", Number(e.target.value))}}/>
+                  <Input placeholder="幅" type="number" value={item.width ?? undefined} onChange={(e) => { updateItemField<"width">(index, "width", (e.target.value)?Number(e.target.value):undefined)}}/>
                 </InputGroup>
               </Box>
               <Box>
@@ -280,7 +287,14 @@ const RegisterIssue = () => {
                   type="number" placeholder="数字" onChange={(e) => { updateItemField<"count">(index, "count", e.target.value ? new Decimal(e.target.value): undefined)}}/>
                   <UnitSelect required 
                   value={item.unitId}
-                  onSelect={(e) => { updateItemField<"unitId">(index, "unitId", Number(e.target.value)) }}/>
+                  onSelect={(e) => { 
+                    if(issueData.issueItems){
+                      const {options, selectedIndex} = e.target
+                      const newItem = { ...issueData.issueItems[index], ...{ unitId : Number(e.target.value), unitName: options[selectedIndex].innerHTML}}
+                      const newItems = Object.assign([], issueData.issueItems, {[index]: newItem})
+                      setIssueData({...issueData, ...{ issueItems: newItems}})  
+                    }
+                    }}/>
                 </InputGroup>
               </Box>
               <Box>

@@ -4,6 +4,8 @@ import { Decimal } from 'decimal.js'
 import { Units } from '~/server/domain/init/master'
 import { apiClient } from '~/utils/apiClient'
 import { DeepPartial } from '~/types/DeepPartial.spec'
+import produce from "immer"
+import useUser from './useUser'
 
 export type EditIssueData = DeepPartial<IssueProps>
 export type EditIssueItemData = DeepPartial<IssueItemProps>
@@ -25,10 +27,11 @@ const defaultItemData = {
   count: undefined, // 在庫数量
   unitName:"", // 単位
   unitId:undefined,
-  arrivalExpectedDate :"", // 入荷予定日
   cost :undefined,
   costUnitName : "", // 原価単位
-  costUnitId :1 
+  costUnitId :1 ,
+  issueNote:"",
+  innerNote:""
 }
 
 const defaultData = {
@@ -86,6 +89,27 @@ const demoData = {
       cost : new Decimal(10000),
       costUnitName : "㎥", // 原価単位
       costUnitId :1 
+    },
+    {
+      itemTypeName: 'フローリング',
+      itemTypeId: 2,
+      woodSpeciesName: '杉',
+      woodSpeciesId: 18,
+      spec: '',
+      manufacturer: '',
+      gradeName: '上小無節',
+      gradeId: 12,
+      length: '1820',
+      width: 90,
+      thickness: 15,
+      packageCount: '10',
+      costPackageCount: '0.48',
+      count: '60',
+      unitName: '',
+      unitId: 2,
+      cost: '10000',
+      costUnitName: '坪',
+      costUnitId: 5
     }
   ]
 }
@@ -104,8 +128,9 @@ const useIssue = () => {
   )
 
   const addItemData = useCallback(() => {
-    const newIndex = Number(issueData.issueItems?.length) +  1
-    const newItems = [...issueData.issueItems??[], {[newIndex]: defaultItemData}]
+    const newItems = produce(issueData.issueItems, draft => {
+      draft?.push(defaultItemData)
+    })
     setIssueData({...issueData, ...{ issueItems: newItems}})  
   }, [issueData.issueItems])
   
@@ -149,7 +174,6 @@ const useIssue = () => {
         const dLength = new Decimal(length)
         const dThickness = new Decimal(thickness)
         const dPackageCount = new Decimal(String(packageCount))
-        console.log(unit)
         switch (unit) {
           case '㎥': // 幅/1000*長さ/1000*厚み/1000
             return dWidth
@@ -357,6 +381,7 @@ const useIssue = () => {
         console.error('postIssueData is not valid')
         return
       }
+      console.debug(JSON.stringify(postIssueData))
       await apiClient.issue.post({
         body: postIssueData,
       })
