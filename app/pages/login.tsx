@@ -94,7 +94,6 @@ const Login = () => {
                 <InputGroup>
                   <InputLeftElement
                     pointerEvents="none"
-                    
                   >
                     <CFaLock color="gray.300" />
                   </InputLeftElement>

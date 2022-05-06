@@ -41,5 +41,6 @@ export interface IssueItemProps {
   readonly cost :Prisma.Decimal // 原価
   readonly costUnitName : string // 原価単位
   readonly costUnitId :number 
+  readonly itemNote :string | null
   readonly isStored: boolean
 }

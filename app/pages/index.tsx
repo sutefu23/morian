@@ -9,6 +9,8 @@ import {
   Th,
   Td,
   useDisclosure,
+  chakra,
+  Input
 } from "@chakra-ui/react"
 import Footer from "~/components/Footer"
 import RightDrawer from '~/components/drawer/rightDrawer'
@@ -21,7 +23,9 @@ import Register from './item/register'
 import useStock from '~/hooks/useStock'
 import { Decimal } from 'decimal.js'
 import IssueDetail from "./item/issueDetail"
+import { GrEdit } from "react-icons/gr"
 
+const CGrEdit = chakra(GrEdit);
 const Home = () => {
   const { setTitle } = usePageTitle()
   setTitle("TOP (入荷状況)")
@@ -33,13 +37,14 @@ const Home = () => {
   useEffect(() => {
     (async() => {
       const response = await apiClient.issue.get({query: { isStored: false}})
-      const data = await response.body
+      const data = response.body
       setIssues(data)
     })()
   }, [])
 
   const { setStockData } = useStock()
-
+  const [ hoverdId, setHoveredId ] = useState<number|undefined>(undefined)
+  const [ editId, setEditId ] = useState<number|undefined>(undefined)
   const {isOpen: isRightOpen, onOpen: onRightOpen, onClose: onRightClose} = useDisclosure()
   const {isOpen: isBottomOpen, onOpen: onBottomOpen, onClose: onBottomClose} = useDisclosure()
   return (
@@ -58,7 +63,8 @@ const Home = () => {
             <Th>仕入先</Th>
             <Th>希望納期</Th>
             <Th>納入場所</Th>
-            <Th>内部備考</Th>
+            <Th>発注内部備考</Th>
+            <Th color="red.400" textAlign="center">入荷予定</Th>
             <Th>樹種</Th>
             <Th>材種</Th>
             <Th>グレード</Th>
@@ -88,6 +94,15 @@ const Home = () => {
                   <Td>{issue.expectDeliveryDate}</Td>
                   <Td>{issue.deliveryPlaceName}</Td>
                   <Td>{issue.innerNote}</Td>
+                  <Td 
+                  >
+                    <Input 
+                    onBlur={async (e) => {
+                      await apiClient.issueItem.patch({body:{id:item.id, data:{itemNote: e.currentTarget.value}}})
+                    }}
+                    defaultValue={item.itemNote??undefined}
+                    />
+                  </Td>
                   <Td>{item.woodSpeciesName}</Td>
                   <Td>{item.itemTypeName}</Td>
                   <Td>{item.gradeName}</Td>

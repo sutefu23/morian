@@ -1,6 +1,5 @@
 import { PrismaClient } from "@prisma/client"
 import { IssueProps } from "../domain/entity/issue";
-import { Item } from "../domain/entity/stock";
 const prisma = new PrismaClient();
 
 export type getQuery = {
