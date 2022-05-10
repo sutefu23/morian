@@ -9,6 +9,7 @@ import dayjs from 'dayjs'
 import Footer from '~/components/Footer'
 import BottomDrawer from '~/components/drawer/bottomDrawer'
 import RightDrawer from '~/components/drawer/rightDrawer'
+import Breadcrumbs from '~/components/navigation/breadcrumb'
 
 const HistoryListPage = () => {
   const router = useRouter()
@@ -20,9 +21,8 @@ const HistoryListPage = () => {
   }})
   const { updateField } = useStock()
 
-  const {isOpen: isRightOpen, onOpen: onRightOpen, onClose: onRightClose} = useDisclosure()
-  const {isOpen: isBottomOpen, onOpen: onBottomOpen, onClose: onBottomClose} = useDisclosure()
-
+  const {isOpen: isRightOpen, onClose: onRightClose} = useDisclosure()
+  const {isOpen: isBottomOpen, onClose: onBottomClose} = useDisclosure()
 
   const { data: units, } = useAspidaQuery(apiClient.master.unit)
   const { data: grade } = useAspidaQuery(apiClient.master.grade._id(Number(item?.gradeId)))
@@ -33,8 +33,13 @@ const HistoryListPage = () => {
   const arraivalDate = item?.arrivalDate ? "入荷日:" + dayjs(item.arrivalDate).format("YY/MM/DD"):""
   setTitle(`${lotId} ${woodSpecies?.name} ${itemType?.name} 在庫一覧   ${arraivalDate}`)
   const scale = `${item?.length} * ${item?.thickness}* ${item?.width}`
+  
   return (
     <>
+      <Breadcrumbs links={[
+        {name: `${woodSpecies?.name} ${itemType?.name}一覧`, path:`/item/${itemType?.id}/species/${woodSpecies?.id}`},
+        {name: `${lotId} ${woodSpecies?.name} ${itemType?.name}`}
+        ]}></Breadcrumbs>
       <VStack align="left" pl="10">
       <HStack>
         <Box>

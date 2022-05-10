@@ -14,19 +14,21 @@ import {
   AccordionPanel,
   AccordionIcon,
   Heading,
+  Link,
 } from '@chakra-ui/react'
 import React from 'react'
 import { apiClient } from '~/utils/apiClient'
 import router from 'next/router'
+import NextLink from "next/link"
 import StatusBar from '~/components/feedback/statusBar'
 import useSidebar from '~/hooks/useSidebar'
-type Link = {
+
+export type Link = {
   key: number|string
   name: string
   path?: string
   children?: Link[] 
 }|undefined
-
 
 const Sidebar = () => {
   const { data: itemTypes, error: itemTypeErr } = useAspidaQuery(apiClient.master.itemType)
@@ -98,17 +100,28 @@ const Sidebar = () => {
   ]
   const ButtonLinks = (props: {links: Link[]}) => 
     (<>
-      {props.links.map(link => (
-        !link?.children?
+      {props.links.map(link => {
+        if(!link) return <></>
+        return (
+        !link?.children ?
+        <NextLink
+        href={link.path!}
+        >
         <Button
         mt="1" 
         w="100%"
+        pt="2"
+        display="inline-block"
+        textAlign="center"
+        cursor="pointer"
         bgColor="transparent"
         border="solid 2px #eee"
-        key={link?.key}
-        onClick={() => {link?.path && router.push(link.path)}}>
-          {link?.name}
+        key={link.key}
+        as="a"
+        >
+          {link.name}
         </Button>
+        </NextLink>
         :
         <Accordion allowToggle
           defaultIndex={
@@ -130,7 +143,8 @@ const Sidebar = () => {
             }
           </AccordionItem>
         </Accordion>
-      ))
+        )
+      })
       }
     </>
     )

@@ -9,7 +9,6 @@ import {
   Th,
   Td,
   useDisclosure,
-  chakra,
   Input
 } from "@chakra-ui/react"
 import Footer from "~/components/Footer"
@@ -23,10 +22,7 @@ import Register from './item/register'
 import useStock from '~/hooks/useStock'
 import { Decimal } from 'decimal.js'
 import IssueDetail from "./item/issueDetail"
-import { GrEdit } from "react-icons/gr"
-import produce from "immer"
 
-const CGrEdit = chakra(GrEdit);
 const Home = () => {
   const { setTitle } = usePageTitle()
   setTitle("TOP (入荷状況)")
@@ -53,7 +49,6 @@ const Home = () => {
       const issueItems = issue.issueItems.filter(item=>(item.id !== stockData.issueItemId))
       return {...issue, issueItems}
     })
-    console.log(newIssues)
     setIssues(newIssues)
   },[])
 

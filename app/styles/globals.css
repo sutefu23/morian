@@ -21,7 +21,12 @@ a {
 td {
   padding: 5px!important
 }
-
+.chakra-breadcrumb a:hover{
+  text-decoration: underline;
+}
+.chakra-breadcrumb .current{
+  font-weight: bold;
+}
 [aria-required="true"]::after{
   content: "*";
   color: red;
