@@ -11,9 +11,10 @@ import dayjs from "dayjs"
 
 type Props = {
   isFromIssue?: boolean //発注情報を入庫化する時
+  onSuccess: () => void
 }
 
-const Register = ({isFromIssue}:Props) => {
+const Register = ({isFromIssue, onSuccess}:Props) => {
   const { setTitle } = usePageTitle()
   setTitle("新規在庫登録")
   
@@ -200,7 +201,12 @@ const Register = ({isFromIssue}:Props) => {
           <Button type='submit' ml={50} w={100} bgColor="green.200"
           onClick={async (e) => {
             e.preventDefault()
-            await postStock()
+            try{
+              await postStock()
+              onSuccess()
+            }catch(e){
+              console.error(e)
+            }
             }
           }
           >登録</Button>

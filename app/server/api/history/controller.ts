@@ -6,7 +6,7 @@ const historyService = new HistoryService(
 )
 export default defineController(() => ({
   patch: async ({body}) => {
-    const data = await historyService.updateHistory(body.id, body.body)
+    const data = await historyService.updateHistory(body.id, body.data)
     if (data instanceof Error) {
       console.error(data.message)
       return { status: 401, body: data }
@@ -14,7 +14,7 @@ export default defineController(() => ({
     return { status: 204, body: data}
   },
   post: async ({body}) => {
-    const data = await historyService.createHistory(body.body)
+    const data = await historyService.createHistory(body.data)
     if (data instanceof Error) {
       console.error(data.message)
       return { status: 401, body: data }

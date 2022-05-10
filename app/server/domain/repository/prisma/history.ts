@@ -110,8 +110,6 @@ export class HistoryRepository implements IHistoryRepository {
         }
       }
     })()
-    console.log(reasons[0].id)
-    console.log({ data: { ...createParam, ...bookUpdateParam } })
     const result = await this.prisma.history.create({
       data: { ...createParam, ...bookUpdateParam }
     })

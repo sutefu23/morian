@@ -280,7 +280,7 @@ const useStock = () => {
       const postStockData = checkValidStock(stockData)
       if (!postStockData) {
         console.error('postStockData is not valid')
-        return
+        throw new Error()
       }
 
       await apiClient.stock.post({

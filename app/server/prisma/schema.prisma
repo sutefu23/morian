@@ -33,7 +33,6 @@ model Issue {//発注情報
   issueNote String //発注備考
   innerNote String // 内部備考
   issueItems   IssueItem[]
-  isStored      Boolean   @default(true)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }

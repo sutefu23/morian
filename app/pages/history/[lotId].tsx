@@ -4,7 +4,6 @@ import usePageTitle from '~/hooks/usePageTitle'
 import { apiClient } from '~/utils/apiClient'
 import { HStack, Box, VStack, InputGroup, InputLeftAddon, Input, Spacer, Button, } from "@chakra-ui/react"
 import { useAspidaQuery } from '@aspida/react-query'
-import { InputLabel } from "@material-ui/core"
 import useStock from '~/hooks/useStock'
 import dayjs from 'dayjs'
 import Footer from '~/components/Footer'

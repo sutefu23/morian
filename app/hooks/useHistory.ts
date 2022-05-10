@@ -1,7 +1,5 @@
 import { useCallback} from 'react'
 import { UpdateHistoryData } from '~/server/domain/service/stock'
-import { Decimal } from 'decimal.js'
-import { Units } from '~/server/domain/init/master'
 import { apiClient } from '~/utils/apiClient'
 import { atom , useRecoilState } from 'recoil'
 
@@ -48,20 +46,60 @@ const useStock = () => {
       console.error('checkValidHistory data is null')
       return null
     }
-
+    const {itemId, date, status, reason, reduceCount, addCount, editUserId} = data
+    if(!itemId){
+      alert("itemIdは必須です")
+      return null
+    }
+    if(!date){
+      alert("dateは必須です")
+      return null
+    }
+    if(!status){
+      alert("statusは必須です")
+      return null
+    }
+    if(!reason){
+      alert("reasonは必須です")
+      return null
+    }
+    if(!reduceCount){
+      alert("reduceCountは必須です")
+      return null
+    }
+    if(!addCount){
+      alert("addCountは必須です")
+      return null
+    }
+    if(!editUserId){
+      alert("editUserIdは必須です")
+      return null
+    }
+    
+    return {
+      ...data,
+      itemId,
+      date,
+      status,
+      reason,
+      reduceCount,
+      addCount,
+      editUserId,
+      isTemp:true
+    }
   }
 
   const postHistory = useCallback(
     async () => {
-      const postStockData = checkValidHistory(historyData)
-      if (!postStockData) {
+      const postHistoryData = checkValidHistory(historyData)
+      if (!postHistoryData) {
         console.error('postHistoryData is not valid')
         return
       }
 
       await apiClient.history.post({
         body: {
-          data: postStockData,
+          data: postHistoryData,
         }
       })
 
@@ -71,6 +109,32 @@ const useStock = () => {
     [historyData]
   )
 
+  const updateHistory = useCallback(
+   async (id: number) => {
+    const updateHistoryData = checkValidHistory(historyData)
+    if (!updateHistoryData) {
+      console.error('postHistoryData is not valid')
+      return
+    }
+    await apiClient.history.patch({
+      body: {
+        id,
+        data: updateHistoryData,
+      }
+    })
+   },[historyData]
+  )
+
+  const deleteHistory = useCallback(
+    async (id: number) => {
+     await apiClient.history.delete({
+       body: {
+         id
+       }
+     })
+    },[historyData]
+   )
+ 
   return {
     historyData,
     setHistoryData,

@@ -17,13 +17,14 @@ import RightDrawer from '~/components/drawer/rightDrawer'
 import BottomDrawer from '~/components/drawer/bottomDrawer'
 import usePageTitle from '~/hooks/usePageTitle'
 import { apiClient }from '~/utils/apiClient'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { IssueProps } from '~/server/domain/entity/issue'
 import Register from './item/register'
 import useStock from '~/hooks/useStock'
 import { Decimal } from 'decimal.js'
 import IssueDetail from "./item/issueDetail"
 import { GrEdit } from "react-icons/gr"
+import produce from "immer"
 
 const CGrEdit = chakra(GrEdit);
 const Home = () => {
@@ -42,11 +43,20 @@ const Home = () => {
     })()
   }, [])
 
-  const { setStockData } = useStock()
-  const [ hoverdId, setHoveredId ] = useState<number|undefined>(undefined)
-  const [ editId, setEditId ] = useState<number|undefined>(undefined)
+  const {stockData, setStockData } = useStock()
   const {isOpen: isRightOpen, onOpen: onRightOpen, onClose: onRightClose} = useDisclosure()
   const {isOpen: isBottomOpen, onOpen: onBottomOpen, onClose: onBottomClose} = useDisclosure()
+
+  const handleRegister = useCallback(()=>{
+    onBottomClose()
+    const newIssues = issues?.map(issue=>{
+      const issueItems = issue.issueItems.filter(item=>(item.id !== stockData.issueItemId))
+      return {...issue, issueItems}
+    })
+    console.log(newIssues)
+    setIssues(newIssues)
+  },[])
+
   return (
     <>
     <div className={styles.container}>
@@ -60,11 +70,6 @@ const Home = () => {
         <Thead>
           <Tr>
             <Th>管理番号</Th>
-            <Th>仕入先</Th>
-            <Th>希望納期</Th>
-            <Th>納入場所</Th>
-            <Th>発注内部備考</Th>
-            <Th color="red.400" textAlign="center">入荷予定</Th>
             <Th>樹種</Th>
             <Th>材種</Th>
             <Th>グレード</Th>
@@ -72,6 +77,11 @@ const Home = () => {
             <Th>寸法</Th>
             <Th>入数</Th>
             <Th>数量</Th>
+            <Th>仕入先</Th>
+            <Th>希望納期</Th>
+            <Th>納入場所</Th>
+            <Th>発注内部備考</Th>
+            <Th color="red.400" textAlign="center">入荷予定</Th>
             <Th></Th>
           </Tr>
         </Thead>
@@ -90,19 +100,6 @@ const Home = () => {
                     {issue.managedId}
                     </Button>
                     </Td>
-                  <Td>{issue.supplierName}</Td>
-                  <Td>{issue.expectDeliveryDate}</Td>
-                  <Td>{issue.deliveryPlaceName}</Td>
-                  <Td>{issue.innerNote}</Td>
-                  <Td 
-                  >
-                    <Input 
-                    onBlur={async (e) => {
-                      await apiClient.issueItem.patch({body:{id:item.id, data:{itemNote: e.currentTarget.value}}})
-                    }}
-                    defaultValue={item.itemNote??undefined}
-                    />
-                  </Td>
                   <Td>{item.woodSpeciesName}</Td>
                   <Td>{item.itemTypeName}</Td>
                   <Td>{item.gradeName}</Td>
@@ -110,6 +107,21 @@ const Home = () => {
                   <Td>{item.length}{(item.thickness)?`*${item.thickness}`:""}{(item.width)?`*${item.width}`:""}</Td>
                   <Td>{item.packageCount}</Td>
                   <Td>{item.count}{item.unitName}</Td>
+                  <Td>{issue.supplierName}</Td>
+                  <Td>{issue.expectDeliveryDate}</Td>
+                  <Td>{issue.deliveryPlaceName}</Td>
+                  <Td>{issue.innerNote}</Td>
+                  <Td 
+                  >
+                    <Input 
+                    border="solid 1px #ddd"
+                    bgColor="white"
+                    onBlur={async (e) => {
+                      await apiClient.issueItem.patch({body:{id:item.id, data:{itemNote: e.currentTarget.value}}})
+                    }}
+                    defaultValue={item.itemNote??undefined}
+                    />
+                  </Td>
                   <Td>
                   <Button ml="5" bgColor="blue.100"
                     onClick={(e) => {
@@ -163,7 +175,7 @@ const Home = () => {
         <BottomDrawer title="入庫登録" isOpen={isBottomOpen} onClose={onBottomClose} height="40vw">
           {
             issues &&
-           <Register isFromIssue={true}></Register>
+           <Register isFromIssue={true} onSuccess={handleRegister}></Register>
           }
         </BottomDrawer>
       </Footer>
