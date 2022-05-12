@@ -33,7 +33,7 @@ const useHistory = () => {
       key: K,
       val: EditUpdataHistoryData[K]
     ): void => {
-      setHistoryData({ ...historyData, ...{ [key]: val } })
+      setHistoryData({ ...historyData, [key]: val})
     },
     [historyData]
   )
@@ -106,7 +106,7 @@ const useHistory = () => {
       const postHistoryData = checkValidHistory(historyData)
       if (!postHistoryData) {
         console.error('postHistoryData is not valid')
-        return
+        return false
       }
 
       await apiClient.history.post({
@@ -114,7 +114,7 @@ const useHistory = () => {
           data: postHistoryData,
         }
       })
-      return
+      return true
     },
     [historyData]
   )
@@ -124,7 +124,7 @@ const useHistory = () => {
     const updateHistoryData = checkValidHistory(historyData)
     if (!updateHistoryData) {
       console.error('postHistoryData is not valid')
-      return
+      return false
     }
     await apiClient.history.patch({
       body: {
@@ -132,6 +132,7 @@ const useHistory = () => {
         data: updateHistoryData,
       }
     })
+    return true
    },[historyData]
   )
 

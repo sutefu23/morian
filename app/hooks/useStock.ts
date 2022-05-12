@@ -62,7 +62,7 @@ const useStock = () => {
       key: K,
       val: EditUpdataItemData[K]
     ): void => {
-      setStockData({ ...stockData, ...{ [key]: val } })
+      setStockData({ ...stockData, [key]: val})
     },
     [stockData]
   )

@@ -12,23 +12,26 @@ type Props = {
   onClose:()=>void
   editHistoryId: number|undefined 
   mode: '新規作成'|'編集'
+  onDone:()=>void
 } 
-const editHistory = ({isOpen , onClose, editHistoryId, mode}:Props) => {
+const editHistory = ({isOpen , onClose, onDone, editHistoryId, mode}:Props) => {
   const { historyData, setHistoryData, updateField, updateHistory, postHistory } = useHistory()
 
-  const handleRegister = useCallback(()=>{
+  const handleRegister = useCallback(async ()=>{
     switch (mode) {
       case "新規作成":
-        postHistory()
-        onClose()
+        if(await postHistory()){
+          onDone()
+        }
         break;
       case "編集":
         if(!editHistoryId){
           alert("IDが存在しません")
           return
         }
-        updateHistory(editHistoryId)        
-        onClose()
+        if(await updateHistory(editHistoryId)){
+          onDone()
+        }
         break;
     }
   },[historyData, editHistoryId])
@@ -67,12 +70,10 @@ const editHistory = ({isOpen , onClose, editHistoryId, mode}:Props) => {
                 onSelect={(e) => {
                   const newHistory = {
                     ...historyData,
-                    ...{
-                      status: Number(e.currentTarget.value),
-                      reduceCount: new Decimal(0),
-                      addCount: new Decimal(0),
-                      reason: undefined
-                    }
+                    status: Number(e.currentTarget.value),
+                    reduceCount: new Decimal(0),
+                    addCount: new Decimal(0),
+                    reason: undefined
                   }
                   setHistoryData(newHistory)
                 }}/>

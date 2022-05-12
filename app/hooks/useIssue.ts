@@ -125,7 +125,7 @@ const useIssue = () => {
       key: K,
       val: EditIssueData[K]
     ): void => {
-      setIssueData({ ...issueData, ...{ [key]: val } })
+      setIssueData({ ...issueData, [key]: val})
     },
     [issueData]
   )

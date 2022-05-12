@@ -226,10 +226,12 @@ const HistoryListPage = () => {
               <DeleteIcon title='削除' cursor="pointer"
                 fontSize="lg"
                 color="red"
-                onClick={()=>{
+                onClick={ async ()=> {
                   const res = confirm(`この明細を削除しますか？\n入出庫日:${dayjs(data.date).format("YY/MM/DD")}`)
                   if(res){
-                    deleteHistory(data.id)
+                    await deleteHistory(data.id).then(()=>{
+                      refetch()
+                    })
                   }
                 }}
               />
@@ -270,7 +272,15 @@ const HistoryListPage = () => {
         </Box>
       </HStack>
     </Footer>
-    <EditHistoryModal isOpen={isModalOpen} onClose={onModalClose} mode={mode} editHistoryId={editHistoryId}/>
+    <EditHistoryModal 
+      isOpen={isModalOpen}
+      onClose={onModalClose}
+      mode={mode}
+      editHistoryId={editHistoryId}
+      onDone={()=>{
+        onModalClose()
+        refetch()
+    }}/>
     </>
   )
 }
