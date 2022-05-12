@@ -47,7 +47,6 @@ const defaultData = {
   issueNote:"",
   innerNote:"",
   isStored:false,
-  isDraft:true,
   issueItems: [
     defaultItemData
   ]
@@ -70,7 +69,6 @@ const demoData = {
   innerNote : 'キズアリ。2月中旬予定',
   receiveingStaff : '田中',
   isStored:false,
-  isDraft:true,
   issueItems: [
     {
       itemTypeName: '集成材',

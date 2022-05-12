@@ -12,6 +12,7 @@ import { buildWhereStatement } from './common'
 import { HistoryDTO } from '$/domain/dto/history'
 import { UpdateHistoryData } from '$/domain/service/stock'
 import { StockReason } from '$/domain/init/master'
+import { Decimal } from '@prisma/client/runtime'
 
 export class HistoryRepository implements IHistoryRepository {
   readonly prisma: PrismaClient
@@ -94,9 +95,11 @@ export class HistoryRepository implements IHistoryRepository {
       itemId: undefined,
       editUserId: undefined,
       bookUserId: undefined,
-      bookDate: undefined,
+      bookDate: null,
       reasonId: undefined
     }
+
+    const itemUpdateParam = this._itemUpdateParam({ ...entity, itemId:entity.itemId }, itemField)
 
     const bookUpdateParam = (() => {
       if (entity.bookUserId) {
@@ -106,14 +109,24 @@ export class HistoryRepository implements IHistoryRepository {
               id: entity.bookUserId
             }
           },
-          bookDate: entity.bookDate ? entity.bookDate : undefined
+          bookDate: entity.bookDate ? entity.bookDate : null
         }
       }
     })()
-    const result = await this.prisma.history.create({
-      data: { ...createParam, ...bookUpdateParam }
-    })
-    const newHistory = await dbModelToEntity(result)
+
+    console.log(itemUpdateParam)
+
+    const [history, ] = await this.prisma.$transaction([
+      this.prisma.history.create({
+        data: { ...createParam, ...bookUpdateParam }
+      }),
+      this.prisma.item.update({
+        where:{id: entity.itemId},
+        data: {...itemUpdateParam}
+      })
+    ])
+
+    const newHistory = await dbModelToEntity(history)
     return newHistory
   }
   async update(
@@ -164,17 +177,26 @@ export class HistoryRepository implements IHistoryRepository {
               id: entity.bookUserId
             }
           },
-          bookDate: entity.bookDate ? entity.bookDate : undefined
+          bookDate: entity.bookDate ? entity.bookDate : null
         }
       }
     })()
 
-    const result = await this.prisma.history.update({
-      where: { id },
-      data: { ...updateParam, ...itemUpdateParam, ...bookUpdateParam }
-    })
 
-    const newHistory = await dbModelToEntity(result)
+    const [historyModel] = await this.prisma.$transaction([
+      this.prisma.history.update({
+        where: { id },
+        data: { ...updateParam, ...bookUpdateParam }
+      }),
+      this.prisma.item.update({
+        where: { id: entity.itemId },
+        data: {
+          ...itemUpdateParam
+        }
+      })
+    ])
+
+    const newHistory = await dbModelToEntity(historyModel)
     return newHistory
   }
 
@@ -216,70 +238,34 @@ export class HistoryRepository implements IHistoryRepository {
       Partial<Pick<HistoryDTO, 'reduceCount' | 'addCount'>>,
     itemField: ITEM_FIELD
   ) => {
-    if (itemField != null) {
-      const isAdd =
-        Object.prototype.hasOwnProperty.call(entity, 'addCount') &&
-        entity.addCount
-      const isReduce =
-        Object.prototype.hasOwnProperty.call(entity, 'reduceCount') &&
-        entity.reduceCount
-
-      const updateField = (() => {
-        if (isAdd) {
-          switch (itemField) {
-            case ITEM_FIELD.COUNT:
-              return {
-                count: {
-                  increment: (entity.addCount ?? 0).toString()
-                }
-              }
-            case ITEM_FIELD.TEMP_COUNT:
-              return {
-                tempCount: {
-                  increment: (entity.addCount ?? 0).toString()
-                }
-              }
-
-            case ITEM_FIELD.BOTH:
-              return {
-                count: {
-                  increment: (entity.addCount ?? 0).toString()
-                },
-                tempCount: {
-                  increment: (entity.addCount ?? 0).toString()
-                }
-              }
+      const addCount = new Decimal(entity.addCount?.toString() ?? 0)
+      const reduceCount = new Decimal(entity.reduceCount?.toString() ?? 0)
+      const count = addCount.minus(reduceCount)
+      
+      switch (itemField) {
+        case ITEM_FIELD.COUNT:
+          return {
+            count: {
+              increment: count
+            }
           }
-        }
-        if (isReduce) {
-          switch (itemField) {
-            case ITEM_FIELD.COUNT:
-              return {
-                count: {
-                  decrement: (entity.reduceCount ?? 0).toString()
-                }
-              }
-            case ITEM_FIELD.TEMP_COUNT:
-              return {
-                tempCount: {
-                  decrement: (entity.reduceCount ?? 0).toString()
-                }
-              }
-
-            case ITEM_FIELD.BOTH:
-              return {
-                count: {
-                  decrement: (entity.reduceCount ?? 0).toString()
-                },
-                tempCount: {
-                  decrement: (entity.reduceCount ?? 0).toString()
-                }
-              }
+        case ITEM_FIELD.TEMP_COUNT:
+          return {
+            tempCount: {
+              increment: count
+            }
           }
-        }
-      })()
 
-      return updateField
+        case ITEM_FIELD.BOTH:
+          return {
+            count: {
+              increment: count
+            },
+            tempCount: {
+              increment: count
+            }
+          }
+      }
+
     }
-  }
 }

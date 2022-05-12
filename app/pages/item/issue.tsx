@@ -39,7 +39,7 @@ const RegisterIssue = () => {
     },[user])
 
     const pageChangeHandler = () => {
-      if(Number(issueData.issueItems?.length) > 0){
+      if(issueData?.issueItems?.length && issueData?.issueItems[0].itemTypeId){
         const answer = window.confirm('内容がリセットされます、本当にページ遷移しますか？');
         if(!answer) {
           // eslint-disable-next-line no-throw-literal

@@ -316,14 +316,15 @@ export class HistoryService {
     switch (reason) {
       case 出庫理由.見積:
         return ITEM_FIELD.NONE //引落なし
-      case (出庫理由.受注予約, 入庫理由.発注):
+      case 出庫理由.受注予約:
+      case 入庫理由.発注:
         return ITEM_FIELD.TEMP_COUNT //仮在庫
-      case (入庫理由.仕入, 出庫理由.受注出庫):
-        return ITEM_FIELD.COUNT //実在庫
-      case (出庫理由.不良品,
-      出庫理由.棚卸調整,
-      入庫理由.棚卸調整,
-      入庫理由.返品):
+      case 入庫理由.仕入:
+      case 出庫理由.受注出庫:
+      case 出庫理由.不良品:
+      case 出庫理由.棚卸調整:
+      case 入庫理由.棚卸調整:
+      case 入庫理由.返品:
         return ITEM_FIELD.BOTH //両方
       default:
         return ITEM_FIELD.NONE

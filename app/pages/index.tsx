@@ -16,40 +16,29 @@ import RightDrawer from '~/components/drawer/rightDrawer'
 import BottomDrawer from '~/components/drawer/bottomDrawer'
 import usePageTitle from '~/hooks/usePageTitle'
 import { apiClient }from '~/utils/apiClient'
-import { useCallback, useEffect, useState } from 'react'
-import { IssueProps } from '~/server/domain/entity/issue'
+import { useCallback, useState } from 'react'
 import Register from './item/register'
 import useStock from '~/hooks/useStock'
 import { Decimal } from 'decimal.js'
 import IssueDetail from "./item/issueDetail"
+import { useAspidaQuery } from '@aspida/react-query'
 
 const Home = () => {
   const { setTitle } = usePageTitle()
   setTitle("TOP (入荷状況)")
 
-  const [issues, setIssues] = useState<IssueProps[]>()
   const [issueIndex, setIssueIndex ] = useState<number>(0)
   const [itemIndex, setItemIndex ] = useState<number>(0)
 
-  useEffect(() => {
-    (async() => {
-      const response = await apiClient.issue.get({query: { isStored: false}})
-      const data = response.body
-      setIssues(data)
-    })()
-  }, [])
+  const {data:issues, refetch} = useAspidaQuery(apiClient.issue, {query: { isStored: false}})
 
-  const {stockData, setStockData } = useStock()
+  const { setStockData } = useStock()
   const {isOpen: isRightOpen, onOpen: onRightOpen, onClose: onRightClose} = useDisclosure()
   const {isOpen: isBottomOpen, onOpen: onBottomOpen, onClose: onBottomClose} = useDisclosure()
 
   const handleRegister = useCallback(()=>{
     onBottomClose()
-    const newIssues = issues?.map(issue=>{
-      const issueItems = issue.issueItems.filter(item=>(item.id !== stockData.issueItemId))
-      return {...issue, issueItems}
-    })
-    setIssues(newIssues)
+    refetch()
   },[])
 
   return (
@@ -170,7 +159,7 @@ const Home = () => {
         <BottomDrawer title="入庫登録" isOpen={isBottomOpen} onClose={onBottomClose} height="40vw">
           {
             issues &&
-           <Register isFromIssue={true} onSuccess={handleRegister}></Register>
+           <Register isFromIssue={true} onSuccess={()=>{handleRegister()}}></Register>
           }
         </BottomDrawer>
       </Footer>

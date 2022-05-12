@@ -30,8 +30,6 @@ const HistoryListPage = () => {
   
   const { setHistoryData, deleteHistory, defaultData } = useHistory()
   const { user } = useUser()
-  const [ , setValue] = useState(0)
-  const forceUpdate = () => setValue(value => value + 1)
 
   const [ hoverIndex, setHoverIndex ] = useState<number>(0)
   const [ editHistoryId, setEditHistoryId ] = useState<number|undefined>(undefined)
@@ -130,13 +128,23 @@ const HistoryListPage = () => {
         </Box>
         <Box>
           <InputGroup size="sm">
-            <InputLeftAddon>数量</InputLeftAddon>
+            <InputLeftAddon>実数</InputLeftAddon>
             <Input readOnly w="8em" textAlign="right"
               value={`${item?.count}`}
             />
             <InputLeftAddon>{units?.find(u => u.id === item?.unitId)?.name}</InputLeftAddon>
           </InputGroup>
         </Box>
+        <Box>
+          <InputGroup size="sm">
+            <InputLeftAddon>仮数</InputLeftAddon>
+            <Input readOnly w="8em" textAlign="right"
+              value={`${item?.tempCount}`}
+            />
+            <InputLeftAddon>{units?.find(u => u.id === item?.unitId)?.name}</InputLeftAddon>
+          </InputGroup>
+        </Box>
+
       </HStack>
         <Spacer/>
       <HStack>
@@ -195,7 +203,7 @@ const HistoryListPage = () => {
             <Td>{data.note}</Td>
             <Td textAlign="center">{data.addCount.toString()!="0" && data.addCount}</Td>
             <Td textAlign="center">{data.reduceCount.toString()!="0" && data.reduceCount}</Td>
-            <Td textAlign="center">{dayjs(data.bookDate).format("YY/MM/DD")}</Td>
+            <Td textAlign="center">{data.bookDate?dayjs(data.bookDate).format("YY/MM/DD"):""}</Td>
             <Td textAlign="center">
               <Box display="flex" 
                 justifyContent="space-around"

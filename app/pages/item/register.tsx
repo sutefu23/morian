@@ -16,7 +16,9 @@ type Props = {
 
 const Register = ({isFromIssue, onSuccess}:Props) => {
   const { setTitle } = usePageTitle()
-  setTitle("新規在庫登録")
+  if(!isFromIssue){
+    setTitle("新規在庫登録")
+  }
   
   const { stockData, setStockData, updateField, calcCostPackageCount, costPerUnit, totalPrice, postStock, useDemo } = useStock()
 
