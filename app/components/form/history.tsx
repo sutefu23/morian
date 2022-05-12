@@ -8,10 +8,6 @@ import "~/utils/number"
 import dayjs from "dayjs"
 import useStock from "~/hooks/useStock"
 
-type Props = {
-  
-}
-
 const HistoryForm = () => {
   const { stockData, setStockData, updateField, calcCostPackageCount, costPerUnit, totalPrice, postStock, useDemo } = useStock()
 

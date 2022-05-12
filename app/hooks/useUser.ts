@@ -26,8 +26,6 @@ const fetchUser = async () => {
   }
 }
 
-
-
 const useUser = () => {
 
   const login = async ({userId, userPass}:LoginParam) => {

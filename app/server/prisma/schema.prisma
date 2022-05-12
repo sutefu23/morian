@@ -212,7 +212,7 @@ model History {
   order       Int //並び順
   bookUser    User?    @relation(name: "bookUser", fields: [bookUserId], references: [id])
   bookUserId  Int?
-  bookDate    DateTime? @default(now())
+  bookDate    DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

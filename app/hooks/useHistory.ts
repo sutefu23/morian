@@ -46,30 +46,33 @@ const useHistory = () => {
       console.error('checkValidHistory data is null')
       return null
     }
-    const {itemId, date, status, reason, reduceCount, addCount, editUserId, bookDate, bookUserId} = data
-    console.log(data)
+    const {itemId, date, status, reason, reduceCount, addCount, bookDate, bookUserId, editUserId} = data
     if(!itemId){
       alert("itemIdは必須です")
       return null
     }
     if(!date){
-      alert("dateは必須です")
+      alert("日付は必須です")
       return null
     }
     if(!status){
-      alert("statusは必須です")
+      alert("ステータスは必須です")
       return null
     }
     if(!reason){
-      alert("reasonは必須です")
-      return null
-    }
-    if(!reduceCount){
-      alert("reduceCountは必須です")
+      alert("理由は必須です")
       return null
     }
     if(!addCount){
-      alert("addCountは必須です")
+      alert("入庫数は必須です")
+      return null
+    }
+    if(!reduceCount){
+      alert("出庫数は必須です")
+      return null
+    }
+    if(addCount.toNumber() == 0 && reduceCount.toNumber() == 0){
+      alert("数量が入っていません")
       return null
     }
     if(!editUserId){
@@ -111,8 +114,6 @@ const useHistory = () => {
           data: postHistoryData,
         }
       })
-
-      alert('登録しました')
       return
     },
     [historyData]
@@ -134,15 +135,14 @@ const useHistory = () => {
    },[historyData]
   )
 
-  const deleteHistory = useCallback(
-    async (id: number) => {
-     await apiClient.history.delete({
-       body: {
-         id
-       }
-     })
-    },[historyData]
-   )
+  const deleteHistory = async (id: number) => {
+    await apiClient.history.delete({
+      body: {
+        id
+      }
+    })
+  }
+
  
   return {
     historyData,

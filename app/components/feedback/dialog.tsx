@@ -8,12 +8,15 @@ import {
   ModalCloseButton,
   Button,
   ThemeTypings,
+  ThemingProps
 } from "@chakra-ui/react"
 
 type Props = {
   title?: string,
   children: React.ReactNode,
   isOpen: boolean,
+  size?: ThemingProps<"Modal">["size"]
+  closeOnOverlayClick?:boolean
   onClose: () => void
   button1?:{
     text: string,
@@ -27,10 +30,18 @@ type Props = {
   }
 }
 
-const Dialog = ({title, children, isOpen, button1 = {text:"OK", color:"blue"}, button2, onClose}:Props) => {
+const Dialog = (
+  { title, 
+    children,
+    isOpen,
+    size = "md",
+    closeOnOverlayClick = true,
+    button1 = {text:"OK", color:"blue"},
+    button2,
+    onClose}:Props) => {
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={onClose} size={size} closeOnOverlayClick={closeOnOverlayClick}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>{title}</ModalHeader>

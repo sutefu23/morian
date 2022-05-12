@@ -14,11 +14,13 @@ type Props = {
   mode: '新規作成'|'編集'
 } 
 const editHistory = ({isOpen , onClose, editHistoryId, mode}:Props) => {
-  const { historyData,  updateField, updateHistory, postHistory } = useHistory()
+  const { historyData, setHistoryData, updateField, updateHistory, postHistory } = useHistory()
+
   const handleRegister = useCallback(()=>{
     switch (mode) {
       case "新規作成":
         postHistory()
+        onClose()
         break;
       case "編集":
         if(!editHistoryId){
@@ -26,15 +28,21 @@ const editHistory = ({isOpen , onClose, editHistoryId, mode}:Props) => {
           return
         }
         updateHistory(editHistoryId)        
+        onClose()
         break;
     }
-  },[])
+  },[historyData, editHistoryId])
   return (
-    <Dialog isOpen={isOpen} onClose={onClose} 
+    <Dialog
+      isOpen={isOpen} 
+      onClose={onClose} 
       title={mode}
+      closeOnOverlayClick={false}
+      size="xl"
       button1={{text:mode,color:"green",event:handleRegister}}
       button2={{text:"キャンセル", color:"blue", event:onClose}}
       >
+
       <VStack align="left" pl="10">
         <HStack>
           <Box>
@@ -56,8 +64,18 @@ const editHistory = ({isOpen , onClose, editHistoryId, mode}:Props) => {
               >ステータス</InputLeftAddon>
               <StatusSelect required
                 value={historyData.status}
-                onSelect={(e) => { 
-                updateField<"status">("status", Number(e.currentTarget.value))}}/>
+                onSelect={(e) => {
+                  const newHistory = {
+                    ...historyData,
+                    ...{
+                      status: Number(e.currentTarget.value),
+                      reduceCount: new Decimal(0),
+                      addCount: new Decimal(0),
+                      reason: undefined
+                    }
+                  }
+                  setHistoryData(newHistory)
+                }}/>
             </InputGroup>
           </Box>
         </HStack>
@@ -74,22 +92,33 @@ const editHistory = ({isOpen , onClose, editHistoryId, mode}:Props) => {
             </InputGroup>
           </Box>
         </HStack>
-
         <HStack>
           <Box>
+            {historyData.status == 1 && (
             <InputGroup>
-            <InputLeftAddon aria-required>数量</InputLeftAddon>
+              <InputLeftAddon aria-required>入庫数</InputLeftAddon>
               <Input required 
               value={String(historyData.addCount)}
               type="number" placeholder="数字" onChange={(e) => { updateField<"addCount">("addCount", e.target.value ? new Decimal(e.target.value): undefined)}}/>
             </InputGroup>
+            )}
+            {historyData.status == 2 && (
+            <InputGroup>
+              <InputLeftAddon aria-required>出庫数</InputLeftAddon>
+              <Input required 
+              value={String(historyData.reduceCount)}
+              type="number" placeholder="数字" onChange={(e) => { updateField<"reduceCount">("reduceCount", e.target.value ? new Decimal(e.target.value): undefined)}}/>
+            </InputGroup>
+            )}
           </Box>
         </HStack>
         <HStack>
           <Box width="75vw" >
             <InputGroup>
               <InputLeftAddon bgColor="blue.100">備考</InputLeftAddon>
-              <Input onChange={(e) => { updateField<"note">("note", e.target.value)}}/>
+              <Input 
+              value={historyData.note}
+              onChange={(e) => { updateField<"note">("note", e.target.value)}}/>
             </InputGroup>
           </Box>
         </HStack>
