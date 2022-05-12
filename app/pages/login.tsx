@@ -60,7 +60,7 @@ const Login = () => {
     },
     [userId, userPass],
   )
-  if(isOpen) return <Dialog message={errorMessage} isOpen onClose={onClose}/>
+  if(isOpen) return <Dialog isOpen onClose={onClose}>{errorMessage}</Dialog>
   return (
     <Flex flexDirection="column" width="100wh" height="100vh"  justifyContent="center" alignItems="center">
       <Stack

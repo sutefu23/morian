@@ -19,7 +19,7 @@ export default defineController(() => ({
     }
   },
   patch: async ({ body, params }) => {
-    const item = await itemService.updateItem(params.itemId, body.body)
+    const item = await itemService.updateItem(params.itemId, body.data)
     if (item instanceof Error) {
       console.error(item.message)
       return { status: 401, body: item }

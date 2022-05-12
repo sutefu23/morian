@@ -23,7 +23,6 @@ export class ItemRepository implements IItemRepository {
     const result = await this.prisma.$queryRaw<ItemModel[]>(
       Prisma.sql`SELECT * FROM Item WHERE ${criteria}`
     )
-
     const items = (await Promise.all(
       result.map((h) => dbModelToEntity(h))
     )) as Item[]

@@ -1,16 +1,14 @@
 import React from 'react'
 import { Select } from "@chakra-ui/react"
-import { ReasonType } from '~/server/domain/entity/stock'
-import { StockReason } from '~/server/domain/init/master'
+import { Status } from '~/server/domain/entity/stock'
 
 type Props = { 
   onSelect: (event:React.ChangeEvent<HTMLSelectElement>) => void;
-  selected? : ReasonType["id"]
-  value? : ReasonType["id"]
+  selected? : number
+  value? : number
   required?: boolean
 }
 const select = ({ onSelect, selected, required, value }:Props) => {
-  const reasons = StockReason
   return (
     <Select 
       onChange={(e) => onSelect(e)}
@@ -19,16 +17,14 @@ const select = ({ onSelect, selected, required, value }:Props) => {
       defaultValue={selected}
       value={value}
     >
-      {
-        reasons &&
-          reasons.map(reason => {
-            return (<option
-              key={reason.id} 
-              value={reason.id}
-              >{reason.name}</option>)
-          })
-      }
-      
+    <option
+      key={Status.入庫} 
+      value={Status.入庫}
+      >入庫</option>
+    <option
+      key={Status.出庫} 
+      value={Status.出庫}
+      >出庫</option>      
     </Select>
   )
 }

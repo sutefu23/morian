@@ -25,7 +25,7 @@ const historyDataAtom = atom({
   default: defaultData,
 });
 
-const useStock = () => {
+const useHistory = () => {
   const [historyData, setHistoryData] = useRecoilState<EditUpdataHistoryData>(historyDataAtom)
 
   const updateField = useCallback(
@@ -46,7 +46,8 @@ const useStock = () => {
       console.error('checkValidHistory data is null')
       return null
     }
-    const {itemId, date, status, reason, reduceCount, addCount, editUserId} = data
+    const {itemId, date, status, reason, reduceCount, addCount, editUserId, bookDate, bookUserId} = data
+    console.log(data)
     if(!itemId){
       alert("itemIdは必須です")
       return null
@@ -73,6 +74,14 @@ const useStock = () => {
     }
     if(!editUserId){
       alert("editUserIdは必須です")
+      return null
+    }
+    if(bookDate && !bookUserId){
+      alert("予約者を入れた場合は予約日は必須です")
+      return null
+    }
+    if(bookDate && !bookUserId){
+      alert("予約日を入れた場合は予約者は必須です")
       return null
     }
     
@@ -142,7 +151,8 @@ const useStock = () => {
     postHistory,
     updateHistory,
     deleteHistory,
+    defaultData
   }
 }
 
-export default useStock
+export default useHistory
