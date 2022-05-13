@@ -10,8 +10,13 @@ export const getHistoryList = async ({ lotNo }:getQuery) =>{
   const data = await prisma.item.findMany({
     where: {lotNo},
     include:{
-      history: true
-    }
+      history:{
+        orderBy:[
+          {isTemp:'asc'},
+          {date:'asc'},
+        ]
+      }
+    },
   })
   return data[0]
 }

@@ -5,7 +5,6 @@ import {
   出庫理由,
   入庫理由,
   UnitType,
-  Status
 } from '@domain/entity/stock'
 import {
   IItemRepository,
@@ -17,10 +16,8 @@ import { ItemDTO, ItemToDTO } from '../dto/item'
 import { HistoryDTO, HistoryToDTO } from '../dto/history'
 import { Decimal } from 'decimal.js'
 import { HistoryRepository } from '../repository/prisma/history'
-import { AuthService } from './auth'
-import { PrismaClient } from '@prisma/client'
+import { StockReason } from '../init/master'
 
-const prisma = new PrismaClient()
 
 export type UpdateItemData = {
   readonly lotNo: string
@@ -55,7 +52,7 @@ export type UpdateHistoryData = {
   readonly note?: string
   readonly date: Date
   readonly status: number
-  readonly reason: Reason
+  readonly reasonId: number
   readonly reduceCount: Decimal
   readonly addCount: Decimal
   readonly editUserId: number
@@ -79,90 +76,6 @@ export class ItemService {
   async findLotNo(lotNo: string) {
     const data = await this.itemRepository.findByLotNo(lotNo)
     return data
-  }
-
-  async issueItem(item: UpdateItemData) {
-    const hasLotNo = await this.findLotNo(item.lotNo)
-    if (hasLotNo instanceof Error) {
-      return hasLotNo as Error
-    }
-    if (hasLotNo) {
-      return new Error('ロットNoが既に存在します。')
-    }
-    const data = await this.itemRepository.create(item)
-    if (data instanceof Error) {
-      return data as Error
-    }
-
-    const editUser = AuthService.user()
-    if (!editUser) {
-      return new Error('認証されたユーザーが見つかりません。')
-    }
-
-    const 発注詳細 = {
-      itemId: data.id,
-      note: data.note,
-      date: new Date(),
-      status: Status.入庫,
-      reason: 入庫理由.発注,
-      reduceCount: new Decimal(0),
-      addCount: data.count,
-      editUserId: editUser.id,
-      isTemp: true
-    }
-
-    const historyData = await this.historyService.createHistory(発注詳細)
-    if (historyData instanceof Error) {
-      return historyData as Error
-    }
-
-    const itemDto = ItemToDTO(data)
-    return itemDto
-  }
-  async registerItem(item: UpdateItemData) {
-    //仕入
-    const hasLotNo = await this.findLotNo(item.lotNo)
-    if (hasLotNo instanceof Error) {
-      return hasLotNo as Error
-    }
-    if (hasLotNo) {
-      return new Error('ロットNoが既に存在します。')
-    }
-    const data = await this.itemRepository.create(item)
-    if (data instanceof Error) {
-      return data as Error
-    }
-
-    const editUser = AuthService.user()
-    if (!editUser) {
-      return new Error('認証されたユーザーが見つかりません。')
-    }
-    await prisma.issueItem.update({
-      where: {
-        id:item.issueItemId
-      },
-      data:{isStored:true}
-    })
-  
-    const 仕入詳細 = {
-      itemId: data.id,
-      note: data.note,
-      date: new Date(),
-      status: Status.入庫,
-      reason: 入庫理由.発注,
-      reduceCount: new Decimal(0),
-      addCount: data.count,
-      editUserId: editUser.id,
-      isTemp: false
-    }
-
-    const historyData = await this.historyService.createHistory(仕入詳細)
-    if (historyData instanceof Error) {
-      return historyData as Error
-    }
-
-    const itemDto = ItemToDTO(data)
-    return itemDto
   }
 
   async updateItem(id: number, item: Partial<UpdateItemData>) {
@@ -216,14 +129,16 @@ export class HistoryService {
     this.historyRepository = historyRepo
   }
   async createHistory(history: UpdateHistoryData) {
-    if (!history.reason) return new InvalidArgumentError('在庫理由は必須です。')
+    if (!history.reasonId) return new InvalidArgumentError('在庫理由は必須です。')
+    const reason = StockReason.find(r => r.id === history.reasonId)
+    if(!reason) return new InvalidArgumentError('在庫理由は必須です。')
 
-    if (history.reason == 出庫理由.不良品 && !history.note) {
+    if (reason.name == 出庫理由.不良品 && !history.note) {
       return new ValidationError('不良品の時は理由を備考に入れてください。')
     }
 
-    const itemUpdateWith = this._whichItemField(history.reason)
-    const data = await this.historyRepository.create(history, itemUpdateWith)
+    const {isTemp, itemField} = this._whichItemField(reason.name)
+    const data = await this.historyRepository.create({...history, isTemp}, itemField)
     if (data instanceof Error) {
       return data as Error
     }
@@ -231,16 +146,19 @@ export class HistoryService {
   }
 
   async updateHistory(id: number, history: Partial<UpdateHistoryData>) {
-    if (!history.reason) return new InvalidArgumentError('在庫理由は必須です。')
-    if (history.reason == 出庫理由.不良品 && !history.note) {
+    if (!history.reasonId) return new InvalidArgumentError('在庫理由は必須です。')
+    const reason = StockReason.find(r => r.id === history.reasonId)
+    if(!reason) return new InvalidArgumentError('在庫理由は必須です。')
+
+    if (reason?.name == 出庫理由.不良品 && !history.note) {
       return new ValidationError('不良品の時は理由を備考に入れてください。')
     }
 
-    const itemUpdateWith = this._whichItemField(history.reason)
+    const {isTemp, itemField} = this._whichItemField(reason.name) 
     const data = await this.historyRepository.update(
       id,
-      history,
-      itemUpdateWith
+      {...history, isTemp},
+      itemField
     )
     if (data instanceof Error) {
       return data as Error
@@ -299,11 +217,11 @@ export class HistoryService {
     if (!target || target instanceof Error)
       return new InvalidArgumentError('在庫が存在しません。')
 
-    const itemUpdateWith = this._whichItemField(target.reason.name)
+    const {itemField} = this._whichItemField(target.reason.name)
     const data = await this.historyRepository.delete(
       historyId,
       target,
-      itemUpdateWith
+      itemField
     )
     if (data instanceof Error) {
       return data as Error
@@ -312,22 +230,22 @@ export class HistoryService {
     return [HistoryToDTO(history), ItemToDTO(item)]
   }
   //どのITEMフィールドを同時に引落すべきか
-  private _whichItemField(reason: Reason): ITEM_FIELD {
+  private _whichItemField(reason: Reason): {isTemp: boolean, itemField :ITEM_FIELD} {
     switch (reason) {
       case 出庫理由.見積:
-        return ITEM_FIELD.NONE //引落なし
+        return {isTemp: true, itemField: ITEM_FIELD.NONE} //引落なし
       case 出庫理由.受注予約:
       case 入庫理由.発注:
-        return ITEM_FIELD.TEMP_COUNT //仮在庫
+        return {isTemp: true, itemField: ITEM_FIELD.TEMP_COUNT} //仮在庫
       case 入庫理由.仕入:
       case 出庫理由.受注出庫:
       case 出庫理由.不良品:
       case 出庫理由.棚卸調整:
       case 入庫理由.棚卸調整:
       case 入庫理由.返品:
-        return ITEM_FIELD.BOTH //両方
+        return {isTemp: false, itemField: ITEM_FIELD.BOTH} //両方
       default:
-        return ITEM_FIELD.NONE
+        throw new Error("理由とフィールドの対応が判別できません。")
     }
   }
 }

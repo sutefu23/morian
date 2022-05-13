@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useState } from 'react'
 import { ReasonSelect, StatusSelect, UserSelect } from '~/components/select'
 import Dialog from '~/components/feedback/dialog'
 import useHistory from '~/hooks/useHistory'
@@ -6,6 +6,7 @@ import { HStack, Box, VStack, InputGroup, InputLeftAddon, Input } from "@chakra-
 import dayjs from 'dayjs'
 import { StockReason } from '~/server/domain/init/master'
 import { Decimal } from "decimal.js"
+import { 出庫理由 } from '~/server/domain/entity/stock'
 
 type Props = {
   isOpen:boolean
@@ -16,7 +17,7 @@ type Props = {
 } 
 const editHistory = ({isOpen , onClose, onDone, editHistoryId, mode}:Props) => {
   const { historyData, setHistoryData, updateField, updateHistory, postHistory } = useHistory()
-
+  const [isBook, setIsBook] = useState<boolean>(false)
   const handleRegister = useCallback(async ()=>{
     switch (mode) {
       case "新規作成":
@@ -86,10 +87,13 @@ const editHistory = ({isOpen , onClose, onDone, editHistoryId, mode}:Props) => {
               <InputLeftAddon
               >理由</InputLeftAddon>
               <ReasonSelect required
-                value={StockReason.find(r => r.name === historyData.reason)?.id}
+                value={historyData.reasonId}
                 status={historyData.status}
                 onSelect={(e) => { 
-                updateField<"reason">("reason",StockReason.find(r => r.id === Number(e.currentTarget.value))?.name)}}/>
+                const reasonBookId = StockReason.find(r => r.name === 出庫理由.受注予約)?.id
+                const reasonEstimateId = StockReason.find(r => r.name === 出庫理由.見積)?.id
+                setIsBook(Number(e.currentTarget.value)===reasonBookId || Number(e.currentTarget.value)===reasonEstimateId)
+                updateField<"reasonId">("reasonId",Number(e.currentTarget.value))}}/>
             </InputGroup>
           </Box>
         </HStack>
@@ -123,30 +127,36 @@ const editHistory = ({isOpen , onClose, onDone, editHistoryId, mode}:Props) => {
             </InputGroup>
           </Box>
         </HStack>
-        <HStack>
-          <Box width="75vw" >
-            <InputGroup>
-              <InputLeftAddon bgColor="blue.100">予約日</InputLeftAddon>
-              <Input
-                type="date"
-                value={historyData.bookDate ? dayjs(historyData.bookDate).format('YYYY-MM-DD'): undefined}
-                onChange={(e) => { 
-                  updateField<"bookDate">("bookDate", e.target.valueAsDate ?? undefined)}}
-                />
-            </InputGroup>
-          </Box>
-        </HStack>
-        <HStack>
-          <Box width="75vw" >
-            <InputGroup>
-              <InputLeftAddon bgColor="blue.100">予約者</InputLeftAddon>
-              <UserSelect required
-                value={historyData.bookUserId ?? undefined}
-                onSelect={(e) => { 
-                updateField<"bookUserId">("bookUserId", Number(e.currentTarget.value))}}/>
-            </InputGroup>
-          </Box>
-        </HStack>
+        {
+          isBook &&
+          <>
+          <HStack>
+            <Box width="75vw" >
+              <InputGroup>
+                <InputLeftAddon bgColor="blue.100">予約日</InputLeftAddon>
+                <Input
+                  type="date"
+                  value={historyData.bookDate ? dayjs(historyData.bookDate).format('YYYY-MM-DD'): undefined}
+                  onChange={(e) => { 
+                    updateField<"bookDate">("bookDate", e.target.valueAsDate ?? undefined)}}
+                  />
+              </InputGroup>
+            </Box>
+          </HStack>
+          <HStack>
+            <Box width="75vw" >
+              <InputGroup>
+                <InputLeftAddon bgColor="blue.100">予約者</InputLeftAddon>
+                <UserSelect required
+                  value={historyData.bookUserId ?? undefined}
+                  onSelect={(e) => { 
+                  updateField<"bookUserId">("bookUserId", Number(e.currentTarget.value))}}/>
+              </InputGroup>
+            </Box>
+          </HStack>
+          </>
+        }
+
       </VStack>
     </Dialog>
   )

@@ -8,15 +8,12 @@ import Footer from '~/components/Footer'
 import BottomDrawer from '~/components/drawer/bottomDrawer'
 import RightDrawer from '~/components/drawer/rightDrawer'
 import Breadcrumbs from '~/components/navigation/breadcrumb'
-import {RiEdit2Line, RiDeleteBinLine} from 'react-icons/ri'
-import { Decimal } from "decimal.js"
+import {RiDeleteBinLine} from 'react-icons/ri'
 import { useState } from 'react'
-import { StockReason } from '~/server/domain/init/master'
 import EditHistoryModal from './editHistory'
 import useHistory from '~/hooks/useHistory'
 import useUser from '~/hooks/useUser'
-
-const EditIcon = chakra(RiEdit2Line);
+import HistoryDetail from './historyDetail'
 const DeleteIcon = chakra(RiDeleteBinLine);
 
 const HistoryListPage = () => {
@@ -34,7 +31,8 @@ const HistoryListPage = () => {
   const [ hoverIndex, setHoverIndex ] = useState<number>(0)
   const [ editHistoryId, setEditHistoryId ] = useState<number|undefined>(undefined)
 
-  const {isOpen: isRightOpen, onClose: onRightClose} = useDisclosure()
+  const [ detailId, setDetailId ] = useState<number|undefined>(undefined)
+  const {isOpen: isRightOpen, onOpen: onRightOpen, onClose: onRightClose} = useDisclosure()
   const {isOpen: isBottomOpen, onClose: onBottomClose} = useDisclosure()
   const {isOpen: isModalOpen, onOpen : onModalOpen, onClose: onModalClose} = useDisclosure()
 
@@ -51,10 +49,11 @@ const HistoryListPage = () => {
   
   return (
     <>
-      <Breadcrumbs links={[
-        {name: `${woodSpecies?.name} ${itemType?.name}一覧`, path:`/item/${itemType?.id}/species/${woodSpecies?.id}`},
-        {name: `${lotId} ${woodSpecies?.name} ${itemType?.name}`}
-        ]}></Breadcrumbs>
+
+    <Breadcrumbs links={[
+      {name: `${woodSpecies?.name} ${itemType?.name}一覧`, path:`/item/${itemType?.id}/species/${woodSpecies?.id}`},
+      {name: `${lotId} ${woodSpecies?.name} ${itemType?.name}`}
+      ]}></Breadcrumbs>
     <VStack align="left" pl="10">
       <HStack>
         <Box>
@@ -179,7 +178,7 @@ const HistoryListPage = () => {
         </Box>
       </HStack>
     </VStack>
-    <Table variant="striped">
+    <Table variant="striped" className='hover'>
       <Thead>
       <Th textAlign="center">入出庫日</Th>
       <Th textAlign="center">ステータス</Th>
@@ -194,43 +193,38 @@ const HistoryListPage = () => {
         {item?.history && 
           item?.history.map((data, i) => (
           <Tr key={data.id} 
+            style={{"color":data.isTemp?"red":""}}
             onMouseEnter={() => setHoverIndex(i)}
             onMouseLeave={() => setHoverIndex(-1)}
           >
-            <Td textAlign="center">{dayjs(data.date).format('YY/MM/DD')}</Td>
-            <Td textAlign="center">{data.status===1?"入庫":"出庫"}</Td>
+            <Td>
+              <Button size="sm" onClick={() => {
+                  setDetailId(data.id)
+                  onRightOpen()
+                  }}>
+                {dayjs(data.date).format('YY/MM/DD')}
+              </Button>
+            </Td>
+            <Td textAlign="center">{data.isTemp?"(仮)":""}{data.status===1?"入庫":"出庫"}</Td>
             <Td textAlign="center">{reasons?.find(r => r.id === data.reasonId)?.name}</Td>
-            <Td>{data.note}</Td>
+            <Td>
+            <Input 
+              border="solid 1px #ddd"
+              bgColor="white"
+              onBlur={async (e) => {
+                await apiClient.history._id(data.id).patch({body:{id:data.id, data:{note: e.currentTarget.value, editUserId: user?.id}}})
+              }}
+              defaultValue={data.note??undefined}
+              />
+              </Td>
             <Td textAlign="center">{data.addCount.toString()!="0" && data.addCount}</Td>
             <Td textAlign="center">{data.reduceCount.toString()!="0" && data.reduceCount}</Td>
             <Td textAlign="center">{data.bookDate?dayjs(data.bookDate).format("YY/MM/DD"):""}</Td>
             <Td textAlign="center">
               <Box display="flex" 
                 justifyContent="space-around"
-                visibility={hoverIndex==i?"visible":"hidden"}  
+                visibility={data.isTemp && hoverIndex==i?"visible":"hidden"}  
               >
-              <EditIcon title='編集' cursor="pointer"
-                fontSize="lg"
-                onClick={()=>{
-                  const reason = StockReason.find(r => r.id===data.reasonId)?.name
-                  setHistoryData({
-                    itemId: data.itemId,
-                    note:data.note??undefined,
-                    date: data.date,
-                    status: data.status,
-                    reason: reason,
-                    reduceCount: new Decimal(data.reduceCount.toString()),
-                    addCount: new Decimal(data.addCount.toString()),
-                    editUserId: user?.id,
-                    bookUserId: data.bookUserId,
-                    bookDate: data.bookDate,
-                    isTemp: data.isTemp
-                  })
-                  setEditMode("編集")
-                  setEditHistoryId(data.id)
-                  onModalOpen()
-                }}
-              />
               <DeleteIcon title='削除' cursor="pointer"
                 fontSize="lg"
                 color="red"
@@ -254,7 +248,10 @@ const HistoryListPage = () => {
         <RightDrawer
         isOpen={isRightOpen} onClose={onRightClose}
         width="30vw"
-        >
+        >{
+          detailId &&
+          <HistoryDetail id={detailId}/>
+          }
         </RightDrawer>
       </aside>
     <Footer>
@@ -263,7 +260,7 @@ const HistoryListPage = () => {
         </BottomDrawer>
         <HStack textAlign="right">
         <Box>
-          <Button type='submit' ml={50} w={100} bgColor="green.200"
+          <Button type='submit' bgColor="green.200"
           onClick={ (e) => {
             e.preventDefault()
             if(!item?.id){

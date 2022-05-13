@@ -87,13 +87,38 @@ const Sidebar = () => {
       path: "/item/handhi"
     },
     {
+      key: "barcode",
+      name: "バーコード印刷",
+      path: "/api/report/barcode"
+    },
+    {
       key: "reports",
       name: "帳票",
       children : [
         {
-          key: "printBarCode",
-          name: "バーコード印刷",
-          path: "/print/barcode"
+          key: "printDefectiveList",
+          name: "不良在庫一覧",
+          path: "/api/report/barcode"
+        },
+        {
+          key: "printBookList",
+          name: "受注予約一覧",
+          path: "/api/report/barcode"
+        },
+        {
+          key: "printOrderPrevMonthList",
+          name: "受注出庫一覧（前月）",
+          path: "/api/report/barcode"
+        },
+        {
+          key: "printOrderCurMonthList",
+          name: "受注出庫一覧（当月）",
+          path: "/api/report/barcode"
+        },
+        {
+          key: "printEstimateList",
+          name: "見積一覧",
+          path: "/api/report/barcode"
         },
       ]
     },

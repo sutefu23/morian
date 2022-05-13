@@ -67,7 +67,7 @@ const WoodSpeciesPage = () => {
           <Td>{stock.arrivalDate?dayjs(stock.arrivalDate).format('YY/MM/DD'):""}</Td>
           <Td>{warehouses?.find(w => w.id === stock.warehouseId)?.name }</Td>
           <Td>{stock.cost}/{units?.find(u => u.id === stock.costUnitId)?.name}</Td>
-          <Td>{stock.tempCount} {units?.find(u => u.id === stock.unitId)?.name}</Td>
+          <Td color={Number(stock.tempCount) < 0?"red":""}>{stock.tempCount} {units?.find(u => u.id === stock.unitId)?.name}</Td>
           <Td>
             <NextLink
               href={`/history/${stock.lotNo}`}

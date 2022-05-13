@@ -21,6 +21,9 @@ a {
 td {
   padding: 5px!important
 }
+table.hover tr:hover{
+  background-color: lightyellow!important;
+}
 .chakra-breadcrumb a:hover{
   text-decoration: underline;
 }

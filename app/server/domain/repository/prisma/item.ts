@@ -58,7 +58,7 @@ export class ItemRepository implements IItemRepository {
     const newEntity = {
       ...entity,
       lotNo: entity.lotNo,
-      length: String(entity.length),
+      length: entity.length?String(entity.length):undefined,
       manufacturer: entity.manufacturer ?? '',
       itemType: { connect: { id: entity.itemTypeId } },
       unit: { connect: { id: entity.unitId } },
@@ -91,14 +91,14 @@ export class ItemRepository implements IItemRepository {
     const newEntity = {
       ...entity,
       lotNo: entity.lotNo,
-      length: String(entity.length),
-      itemType: { connect: { id: entity.itemTypeId } },
-      unit: { connect: { id: entity.unitId } },
-      costUnit: { connect: { id: entity.costUnitId } },
-      woodSpecies: { connect: { id: entity.woodSpeciesId } },
-      supplier: { connect: { id: entity.supplierId } },
-      grade: { connect: { id: entity.gradeId } },
-      warehouse: { connect: { id: entity.warehouseId } },
+      length: entity.length?String(entity.length): undefined,
+      itemTypeId: entity.itemTypeId,
+      unitId: entity.unitId,
+      costUnitId: entity.costUnitId,
+      woodSpeciesId: entity.woodSpeciesId,
+      supplierId: entity.supplierId,
+      gradeId: entity.gradeId,
+      warehouseId: entity.warehouseId,
       cost: entity.cost ? entity.cost.toString() : undefined,
       packageCount: entity.packageCount
         ? entity.packageCount.toString()
@@ -108,14 +108,8 @@ export class ItemRepository implements IItemRepository {
         : undefined,
       count: entity.count ? entity.count.toString() : undefined,
       tempCount: entity.tempCount ? entity.tempCount.toString() : undefined,
-      supplierId: undefined,
-      itemTypeId: undefined,
-      woodSpeciesId: undefined,
-      gradeId: undefined,
-      unitId: undefined,
-      costUnitId: undefined,
-      warehouseId: undefined
     }
+
     const result = await this.prisma.item.update({
       where: { id },
       data: newEntity

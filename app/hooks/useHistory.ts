@@ -2,6 +2,8 @@ import { useCallback} from 'react'
 import { UpdateHistoryData } from '~/server/domain/service/stock'
 import { apiClient } from '~/utils/apiClient'
 import { atom , useRecoilState } from 'recoil'
+import { 出庫理由 } from '~/server/domain/entity/stock'
+import { StockReason } from '~/server/domain/init/master'
 
 export type EditUpdataHistoryData = Partial<UpdateHistoryData>
 
@@ -10,7 +12,7 @@ const defaultData:EditUpdataHistoryData = {
   note: "",
   date: new Date(),
   status: undefined,
-  reason: undefined,
+  reasonId: undefined,
   reduceCount: undefined,
   addCount: undefined,
   editUserId: undefined,
@@ -46,7 +48,8 @@ const useHistory = () => {
       console.error('checkValidHistory data is null')
       return null
     }
-    const {itemId, date, status, reason, reduceCount, addCount, bookDate, bookUserId, editUserId} = data
+    const {itemId, date, status, reasonId, reduceCount, addCount, editUserId} = data
+    let { bookDate, bookUserId } = data
     if(!itemId){
       alert("itemIdは必須です")
       return null
@@ -59,7 +62,7 @@ const useHistory = () => {
       alert("ステータスは必須です")
       return null
     }
-    if(!reason){
+    if(!reasonId){
       alert("理由は必須です")
       return null
     }
@@ -87,17 +90,26 @@ const useHistory = () => {
       alert("予約日を入れた場合は予約者は必須です")
       return null
     }
-    
+    const reason = StockReason.find(r => r.id === reasonId)?.name
+    if (reason == 出庫理由.受注予約 || reason == 出庫理由.見積){
+      if(!bookUserId || !bookDate){
+        alert("出庫理由が予約か見積の場合は予約者と予約日は必須です")
+        return null  
+      }else{
+        bookDate = undefined
+        bookUserId = undefined
+      }
+    }
     return {
       ...data,
       itemId,
       date,
       status,
-      reason,
+      reasonId,
       reduceCount,
       addCount,
       editUserId,
-      isTemp:true
+      isTemp:false
     }
   }
 

@@ -35,9 +35,3 @@ export const fetchIssues = async (query:getQuery) => {
   })
   return data
 }
-
-// export const exchangeStock = async (issueData: Issue ) => {
-//   await prisma.item.create({
-//     data : issueData
-//   })
-// }
