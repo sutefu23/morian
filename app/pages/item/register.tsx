@@ -14,7 +14,7 @@ type Props = {
   onSuccess: () => void
 }
 
-const Register = ({isFromIssue, onSuccess}:Props) => {
+const Register = ({isFromIssue, onSuccess = () => {window.location.reload}}:Props) => {
   const { setTitle } = usePageTitle()
   if(!isFromIssue){
     setTitle("新規在庫登録")
@@ -30,7 +30,7 @@ const Register = ({isFromIssue, onSuccess}:Props) => {
       <HStack>
         <Box>
           <InputGroup>
-            <InputLeftAddon aria-required bgColor={isFromIssue?"red.100":undefined}>ロットNo</InputLeftAddon>
+            <InputLeftAddon aria-required>ロットNo</InputLeftAddon>
             <Input required
               placeholder="半角英数字のみ可"
               onChange={(e) => { updateField<"lotNo">("lotNo", e.target.value.toNarrowCase())}}

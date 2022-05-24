@@ -5,6 +5,7 @@ import {
   出庫理由,
   入庫理由,
   UnitType,
+  Status
 } from '@domain/entity/stock'
 import {
   IItemRepository,
@@ -17,7 +18,9 @@ import { HistoryDTO, HistoryToDTO } from '../dto/history'
 import { Decimal } from 'decimal.js'
 import { HistoryRepository } from '../repository/prisma/history'
 import { StockReason } from '../init/master'
-
+import { PrismaClient } from '@prisma/client'
+import { AuthService } from './auth'
+const prisma = new PrismaClient()
 
 export type UpdateItemData = {
   readonly lotNo: string
@@ -41,7 +44,6 @@ export type UpdateItemData = {
   readonly warehouseId: number
   readonly manufacturer?: string
   readonly arrivalDate?: Date
-  readonly arrivalExpectedDate?: string
   readonly enable: boolean
   readonly note?: string
   readonly defectiveNote?: string
@@ -87,7 +89,53 @@ export class ItemService {
     const itemDto = ItemToDTO(data)
     return itemDto
   }
+  async registerItem(item: UpdateItemData) {
+    //仕入
+    const hasLotNo = await this.findLotNo(item.lotNo)
+    if (hasLotNo instanceof Error) {
+      return hasLotNo as Error
+    }
+    if (hasLotNo) {
+      return new Error('ロットNoが既に存在します。')
+    }
+    const data = await this.itemRepository.create(item)
+    if (data instanceof Error) {
+      return data as Error
+    }
 
+    const editUser = AuthService.user()
+    if (!editUser) {
+      return new Error('認証されたユーザーが見つかりません。')
+    }
+    if(item.issueItemId){
+      await prisma.issueItem.update({
+        where: {
+          id:item.issueItemId
+        },
+        data:{isStored:true}
+      })  
+    }
+
+    const 仕入詳細 = {
+      itemId: data.id,
+      note: data.note,
+      date: new Date(),
+      status: Status.入庫,
+      reasonId: 1, //入庫理由.仕入
+      reduceCount: new Decimal(0),
+      addCount: data.count,
+      editUserId: editUser.id,
+      isTemp: false
+    }
+
+    const historyData = await this.historyService.createHistory(仕入詳細)
+    if (historyData instanceof Error) {
+      return historyData as Error
+    }
+
+    const itemDto = ItemToDTO(data)
+    return itemDto
+  }
   async findItemById(id: number) {
     const data = await this.itemRepository.findById(id)
     if (data instanceof Error) {

@@ -18,7 +18,6 @@ import {
 } from '@chakra-ui/react'
 import React from 'react'
 import { apiClient } from '~/utils/apiClient'
-import router from 'next/router'
 import NextLink from "next/link"
 import StatusBar from '~/components/feedback/statusBar'
 import useSidebar from '~/hooks/useSidebar'
@@ -27,6 +26,7 @@ export type Link = {
   key: number|string
   name: string
   path?: string
+  event?: () => void
   children?: Link[] 
 }|undefined
 
@@ -82,14 +82,9 @@ const Sidebar = () => {
       path: "/item/issue"
     },
     {
-      key: "handhi",
-      name: "ハンディ操作",
-      path: "/item/handhi"
-    },
-    {
       key: "barcode",
       name: "バーコード印刷",
-      path: "/api/report/barcode"
+      path: "/report/barcode"
     },
     {
       key: "reports",
@@ -98,27 +93,27 @@ const Sidebar = () => {
         {
           key: "printDefectiveList",
           name: "不良在庫一覧",
-          path: "/api/report/barcode"
+          path: "/report/barcode"
         },
         {
           key: "printBookList",
           name: "受注予約一覧",
-          path: "/api/report/barcode"
+          path: "/report/barcode"
         },
         {
-          key: "printOrderPrevMonthList",
-          name: "受注出庫一覧（前月）",
-          path: "/api/report/barcode"
+          key: "printItemAmountList",
+          name: "ロット別在庫金額",
+          path: "/report/barcode"
         },
         {
-          key: "printOrderCurMonthList",
-          name: "受注出庫一覧（当月）",
-          path: "/api/report/barcode"
+          key: "printOrderMonthList",
+          name: "受注出庫一覧",
+          path: "/report/barcode"
         },
         {
           key: "printEstimateList",
           name: "見積一覧",
-          path: "/api/report/barcode"
+          path: "/report/barcode"
         },
       ]
     },

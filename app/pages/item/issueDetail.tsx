@@ -3,8 +3,12 @@ import {
   Tr,
   Th,
   Td,
+  Button,
 } from "@chakra-ui/react"
+import dayjs from "dayjs"
 import { IssueItemProps, IssueProps } from "~/server/domain/entity/issue"
+import { apiClient } from "~/utils/apiClient"
+import NextLink from "next/link"
 
 type Props = {
   issue: IssueProps
@@ -12,9 +16,10 @@ type Props = {
 }
 const IssueDetail = ({issue, item}:Props) => {
   return (
+    <>
     <Table variant="striped" colorScheme="gray">
-    <Tr><Th>管理</Th><Td>{issue.managedId}</Td></Tr>
-    <Tr><Th>発注日</Th><Td>{issue.date}</Td></Tr>
+    <Tr><Th>管理番号</Th><Td>{issue.managedId}</Td></Tr>
+    <Tr><Th>発注日</Th><Td>{issue.date?dayjs(issue.date).format("YYYY-MM-DD"):""}</Td></Tr>
     <Tr><Th>発注者</Th><Td>{issue.userName}</Td></Tr>
     <Tr><Th>仕入先</Th><Td>{issue.supplierName} </Td></Tr>
     <Tr><Th>仕入先担当者</Th><Td>{issue.supplierManagerName} </Td></Tr>
@@ -33,8 +38,31 @@ const IssueDetail = ({issue, item}:Props) => {
     <Tr><Th>入数</Th><Td>{item.packageCount}</Td></Tr>
     <Tr><Th>原価単位数量</Th><Td>{item.costPackageCount}</Td></Tr>
     <Tr><Th>数量</Th><Td>{item.count} {item.unitName}</Td></Tr>
-    <Tr><Th>原価</Th><Td>{item.cost} {item.costUnitName}</Td></Tr>
+    <Tr><Th>原価</Th><Td>{Number(item.cost).toLocaleString()} {item.costUnitName}</Td></Tr>
     </Table>
+
+    <Button bgColor="red.200"
+      ml="10px"
+      mt="20px"
+      onClick={async ()=>{
+        if(confirm("このデータをキャンセルしますか？")){
+          await apiClient.issue.delete({body:issue.id})
+        }
+      }}
+    >
+      仕入キャンセル
+    </Button>
+    <NextLink
+        href='/item/issue/'
+        >
+      <Button bgColor="green.200"
+        ml="10px"
+        mt="20px"
+      >
+      編集
+    </Button>
+    </NextLink>
+    </>
   )
 }
 export default IssueDetail

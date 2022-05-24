@@ -20,5 +20,15 @@ export default defineController(() => ({
       status: 200,
       body: item
     }
+  },
+  post: async ({ body }) => {
+    const item = await (async () => {
+      return await itemService.registerItem(body.data)
+    })()
+    if (item instanceof Error) throw item
+    return {
+      status: 201,
+      body: item
+    }
   }
 }))

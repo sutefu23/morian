@@ -3,14 +3,25 @@ import { PrismaClient } from "@prisma/client"
 const prisma = new PrismaClient()
 
 export type getQuery = {
-  lotNo: string,
+  lotNo?: string,
+  reasonId?: number,
+  isDefective?: boolean,
+  fromDate?: Date,
+  toDate?: Date
 }
 
-export const getHistoryList = async ({ lotNo }:getQuery) =>{
+export const getHistoryList = async ({ lotNo, reasonId, fromDate, toDate}:getQuery) =>{
   const data = await prisma.item.findMany({
     where: {lotNo},
     include:{
       history:{
+        where:{
+          reasonId,
+          date:{
+            gte: fromDate,
+            lte: toDate
+          }
+        },
         orderBy:[
           {isTemp:'asc'},
           {date:'asc'},
@@ -20,3 +31,4 @@ export const getHistoryList = async ({ lotNo }:getQuery) =>{
   })
   return data[0]
 }
+

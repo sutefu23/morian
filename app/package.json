@@ -41,6 +41,7 @@
     "class-validator": "^0.13.1",
     "dayjs": "^1.11.0",
     "decimal.js": "^10.3.1",
+    "exceljs": "^4.3.0",
     "formik": "^2.2.9",
     "formik-chakra-ui": "^1.6.0",
     "framer-motion": "^4.1.17",

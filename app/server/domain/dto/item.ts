@@ -38,7 +38,6 @@ export type ItemDTO = {
   readonly manufacturer?: string
   readonly enable: boolean
   readonly arrivalDate?: Date
-  readonly arrivalExpectedDate?: string
   readonly note?: string
 }
 export const ItemToDTO = (item: Item): ItemDTO => {
@@ -77,7 +76,6 @@ export const ItemToDTO = (item: Item): ItemDTO => {
     costUnitName: item.costUnit.name,
     costUnitOrder: item.costUnit.order,
     arrivalDate: item.arrivalDate,
-    arrivalExpectedDate: item.arrivalExpectedDate,
     manufacturer: item.manufacturer,
     note: item.note,
     enable: item.enable

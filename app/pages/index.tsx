@@ -11,7 +11,6 @@ import {
   useDisclosure,
   Input
 } from "@chakra-ui/react"
-import Footer from "~/components/Footer"
 import RightDrawer from '~/components/drawer/rightDrawer'
 import BottomDrawer from '~/components/drawer/bottomDrawer'
 import usePageTitle from '~/hooks/usePageTitle'
@@ -76,14 +75,8 @@ const Home = () => {
                 issue.issueItems.map((item, j) => (
                   <Tr key={j}>
                   <Td>
-                    <Button onClick={() => {
-                      setIssueIndex(i)
-                      setItemIndex(j)
-                      onRightOpen()
-                      }}>
                     {issue.managedId}
-                    </Button>
-                    </Td>
+                  </Td>
                   <Td>{item.woodSpeciesName}</Td>
                   <Td>{item.itemTypeName}</Td>
                   <Td>{item.gradeName}</Td>
@@ -106,12 +99,21 @@ const Home = () => {
                     defaultValue={item.itemNote??undefined}
                     />
                   </Td>
-                  <Td>
+                  <Td textAlign="right">
+                  <Button ml="5" bgColor="gray.200"
+                    onClick={() => {
+                      setIssueIndex(i)
+                      setItemIndex(j)
+                      onRightOpen()
+                      }}>
+                        詳細
+                    </Button>
+
                   <Button ml="5" bgColor="blue.100"
                     onClick={(e) => {
                       e.preventDefault()
                       setStockData({
-                        lotNo: "",
+                        lotNo: issue.managedId,
                         woodSpeciesId: item.woodSpeciesId?? undefined,
                         itemTypeId: item.itemTypeId,
                         supplierId: issue.supplierId,
@@ -155,14 +157,12 @@ const Home = () => {
           }
         </RightDrawer>
       </aside>
-      <Footer>
-        <BottomDrawer title="入庫登録" isOpen={isBottomOpen} onClose={onBottomClose} height="40vw">
+      <BottomDrawer title="入庫登録" isOpen={isBottomOpen} onClose={onBottomClose} height="40vw">
           {
             issues &&
            <Register isFromIssue={true} onSuccess={()=>{handleRegister()}}></Register>
           }
         </BottomDrawer>
-      </Footer>
     </div>
     </>
   )

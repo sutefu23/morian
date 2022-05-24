@@ -12,7 +12,10 @@ export type Methods = {
   },
   post: {
     reqBody: IssueProps
-    resBody: Issue
+    resBody: Issue|Error
     status: 201
+  }
+  delete:{
+    reqBody:IssueProps["id"]
   }
 }

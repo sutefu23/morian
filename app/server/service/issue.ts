@@ -8,6 +8,22 @@ export type getQuery = {
 }
 
 export const createIssue = async (issueData: IssueProps) => {
+  const findManagedId = await prisma.issue.findFirst({where:{
+    managedId: issueData.managedId
+  }})
+
+  if(findManagedId){
+    return new Error("管理IDが既に存在します。")
+  }
+
+  const findLotNo = await prisma.item.findFirst({where:{
+    lotNo: issueData.managedId
+  }})
+
+  if(findLotNo){
+    return new Error("ロットNoが既に存在します。")
+  }
+
   const data = await prisma.issue.create({
     data: {
       ...issueData,
@@ -35,3 +51,12 @@ export const fetchIssues = async (query:getQuery) => {
   })
   return data
 }
+
+export const deleteIssue = async (id: number) => {
+  await prisma.issue.delete({
+    where: {id},
+    include:{
+      issueItems:true
+    }
+  })
+} 
