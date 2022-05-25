@@ -32,7 +32,7 @@ const RegisterIssue = () => {
 
     const router = useRouter();
     
-    const {data:editIssues, status} = useAspidaQuery(apiClient.issue,{query:{id: Number(router.query["issueId"])}})
+    const {data:editIssues, status} = useAspidaQuery(apiClient.issue,{query:{id: Number(router.query["issueId"])},enabled:Boolean(router.query["issueId"])})
     const [isEdit, setIsEdit] = useState<boolean>(false) 
 
     const { setTitle } = usePageTitle()

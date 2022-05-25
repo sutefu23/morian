@@ -29,6 +29,7 @@ const defaultItemData = {
   cost :undefined,
   costUnitName : "", // 原価単位
   costUnitId :1 ,
+  isStored:false,
 }
 
 export const defaultData = {
@@ -46,7 +47,6 @@ export const defaultData = {
   receiveingStaff : '',
   issueNote:"",
   innerNote:"",
-  isStored:false,
   issueItems: [
     defaultItemData
   ]
@@ -68,7 +68,6 @@ const demoData = {
   issueNote : '納品書を1枚入れてください。',
   innerNote : 'キズアリ。2月中旬予定',
   receiveingStaff : '田中',
-  isStored:false,
   issueItems: [
     {
       itemTypeName: '集成材',
@@ -89,7 +88,8 @@ const demoData = {
       unitId:1,
       cost : new Decimal(10000),
       costUnitName : "㎥", // 原価単位
-      costUnitId :1 
+      costUnitId :1 ,
+      isStored:false,
     },
     {
       itemTypeName: 'フローリング',
@@ -110,7 +110,8 @@ const demoData = {
       unitId: 2,
       cost: '10000',
       costUnitName: '坪',
-      costUnitId: 5
+      costUnitId: 5,
+      isStored:false,
     }
   ]
 }

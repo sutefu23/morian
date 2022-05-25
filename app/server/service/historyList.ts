@@ -12,16 +12,20 @@ export type getQuery = {
 
 export const getHistoryList = async ({ lotNo, reasonId, fromDate, toDate}:getQuery) =>{
   const data = await prisma.item.findMany({
-    where: {lotNo},
-    include:{
+    where: {
+      lotNo,
       history:{
-        where:{
+        every:{
           reasonId,
           date:{
             gte: fromDate,
             lte: toDate
           }
-        },
+        }
+      }
+    },
+    include:{
+      history:{
         orderBy:[
           {isTemp:'asc'},
           {date:'asc'},

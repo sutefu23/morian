@@ -206,6 +206,9 @@ const Register = ({isFromIssue, onSuccess = () => {window.location.reload}}:Prop
             try{
               await postStock()
               onSuccess()
+              if(!isFromIssue){
+                window.location.reload()
+              }
             }catch(e){
               console.error(e)
             }
