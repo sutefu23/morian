@@ -46,7 +46,11 @@ const IssueDetail = ({issue, item, onSuccessDelete}:Props) => {
       ml="10px"
       mt="20px"
       onClick={async ()=>{
-        if(confirm(`このデータをキャンセルしますか？\n${issue.managedId}`)){
+        const {body} = await apiClient.issueItem.get({query: {IssueId: issue.id}})
+        const confirmText = `このデータをキャンセルしますか？`+
+                            `\n${issue.managedId}`+
+                            `${(body.length > 1)?"\n※この発注データの明細" + body.length + "件同時にキャンセルされます。":""}`
+        if(confirm(confirmText)){
           await apiClient.issue.delete({body:issue.id})
           onSuccessDelete()
         }

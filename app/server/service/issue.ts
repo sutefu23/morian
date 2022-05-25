@@ -81,7 +81,6 @@ export const fetchIssues = async (query:getQuery) => {
       issueItems:  true,
     }
   })
-  console.log(data)
   return data
 }
 
