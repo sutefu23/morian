@@ -8,9 +8,10 @@ type Props = {
   onSelect: (selected: {id: number, name: string}) => void
   required?: boolean
   defaultKey?: number
+  readOnly?:boolean
 }
 
-const select = ({ onSelect, required, defaultKey}:Props) => {
+const select = ({ onSelect, required, defaultKey, readOnly}:Props) => {
 
   useEffect(() => {
     (async() => {
@@ -22,7 +23,7 @@ const select = ({ onSelect, required, defaultKey}:Props) => {
         }
       }
     })()
-  }, [])
+  }, [defaultKey])
   const onSelectionChange = async (key:React.Key) => {
     const response = await apiClient.supplier._id(Number(key)).get()
     if(response.body){
@@ -44,6 +45,7 @@ const select = ({ onSelect, required, defaultKey}:Props) => {
   return (
     <Autocomplete
     aria-label="仕入先" 
+    readOnly={readOnly}
     isRequired={required}
     items={list.items}
     inputValue={list.filterText}

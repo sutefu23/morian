@@ -8,6 +8,7 @@ import {
   Tr,
   Th,
   Td,
+  Heading,
   useDisclosure,
   Input
 } from "@chakra-ui/react"
@@ -48,8 +49,11 @@ const Home = () => {
       <aside>
         <Sidebar></Sidebar>
       </aside>
-
-      <Table variant="striped" colorScheme="gray" >
+      {!issues || issues[0].issueItems.length == 0 
+        ?
+        <Heading textAlign="center" mt="20px">現在発注情報はありません</Heading>
+        :
+        <Table variant="striped" colorScheme="gray" >
         <Thead>
           <Tr>
             <Th>管理番号</Th>
@@ -70,20 +74,21 @@ const Home = () => {
         </Thead>
         <Tbody>
             {
-              issues &&
+              issues && 
               issues.map((issue, i) => (
+                issue.issueItems.length > 0 && 
                 issue.issueItems.map((item, j) => (
                   <Tr key={j}>
                   <Td>
                     {issue.managedId}
                   </Td>
-                  <Td>{item.woodSpeciesName}</Td>
-                  <Td>{item.itemTypeName}</Td>
-                  <Td>{item.gradeName}</Td>
-                  <Td>{item.spec}</Td>
-                  <Td>{item.length}{(item.thickness)?`*${item.thickness}`:""}{(item.width)?`*${item.width}`:""}</Td>
-                  <Td>{item.packageCount}</Td>
-                  <Td>{item.count}{item.unitName}</Td>
+                  <Td>{item?.woodSpeciesName}</Td>
+                  <Td>{item?.itemTypeName}</Td>
+                  <Td>{item?.gradeName}</Td>
+                  <Td>{item?.spec}</Td>
+                  <Td>{item?.length}{(item?.thickness)?`*${item?.thickness}`:""}{(item?.width)?`*${item?.width}`:""}</Td>
+                  <Td>{item?.packageCount}</Td>
+                  <Td>{item?.count}{item.unitName}</Td>
                   <Td>{issue.supplierName}</Td>
                   <Td>{issue.expectDeliveryDate}</Td>
                   <Td>{issue.deliveryPlaceName}</Td>
@@ -146,6 +151,8 @@ const Home = () => {
             }
         </Tbody>
       </Table>
+      }
+
       <aside >
         <RightDrawer
         isOpen={isRightOpen} onClose={onRightClose}
@@ -153,7 +160,11 @@ const Home = () => {
         >
           {
           issues &&
-          <IssueDetail item={issues[issueIndex].issueItems[itemIndex]} issue={issues[issueIndex]}></IssueDetail>
+          <IssueDetail 
+            item={issues[issueIndex].issueItems[itemIndex]}
+            issue={issues[issueIndex]}
+            onSuccessDelete={refetch}
+            ></IssueDetail>
           }
         </RightDrawer>
       </aside>

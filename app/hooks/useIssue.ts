@@ -31,7 +31,7 @@ const defaultItemData = {
   costUnitId :1 ,
 }
 
-const defaultData = {
+export const defaultData = {
   managedId: '',
   date: new Date(),
   userId: undefined,
@@ -346,9 +346,9 @@ const useIssue = () => {
       costUnitId,
     }
   }
-  const checkValidLength = (length: unknown): number | '乱尺' | null => {
+  const checkValidLength = (length: unknown): string | '乱尺' | null => {
     if (isFinite(Number(length))) {
-      return Number(length)
+      return String(length)
     }
 
     if (typeof length === 'string' && length === '乱尺') {
@@ -375,6 +375,30 @@ const useIssue = () => {
     alert('登録しました')
   }, [issueData])
 
+  const updateIssue = useCallback(
+    async () => {
+      const updateIssueData = checkValidIssue(issueData)
+      if (!updateIssueData) {
+        console.error('updateIssueData is not valid')
+        return
+      }
+      if(!issueData.id){
+        alert("データのID情報が見つかりません")
+        return
+      }
+      await apiClient.issue.patch({
+        body: {
+          id:issueData.id,
+          body:issueData
+        },
+      })
+
+      alert('更新しました')
+      return
+    },
+    [issueData]
+  )
+
   const postIssue = useCallback(
     async () => {
       const postIssueData = checkValidIssue(issueData)
@@ -382,7 +406,6 @@ const useIssue = () => {
         console.error('postIssueData is not valid')
         return
       }
-      console.debug(JSON.stringify(postIssueData))
       await apiClient.issue.post({
         body: postIssueData,
       })
@@ -406,6 +429,7 @@ const useIssue = () => {
     totalPrice,
     fetchOrderSheet,
     postIssue,
+    updateIssue,
     useDemo
   }
 }

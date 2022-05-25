@@ -1,5 +1,5 @@
-import { PrismaClient } from "@prisma/client"
-import { IssueProps } from "../domain/entity/issue";
+import { PrismaClient, Issue } from "@prisma/client"
+import { IssueProps, IssueItemProps } from "../domain/entity/issue";
 const prisma = new PrismaClient();
 
 export type getQuery = {
@@ -35,6 +35,35 @@ export const createIssue = async (issueData: IssueProps) => {
       },
     }
   })
+  return data
+}
+
+export const updateIssue = async (id: number, issueData: IssueProps) => {
+
+  const data = await prisma.$transaction<Issue>(async (prisma) => {
+    const updateItems = await Promise.all(issueData.issueItems.map(async (item)=> {
+      return await prisma.issueItem.update({
+        where:{id:item.id},
+        data: {
+          ...item
+        }}
+      )
+    }))
+    const updateIssue = await prisma.issue.update({
+      where:{
+        id
+      },
+      data: {
+        ...issueData,
+        issueItems:undefined
+      }
+    })
+    return {
+      ...updateIssue,
+      issueItems:updateItems
+    }
+  })
+  
   return data
 }
 

@@ -213,11 +213,11 @@ const Register = ({isFromIssue, onSuccess = () => {window.location.reload}}:Prop
           }
           >登録</Button>
         </Box>
-        <Box>
+        {/* <Box>
           <Button ml={50} w={100} bgColor="red.200"
             onClick={useDemo}
           >デモ</Button>
-        </Box>
+        </Box> */}
       </HStack>
     </Footer>
     </form>

@@ -13,8 +13,9 @@ import NextLink from "next/link"
 type Props = {
   issue: IssueProps
   item: IssueItemProps
+  onSuccessDelete: ()=>void
 }
-const IssueDetail = ({issue, item}:Props) => {
+const IssueDetail = ({issue, item, onSuccessDelete}:Props) => {
   return (
     <>
     <Table variant="striped" colorScheme="gray">
@@ -45,16 +46,20 @@ const IssueDetail = ({issue, item}:Props) => {
       ml="10px"
       mt="20px"
       onClick={async ()=>{
-        if(confirm("このデータをキャンセルしますか？")){
+        if(confirm(`このデータをキャンセルしますか？\n${issue.managedId}`)){
           await apiClient.issue.delete({body:issue.id})
+          onSuccessDelete()
         }
       }}
     >
       仕入キャンセル
     </Button>
     <NextLink
-        href='/item/issue/'
-        >
+      href={{
+        pathname:`/item/issue/`,
+        query:{issueId: issue.id}
+      }}
+      >
       <Button bgColor="green.200"
         ml="10px"
         mt="20px"

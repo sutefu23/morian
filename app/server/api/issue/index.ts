@@ -15,6 +15,11 @@ export type Methods = {
     resBody: Issue|Error
     status: 201
   }
+  patch: {
+    reqBody: {id: number, body:IssueProps}
+    resBody: Issue|Error
+    status: 204
+  },
   delete:{
     reqBody:IssueProps["id"]
   }

@@ -34,6 +34,9 @@ table.hover tr:hover{
   content: "*";
   color: red;
 }
+[aria-readonly=true]{
+  pointer-events: none;
+}
 .footer{
   position: fixed;
   width: 100vw;

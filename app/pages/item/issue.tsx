@@ -2,20 +2,20 @@ import { HStack, Box, VStack, InputGroup, InputLeftAddon, Divider, InputRightAdd
 import { WoodSpeciesSelect, ItemTypeSelect, SupplierSelect, GradeSelect, UnitSelect, DeliveryPlaceSelect } from "~/components/select/"
 import Footer from "~/components/Footer"
 import { InputLabel } from "@material-ui/core"
-import useIssue from "~/hooks/useIssue"
+import useIssue, { defaultData } from "~/hooks/useIssue"
 import { Decimal } from "decimal.js"
 import usePageTitle from '~/hooks/usePageTitle'
 import "~/utils/string"
 import "~/utils/number"
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router';
 import dayjs from 'dayjs'
 import useUser from "~/hooks/useUser"
+import { useAspidaQuery } from "@aspida/react-query"
+import { apiClient } from "~/utils/apiClient"
 
 const RegisterIssue = () => {
-  const { setTitle } = usePageTitle()
-  setTitle("在庫発注")
-  
+ 
   const { 
     issueData,
     setIssueData,
@@ -27,10 +27,33 @@ const RegisterIssue = () => {
     costPerUnit,
     totalPrice,
     postIssue,
-    useDemo,
+    updateIssue,
     fetchOrderSheet } = useIssue()
 
     const router = useRouter();
+    
+    const {data:editIssues, status} = useAspidaQuery(apiClient.issue,{query:{id: Number(router.query["issueId"])}})
+    const [isEdit, setIsEdit] = useState<boolean>(false) 
+
+    const { setTitle } = usePageTitle()
+    setTitle(`在庫発注 ${isEdit?"編集":"新規作成"}`)
+
+    useEffect(()=>{
+      if(status==="success" && editIssues && editIssues.length > 0){
+        setIssueData(editIssues[0])
+        setIsEdit(true)
+      }else{
+        setIssueData(defaultData)  
+        setIsEdit(false)
+      }
+    },[status, editIssues])
+    
+    useEffect(()=>{
+      if(editIssues && editIssues.length > 0){
+        setIssueData(editIssues[0])  
+      }  
+    },[])
+
     const { user } = useUser()
     useEffect(() => {
       if(user){
@@ -39,7 +62,7 @@ const RegisterIssue = () => {
     },[user])
 
     const pageChangeHandler = () => {
-      if(issueData?.issueItems?.length && issueData?.issueItems[0].itemTypeId){
+      if(!isEdit && issueData?.issueItems?.length && issueData?.issueItems[0].itemTypeId){
         const answer = window.confirm('内容がリセットされます、本当にページ遷移しますか？');
         if(!answer) {
           // eslint-disable-next-line no-throw-literal
@@ -65,6 +88,7 @@ const RegisterIssue = () => {
           <InputGroup>
             <InputLeftAddon bgColor="blue.100" aria-required>管理番号</InputLeftAddon>
             <Input required
+              readOnly={isEdit}
               placeholder="半角英数字のみ可"
               onChange={(e) => { updateField<"managedId">("managedId", e.target.value.toNarrowCase())}}
               value={issueData?.managedId}
@@ -76,6 +100,7 @@ const RegisterIssue = () => {
             <InputLeftAddon bgColor="blue.100" aria-required>発注日</InputLeftAddon>
             <Input required
               type="date"
+              readOnly={isEdit}
               placeholder="半角英数字のみ可"
               onChange={(e) => { 
                 updateField<"date">("date", new Date(e.target.value))
@@ -90,6 +115,7 @@ const RegisterIssue = () => {
           <InputGroup>
             <InputLeftAddon bgColor="blue.100" aria-required>仕入先</InputLeftAddon>
             <SupplierSelect  
+              readOnly={isEdit}
               onSelect={
                 (selected) => {
                   setIssueData({...issueData, supplierId: selected.id, supplierName: selected.name})}
@@ -132,7 +158,9 @@ const RegisterIssue = () => {
         <Box w="40vw">
           <InputGroup>
             <InputLeftAddon bgColor="blue.100">納入住所</InputLeftAddon>
-            <Input onChange={(e) => { updateField<"deliveryAddress">("deliveryAddress", e.target.value)}}/>
+            <Input onChange={(e) => { updateField<"deliveryAddress">("deliveryAddress", e.target.value)}}
+            value={issueData.deliveryAddress}
+            />
           </InputGroup>
         </Box>
         <Box>
@@ -149,7 +177,9 @@ const RegisterIssue = () => {
         <Box width="75vw" >
           <InputGroup>
             <InputLeftAddon bgColor="blue.100">発注書備考</InputLeftAddon>
-            <Input onChange={(e) => { updateField<"issueNote">("issueNote", e.target.value)}}/>
+            <Input onChange={(e) => { updateField<"issueNote">("issueNote", e.target.value)}}
+            value={issueData.issueNote}
+            />
           </InputGroup>
         </Box>
       </HStack>
@@ -157,7 +187,9 @@ const RegisterIssue = () => {
         <Box width="75vw" >
           <InputGroup>
             <InputLeftAddon bgColor="blue.300">内部備考</InputLeftAddon>
-            <Input onChange={(e) => { updateField<"innerNote">("innerNote", e.target.value)}}/>
+            <Input onChange={(e) => { updateField<"innerNote">("innerNote", e.target.value)}}
+            value={issueData.innerNote}
+            />
           </InputGroup>
         </Box>
       </HStack>
@@ -171,7 +203,9 @@ const RegisterIssue = () => {
               <Box>
                 <InputGroup>
                   <InputLeftAddon aria-required>樹種</InputLeftAddon>
-                  <WoodSpeciesSelect required onSelect={(e) => {
+                  <WoodSpeciesSelect required
+                    readOnly={isEdit}
+                    onSelect={(e) => {
                     if(issueData.issueItems){
                       const {options, selectedIndex} = e.target
                       const newItem = { ...issueData.issueItems[index], ...{ woodSpeciesId : Number(e.target.value), woodSpeciesName: options[selectedIndex].innerHTML}}
@@ -188,6 +222,7 @@ const RegisterIssue = () => {
                   <InputLeftAddon aria-required>材種</InputLeftAddon>
                   <ItemTypeSelect required 
                   value={item.itemTypeId}
+                  readOnly={isEdit}
                   onSelect={(e) => { 
                     if(issueData.issueItems){
                       const {options, selectedIndex} = e.target
@@ -202,6 +237,7 @@ const RegisterIssue = () => {
                 <Button 
                 bgColor="red.100"
                 ml="10"
+                visibility={!isEdit?"visible":"hidden"}
                 onClick={() => {
                   if(confirm("こちらの明細を削除しますか？")){
                     deleteItemData(index)
@@ -335,6 +371,7 @@ const RegisterIssue = () => {
       }
       <Box textAlign="left">
       <Button ml="50" w={80} bgColor="green.100"
+        visibility={!isEdit?"visible":"hidden"}
         onClick={() => addItemData()}
         >行追加</Button>
       </Box>      
@@ -342,23 +379,30 @@ const RegisterIssue = () => {
     <Footer>
     <HStack>
         <Box>
-          <Button type='submit' ml={50} w={100} bgColor="green.400"
-          onClick={async (e) => {
-            e.preventDefault()
-            await postIssue()
+          {
+            isEdit?
+            <Button type='submit' ml={50} w={100} bgColor="green.400"
+            onClick={async (e) => {
+              e.preventDefault()
+              await updateIssue()
+              router.push("/")
+              }
             }
+            >更新</Button>
+            :
+            <Button type='submit' ml={50} w={100} bgColor="green.400"
+            onClick={async (e) => {
+              e.preventDefault()
+              await postIssue()
+              }
+            }
+            >登録</Button>
           }
-          >登録</Button>
         </Box>
         <Box>
             <Button ml={50} w={100} bgColor="blue.200"
               onClick={fetchOrderSheet}
             >発注書</Button>
-          </Box>    
-          <Box>
-          <Button ml={50} w={100} bgColor="red.200"
-            onClick={useDemo}
-          >デモ</Button>
         </Box>
       </HStack>
     </Footer>

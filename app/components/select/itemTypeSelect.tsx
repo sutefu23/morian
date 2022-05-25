@@ -10,8 +10,9 @@ type Props = {
   selected? : ItemTypeType["id"]
   required?: boolean
   value?: ItemTypeType["id"]
+  readOnly?:boolean
 }
-const select = ({ onSelect, selected, required, value }:Props) => {
+const select = ({ onSelect, selected, required, value, readOnly }:Props) => {
   const { data: itemTypes, error: itemTypeErr } = useAspidaQuery(apiClient.master.itemType)
   if (itemTypeErr) return <StatusBar status="error" message="商品カテゴリの取得に失敗しました。"/>
 
@@ -19,6 +20,7 @@ const select = ({ onSelect, selected, required, value }:Props) => {
     <Select 
       onChange={(e) => onSelect(e)}
       placeholder="選択して下さい"
+      isReadOnly={readOnly}
       required={required}
       defaultValue={selected}
       value={value}

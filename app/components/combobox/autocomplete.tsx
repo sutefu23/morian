@@ -21,6 +21,7 @@ export { Item, Section } from "react-stately";
 interface AutocompleteProps<T> extends ComboBoxProps<T> {
   loadingState?: LoadingState;
   onLoadMore?: () => void;
+  readOnly?:boolean
 }
 
 export function Autocomplete<T extends Record<string, unknown>>(props: AutocompleteProps<T>) {
@@ -28,10 +29,12 @@ export function Autocomplete<T extends Record<string, unknown>>(props: Autocompl
   const state = useComboBoxState({ ...props, defaultFilter: contains });
   
   const keyEnter = useCallback((e:React.CompositionEvent) =>{
+    e.preventDefault()
+    if(props.readOnly) return
     if (props.inputValue && props.onInputChange){ 
       props.onInputChange(props.inputValue)
     }
-  },[props.inputValue, props.onInputChange])
+  },[props.inputValue, props.onInputChange, props.readOnly])
 
   const inputRef = React.useRef(null);
   const listBoxRef = React.useRef(null);
@@ -55,6 +58,7 @@ export function Autocomplete<T extends Record<string, unknown>>(props: Autocompl
           <Search2Icon color="gray.500" />
         </InputLeftElement>
         <Input {...inputProps} w="27vw" ref={inputRef} size="md"
+        readOnly={props.readOnly}
         onCompositionStart={(e) => keyEnter(e)}
         onCompositionEnd={(e) => keyEnter(e)}
         />
@@ -65,7 +69,7 @@ export function Autocomplete<T extends Record<string, unknown>>(props: Autocompl
           ) : null}
         </InputRightElement>
       </InputGroup>
-      {state.isOpen && (
+      {state.isOpen && !props.readOnly && (
         <Popover
           popoverRef={popoverRef}
           isOpen={state.isOpen}
