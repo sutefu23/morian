@@ -2,7 +2,7 @@ import path from 'path'
 import Fastify, { FastifyServerFactory } from 'fastify'
 import helmet from 'fastify-helmet'
 import cors from 'fastify-cors'
-import fastifyStatic from 'fastify-static'
+import fastifyStatic from '@fastify/static'
 import fastifyJwt from 'fastify-jwt'
 import {
   HOST,

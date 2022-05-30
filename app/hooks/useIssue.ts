@@ -1,10 +1,13 @@
 import { useCallback, useState } from 'react'
 import { IssueItemProps, IssueProps } from '$/domain/entity/issue'
-import { Decimal } from 'decimal.js'
 import { Units } from '~/server/domain/init/master'
 import { apiClient } from '~/utils/apiClient'
 import { DeepPartial } from '~/types/DeepPartial.spec'
+import { Decimal } from 'decimal.js'
 import produce from "immer"
+import dayjs from 'dayjs'
+import ExcelJS from "exceljs"
+import stream from "stream"
 
 export type EditIssueData = DeepPartial<IssueProps>
 export type EditIssueItemData = DeepPartial<IssueItemProps>
@@ -28,7 +31,7 @@ const defaultItemData = {
   unitId:undefined,
   cost :undefined,
   costUnitName : "", // 原価単位
-  costUnitId :1 ,
+  costUnitId :undefined ,
   isStored:false,
 }
 
@@ -213,7 +216,7 @@ const useIssue = () => {
     []
   )
 
-  const totalPrice = useCallback((issueItem) => {
+  const totalPrice = useCallback((issueItem:DeepPartial<IssueItemProps>) => {
     if (!issueItem?.count) return 0
     const perUnit = costPerUnit(issueItem)
     return perUnit * Number(issueItem?.count)
@@ -363,18 +366,67 @@ const useIssue = () => {
     setIssueData(demoData)
   }
 
-  const fetchOrderSheet = useCallback(async () => {
-    const postIssueData = checkValidIssue(issueData)
-    if (!postIssueData) {
-      console.error('postIssueData is not valid')
-      return
-    }
-    await apiClient.issue.post({
-      body: postIssueData,
-    })
+  const downloadOrderSheet = async () => {
+    
+    if(!issueData.id) return
+    if(!issueData.issueItems) return
 
-    alert('登録しました')
-  }, [issueData])
+    const workbook = new ExcelJS.Workbook()
+    const resp = await fetch(new Request("/files/template.xlsx"))
+    const buff = await resp.arrayBuffer() 
+    const buffer = Buffer.from(buff)
+    const readStream = new stream.PassThrough()
+    readStream.end(buffer)
+    const wb = await workbook.xlsx.read(readStream)
+    const sheet = wb.getWorksheet("発注書")
+    //const copySheet = wb.addWorksheet("Sheet")
+    //copySheet.model = template.model
+    //copySheet.name = "THE REAL ID"
+
+    //ヘッダー部
+    if(issueData.date){
+      sheet.getCell('B1').value = dayjs(issueData.date as Date).format("YYYY年MM月DD日")
+    }
+    sheet.getCell('P1').value = issueData.managedId
+    sheet.getCell('A3').value = issueData.supplierName
+    sheet.getCell('C5').value = issueData.supplierManagerName
+    sheet.getCell('P7').value = issueData.userName
+  
+    //フッター部
+    sheet.getCell('C24').value = issueData.issueNote
+    sheet.getCell('C25').value = issueData.deliveryPlaceName
+    sheet.getCell('G25').value = issueData.deliveryAddress
+    sheet.getCell('D27').value = issueData.receiveingStaff
+  
+    //明細部
+    issueData.issueItems.map((item , indx) =>{
+      const row = indx + 10
+      sheet.getCell(`A${row}`).value = item.woodSpeciesName
+      sheet.getCell(`C${row}`).value = item.itemTypeName
+      sheet.getCell(`E${row}`).value = item.gradeName
+      sheet.getCell(`F${row}`).value = item.spec
+      sheet.getCell(`G${row}`).value = item.manufacturer
+      sheet.getCell(`H${row}`).value = `${item.length}`
+      sheet.getCell(`J${row}`).value = `${item.thickness}`
+      sheet.getCell(`K${row}`).value = `${item.width}`
+      sheet.getCell(`L${row}`).value = `${String(item.packageCount)}` // 入数
+      sheet.getCell(`M${row}`).value = `${(item.cost)} / ${item.costUnitName}` // 単価
+      sheet.getCell(`O${row}`).value = `${(item.count)} ${item.unitName}`// 数量
+      sheet.getCell(`P${row}`).value = `${totalPrice(item)}`
+    })    
+  
+    const uint8Array = await wb.xlsx.writeBuffer();
+    const blob = new Blob([uint8Array], {type: 'application/octet-binary'})
+    const url = window.URL.createObjectURL(blob)
+    // aタグを生成
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `発注書${dayjs(issueData.date as Date).format("YYMMDD")}.xlsx`
+    // aタグをクリックさせます
+    a.click()
+    // ダウンロード後は不要なのでaタグを除去
+    a.remove()  
+  }
 
   const updateIssue = useCallback(
     async () => {
@@ -407,12 +459,15 @@ const useIssue = () => {
         console.error('postIssueData is not valid')
         return
       }
-      await apiClient.issue.post({
+      const { body } = await apiClient.issue.post({
         body: postIssueData,
       })
+      if (body instanceof Error){
+        return
+      }
 
+      setIssueData(body)
       alert('登録しました')
-      window.location.reload()
       return
     },
     [issueData]
@@ -428,9 +483,9 @@ const useIssue = () => {
     calcCostPackageCount,
     costPerUnit,
     totalPrice,
-    fetchOrderSheet,
     postIssue,
     updateIssue,
+    downloadOrderSheet,
     useDemo
   }
 }

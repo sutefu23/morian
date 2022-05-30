@@ -1,4 +1,4 @@
-import { HStack, Box, VStack, InputGroup, InputLeftAddon, Divider, InputRightAddon, Input, Button } from "@chakra-ui/react"
+import { HStack, Box, VStack, InputGroup, InputLeftAddon, Divider, InputRightAddon, Input, Button, Link } from "@chakra-ui/react"
 import { WoodSpeciesSelect, ItemTypeSelect, SupplierSelect, GradeSelect, UnitSelect, DeliveryPlaceSelect } from "~/components/select/"
 import Footer from "~/components/Footer"
 import { InputLabel } from "@material-ui/core"
@@ -13,7 +13,6 @@ import dayjs from 'dayjs'
 import useUser from "~/hooks/useUser"
 import { useAspidaQuery } from "@aspida/react-query"
 import { apiClient } from "~/utils/apiClient"
-
 const RegisterIssue = () => {
  
   const { 
@@ -27,12 +26,11 @@ const RegisterIssue = () => {
     costPerUnit,
     totalPrice,
     postIssue,
-    updateIssue,
-    fetchOrderSheet } = useIssue()
+    downloadOrderSheet,
+    updateIssue } = useIssue()
 
     const router = useRouter();
-    
-    const {data:editIssues, status} = useAspidaQuery(apiClient.issue,{query:{id: Number(router.query["issueId"])},enabled:Boolean(router.query["issueId"])})
+    const {data:editIssues, status, refetch} = useAspidaQuery(apiClient.issue,{query:{id: Number(router.query["issueId"])},enabled:Boolean(router.query["issueId"])})
     const [isEdit, setIsEdit] = useState<boolean>(false) 
 
     const { setTitle } = usePageTitle()
@@ -56,6 +54,7 @@ const RegisterIssue = () => {
 
     const { user } = useUser()
     useEffect(() => {
+      console.log(user)
       if(user){
         setIssueData({...issueData, ...{userId: user.id, userName: user.name}})
       }
@@ -264,13 +263,13 @@ const RegisterIssue = () => {
               <Box>
                 <InputGroup>
                   <InputLeftAddon>仕様</InputLeftAddon>
-                  <Input placeholder="自由入力" onChange={(e) => { updateItemField<"spec">(index, "spec", e.target.value)}}/>
+                  <Input placeholder="自由入力" value={item.spec??""} onChange={(e) => { updateItemField<"spec">(index, "spec", e.target.value)}}/>
                 </InputGroup>
               </Box>
               <Box>
                 <InputGroup>
                   <InputLeftAddon>製造元</InputLeftAddon>
-                  <Input placeholder="自由入力" onChange={(e) => { updateItemField<"manufacturer">(index, "manufacturer", e.target.value)}}/>
+                  <Input placeholder="自由入力" value={item.manufacturer??""} onChange={(e) => { updateItemField<"manufacturer">(index, "manufacturer", e.target.value)}}/>
                 </InputGroup>
               </Box>
             </HStack>
@@ -400,9 +399,13 @@ const RegisterIssue = () => {
           }
         </Box>
         <Box>
-            <Button ml={50} w={100} bgColor="blue.200"
-              onClick={fetchOrderSheet}
-            >発注書</Button>
+          <Button ml={50} w={100} bgColor="blue.200"
+          disabled={Boolean(!issueData.id)}
+          onClick={(e)=>{
+            e.preventDefault()
+            downloadOrderSheet()
+          }}
+          >発注書</Button>
         </Box>
       </HStack>
     </Footer>

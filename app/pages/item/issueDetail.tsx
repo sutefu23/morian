@@ -39,7 +39,7 @@ const IssueDetail = ({issue, item, onSuccessDelete}:Props) => {
     <Tr><Th>入数</Th><Td>{item.packageCount}</Td></Tr>
     <Tr><Th>原価単位数量</Th><Td>{item.costPackageCount}</Td></Tr>
     <Tr><Th>数量</Th><Td>{item.count} {item.unitName}</Td></Tr>
-    <Tr><Th>原価</Th><Td>{Number(item.cost).toLocaleString()} {item.costUnitName}</Td></Tr>
+    <Tr><Th>原価</Th><Td>{Number(item.cost).toLocaleString()} / {item.costUnitName}</Td></Tr>
     </Table>
 
     <Button bgColor="red.200"

@@ -1,2 +1,4 @@
 /db_data
 data/redis/dump.rdb
+*.log
+.vscode
