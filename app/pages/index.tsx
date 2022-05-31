@@ -49,7 +49,7 @@ const Home = () => {
       <aside>
         <Sidebar></Sidebar>
       </aside>
-      {!issues || issues[0]?.issueItems?.length == 0 
+      {!issues || issues?.length ==0 || issues[0]?.issueItems?.length == 0 
         ?
         <Heading textAlign="center" mt="20px">現在発注情報はありません</Heading>
         :
@@ -80,7 +80,14 @@ const Home = () => {
                 issue?.issueItems.map((item, j) => (
                   <Tr key={j}>
                   <Td>
+                  <Button ml="5" bgColor="gray.200"
+                    onClick={() => {
+                      setIssueIndex(i)
+                      setItemIndex(j)
+                      onRightOpen()
+                      }}>
                     {issue.managedId}
+                    </Button>
                   </Td>
                   <Td>{item?.woodSpeciesName}</Td>
                   <Td>{item?.itemTypeName}</Td>
@@ -105,15 +112,6 @@ const Home = () => {
                     />
                   </Td>
                   <Td textAlign="right">
-                  <Button ml="5" bgColor="gray.200"
-                    onClick={() => {
-                      setIssueIndex(i)
-                      setItemIndex(j)
-                      onRightOpen()
-                      }}>
-                        詳細
-                    </Button>
-
                   <Button ml="5" bgColor="blue.100"
                     onClick={(e) => {
                       e.preventDefault()

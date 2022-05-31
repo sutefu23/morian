@@ -216,9 +216,11 @@ model History {
   addCount    Decimal //入荷数
   editUser    User     @relation(name: "editUser", fields: [editUserId], references: [id])
   editUserId  Int
+  editUserName  String @default("")
   order       Int //並び順
   bookUser    User?    @relation(name: "bookUser", fields: [bookUserId], references: [id])
   bookUserId  Int?
+  bookUserName  String?
   bookDate    DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

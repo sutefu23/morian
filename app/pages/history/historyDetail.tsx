@@ -16,7 +16,7 @@ const HistoryDetail = ({id}:Props) => {
   const {data: editUser} = useAspidaQuery(apiClient.user._id(history?.editUserId ?? -1))
   return (
     <Table variant="striped" colorScheme="gray">
-    <Tr><Th>予約日</Th><Td>{history?.bookDate?dayjs(history?.bookDate).format("YYYY-MM-DD"):""}</Td></Tr>
+    <Tr><Th>予約期限</Th><Td>{history?.bookDate?dayjs(history?.bookDate).format("YYYY-MM-DD"):""}</Td></Tr>
     <Tr><Th>予約者</Th><Td>{bookUser?.name}</Td></Tr>
     <Tr><Th>更新者</Th><Td>{editUser?.name} </Td></Tr>
     <Tr><Th>更新日</Th><Td>{history?.updatedAt?dayjs(history?.updatedAt).format("YYYY-MM-DD HH:mm:ss"):""}</Td></Tr>

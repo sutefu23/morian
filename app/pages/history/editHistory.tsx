@@ -133,7 +133,7 @@ const editHistory = ({isOpen , onClose, onDone, editHistoryId, mode}:Props) => {
           <HStack>
             <Box width="75vw" >
               <InputGroup>
-                <InputLeftAddon bgColor="blue.100">予約日</InputLeftAddon>
+                <InputLeftAddon bgColor="blue.100">予約期限</InputLeftAddon>
                 <Input
                   type="date"
                   value={historyData.bookDate ? dayjs(historyData.bookDate).format('YYYY-MM-DD'): undefined}
@@ -150,7 +150,10 @@ const editHistory = ({isOpen , onClose, onDone, editHistoryId, mode}:Props) => {
                 <UserSelect required
                   value={historyData.bookUserId ?? undefined}
                   onSelect={(e) => { 
-                  updateField<"bookUserId">("bookUserId", Number(e.currentTarget.value))}}/>
+                    const {options, selectedIndex} = e.target
+                    setHistoryData({...historyData, bookUserId: Number(e.currentTarget.value), bookUserName: options[selectedIndex].innerHTML})
+                  }}
+                  />
               </InputGroup>
             </Box>
           </HStack>

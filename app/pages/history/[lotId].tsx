@@ -1,19 +1,19 @@
 import { useRouter } from 'next/router'
 import usePageTitle from '~/hooks/usePageTitle'
 import { apiClient } from '~/utils/apiClient'
-import { HStack, Box, VStack, InputGroup, InputLeftAddon, Input, Spacer, Button,Table, Thead, Tbody, Tr, Th, Td, useDisclosure, chakra } from "@chakra-ui/react"
+import { HStack, Box, VStack, InputGroup, InputLeftAddon, Input, Spacer, Button,Table, Thead, Tbody, Tr, Th, Td, useDisclosure, chakra, Text } from "@chakra-ui/react"
 import { useAspidaQuery } from '@aspida/react-query'
 import dayjs from 'dayjs'
 import RightDrawer from '~/components/drawer/rightDrawer'
 import Breadcrumbs from '~/components/navigation/breadcrumb'
-import {RiDeleteBinLine} from 'react-icons/ri'
+import {RiDeleteBinLine, RiErrorWarningFill} from 'react-icons/ri'
 import { useState, useCallback, createRef } from 'react'
 import EditHistoryModal from './editHistory'
 import useHistory from '~/hooks/useHistory'
 import useUser from '~/hooks/useUser'
 import HistoryDetail from './historyDetail'
-
-const DeleteIcon = chakra(RiDeleteBinLine);
+const DeleteIcon = chakra(RiDeleteBinLine)
+const WarnIcon = chakra(RiErrorWarningFill)
 
 const HistoryListPage = () => {
   const router = useRouter()
@@ -34,14 +34,9 @@ const HistoryListPage = () => {
   const {isOpen: isRightOpen, onOpen: onRightOpen, onClose: onRightClose} = useDisclosure()
   const {isOpen: isModalOpen, onOpen : onModalOpen, onClose: onModalClose} = useDisclosure()
 
-  const { data: units, } = useAspidaQuery(apiClient.master.unit)
-  const { data: grade } = useAspidaQuery(apiClient.master.grade._id(Number(item?.gradeId)))
-  const { data: warehouses } = useAspidaQuery(apiClient.master.warehouse)
-  const { data: itemType } = useAspidaQuery(apiClient.master.itemType._id(Number(item?.itemTypeId)))
   const { data: reasons } = useAspidaQuery(apiClient.master.reason)
-  const { data: woodSpecies } = useAspidaQuery(apiClient.master.species._id(Number(item?.woodSpeciesId)))
   const arraivalDate = item?.arrivalDate ? "入荷日:" + dayjs(item.arrivalDate).format("YY/MM/DD"):""
-  setTitle(`${lotId} ${woodSpecies?.name} ${itemType?.name} 在庫一覧   ${arraivalDate}`)
+  setTitle(`${lotId} ${item?.woodSpeciesName} ${item?.itemTypeName} 在庫一覧   ${arraivalDate}`)
   const scale = `${item?.length} * ${item?.thickness}* ${item?.width}`
   const [mode, setEditMode] = useState<"新規作成"|"編集">("新規作成")
   
@@ -56,8 +51,8 @@ const HistoryListPage = () => {
   return (
     <>
     <Breadcrumbs links={[
-      {name: `${woodSpecies?.name} ${itemType?.name}一覧`, path:`/item/${itemType?.id}/species/${woodSpecies?.id}`},
-      {name: `${lotId} ${woodSpecies?.name} ${itemType?.name}`}
+      {name: `${item?.woodSpeciesName} ${item?.itemTypeName}一覧`, path:`/item/${item?.itemTypeId}/species/${item?.woodSpeciesId}`},
+      {name: `${lotId} ${item?.woodSpeciesName} ${item?.itemTypeName}`}
       ]}></Breadcrumbs>
     <VStack align="left" pl="10">
       <HStack>
@@ -66,7 +61,7 @@ const HistoryListPage = () => {
             <InputLeftAddon
             >グレード</InputLeftAddon>
             <Input readOnly
-              value={grade?.name}
+              value={item?.gradeName??undefined}
             />
           </InputGroup>
         </Box>
@@ -98,7 +93,7 @@ const HistoryListPage = () => {
           <InputGroup size="sm">
             <InputLeftAddon>倉庫</InputLeftAddon>
             <Input readOnly
-              value={warehouses?.find(w => w.id === item?.warehouseId)?.name}
+              value={item?.warehouseName}
             />
           </InputGroup>
         </Box>
@@ -126,7 +121,7 @@ const HistoryListPage = () => {
             <Input readOnly w="10em" textAlign="right"
               value={`${Number(item?.cost).toLocaleString() ?? ""}`}
             />
-            <InputLeftAddon>/ {units?.find(u => u.id === item?.costUnitId)?.name}</InputLeftAddon>
+            <InputLeftAddon>/ {item?.costUnitName}</InputLeftAddon>
 
           </InputGroup>
         </Box>
@@ -136,7 +131,7 @@ const HistoryListPage = () => {
             <Input readOnly w="8em" textAlign="right"
               value={`${item?.count}`}
             />
-            <InputLeftAddon>{units?.find(u => u.id === item?.unitId)?.name}</InputLeftAddon>
+            <InputLeftAddon>{item?.unitName}</InputLeftAddon>
           </InputGroup>
         </Box>
         <Box>
@@ -145,7 +140,7 @@ const HistoryListPage = () => {
             <Input readOnly w="8em" textAlign="right"
               value={`${item?.tempCount}`}
             />
-            <InputLeftAddon>{units?.find(u => u.id === item?.unitId)?.name}</InputLeftAddon>
+            <InputLeftAddon>{item?.unitName}</InputLeftAddon>
           </InputGroup>
         </Box>
 
@@ -204,14 +199,14 @@ const HistoryListPage = () => {
           <Th textAlign="center">備考</Th>
           <Th textAlign="center">入庫数</Th>
           <Th textAlign="center">出庫数</Th>
-          <Th textAlign="center">予約日</Th>
+          <Th textAlign="center">予約期限</Th>
           <Th textAlign="center"></Th>
           </Thead>
           <Tbody overflowY="scroll">
             {item?.history && 
               item?.history.map((data, i, array) => (
               <Tr key={data.id} 
-                style={{"color":data.isTemp?(data.reasonId===4?"green":""):""}}
+                style={{"color":data.isTemp?(data.reasonId===4?"green":"red"):""}}
                 onMouseEnter={() => setHoverIndex(i)}
                 onMouseLeave={() => setHoverIndex(-1)}
                 ref={(array.length -1 === i)?ref:undefined}
@@ -238,7 +233,11 @@ const HistoryListPage = () => {
                   </Td>
                 <Td textAlign="center">{data.addCount.toString()!="0" && data.addCount}</Td>
                 <Td textAlign="center">{data.reduceCount.toString()!="0" && data.reduceCount}</Td>
-                <Td textAlign="center">{data.bookDate?dayjs(data.bookDate).format("YY/MM/DD"):""}</Td>
+                <Td textAlign="center">
+                  {data.bookDate?dayjs(data.bookDate).format("YY/MM/DD"):""}
+                  {data.bookDate && dayjs(data.bookDate).diff(new Date(),"day") <= -1 && 
+                  (<Text fontSize="xx-small">期限が切れています</Text>)}
+                </Td>
                 <Td textAlign="center">
                   <Box display="flex" 
                     justifyContent="space-around"
@@ -273,7 +272,7 @@ const HistoryListPage = () => {
           }
           setEditMode("新規作成")
           setEditHistoryId(undefined)
-          setHistoryData({...defaultData, itemId:item?.id, editUserId: user?.id})
+          setHistoryData({...defaultData, itemId:item?.id, editUserId: user?.id, editUserName: user?.name})
           onModalOpen()
           }
         }

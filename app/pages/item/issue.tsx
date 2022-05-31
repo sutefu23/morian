@@ -54,7 +54,6 @@ const RegisterIssue = () => {
 
     const { user } = useUser()
     useEffect(() => {
-      console.log(user)
       if(user){
         setIssueData({...issueData, ...{userId: user.id, userName: user.name}})
       }
@@ -88,9 +87,10 @@ const RegisterIssue = () => {
             <InputLeftAddon bgColor="blue.100" aria-required>管理番号</InputLeftAddon>
             <Input required
               readOnly={isEdit}
+              type="text"
               placeholder="半角英数字のみ可"
               onChange={(e) => { updateField<"managedId">("managedId", e.target.value.toNarrowCase())}}
-              value={issueData?.managedId}
+              value={issueData.managedId}
             />
           </InputGroup>
         </Box>
@@ -104,7 +104,7 @@ const RegisterIssue = () => {
               onChange={(e) => { 
                 updateField<"date">("date", new Date(e.target.value))
               }}
-              value={issueData.date ? dayjs(issueData.date as Date).format('YYYY-MM-DD'): undefined}
+              value={issueData.date ? dayjs(issueData.date as Date).format('YYYY-MM-DD'): ""}
             />
           </InputGroup>
         </Box>

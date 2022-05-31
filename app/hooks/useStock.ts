@@ -10,19 +10,25 @@ export type EditUpdataItemData = Partial<UpdateItemData>
 const defaultData:EditUpdataItemData = {
   lotNo: '',
   woodSpeciesId: undefined,
+  woodSpeciesName: undefined,
   itemTypeId: undefined,
+  itemTypeName: undefined,
   supplierId: undefined,
   supplierName: undefined,
   gradeId: undefined,
+  gradeName: undefined,
   length: undefined,
   thickness: undefined,
   width: undefined,
   packageCount: undefined,
   warehouseId: undefined,
+  warehouseName: undefined,
   cost: undefined,
   costUnitId: undefined,
+  costUnitName: undefined,
   count: undefined,
   unitId: undefined,
+  unitName: undefined,
   costPackageCount: undefined,
   enable: true
 }
@@ -30,19 +36,25 @@ const defaultData:EditUpdataItemData = {
 const demoData = {
   lotNo: 'HM-15233',
   woodSpeciesId: 1,
+  woodSpeciesName: "桧",
   itemTypeId: 2,
+  itemTypeName: "集成材",
   supplierId: 1,
   supplierName: "北材商事",
   gradeId: 1,
+  gradeName: "A",
   length: 5000,
   thickness: 50,
   width: 500,
   packageCount: new Decimal(10),
   warehouseId: 1,
+  warehouseName: "本社",
   cost: new Decimal(100000),
   costUnitId: 1,
+  costUnitName: "㎥",
   count: new Decimal(10),
   unitId: 1,
+  unitName: "㎥",
   costPackageCount: new Decimal(0.125),
   enable: true
 }
@@ -137,16 +149,16 @@ const useStock = () => {
       return null
     }
 
-    const { lotNo, itemTypeId, woodSpeciesId, length } = data
+    const { lotNo, itemTypeId, itemTypeName, woodSpeciesId, woodSpeciesName, length } = data
     if (!lotNo) {
       alert('ロットNoは必須です。')
       return null
     }
-    if (!itemTypeId) {
+    if (!itemTypeId || !itemTypeName) {
       alert('材種は必須です。')
       return null
     }
-    if (!woodSpeciesId) {
+    if (!woodSpeciesId || !woodSpeciesName) {
       alert('樹種は必須です。')
       return null
     }
@@ -181,10 +193,13 @@ const useStock = () => {
       packageCount,
       count,
       unitId,
+      unitName,
       warehouseId,
+      warehouseName,
       costPackageCount,
       cost,
-      costUnitId
+      costUnitId,
+      costUnitName
     } = data
 
     if (!packageCount) {
@@ -195,11 +210,11 @@ const useStock = () => {
       alert('数量は必須です。')
       return null
     }
-    if (!unitId) {
+    if (!unitId || !unitName) {
       alert('単位は必須です。')
       return null
     }
-    if (!warehouseId) {
+    if (!warehouseId || !warehouseName) {
       alert('倉庫は必須です。')
       return null
     }
@@ -211,7 +226,7 @@ const useStock = () => {
       alert('原価単位数量は必須です。')
       return null
     }
-    if (!costUnitId) {
+    if (!costUnitId || !costUnitName) {
       alert('原価単位は必須です。')
       return null
     }
@@ -224,7 +239,9 @@ const useStock = () => {
       ...data,
       lotNo,
       itemTypeId,
+      itemTypeName,
       woodSpeciesId,
+      woodSpeciesName,
       thickness,
       length: validLength,
       width,
@@ -233,11 +250,14 @@ const useStock = () => {
       packageCount,
       count,
       unitId,
+      unitName,
       warehouseId,
+      warehouseName,
       manufacturer,
       costPackageCount,
       cost,
       costUnitId,
+      costUnitName,
       tempCount: count,
       enable
     }
@@ -280,7 +300,6 @@ const useStock = () => {
         console.error('postStockData is not valid')
         throw new Error()
       }
-
       await apiClient.stock.post({
         body: {
           data: postStockData,

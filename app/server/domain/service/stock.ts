@@ -64,7 +64,9 @@ export type UpdateHistoryData = {
   readonly reduceCount: Decimal
   readonly addCount: Decimal
   readonly editUserId: number
+  readonly editUserName: string
   readonly bookUserId?: number | null
+  readonly bookUserName?: string | null
   readonly bookDate?: Date | null
   readonly isTemp: boolean
 }
@@ -101,10 +103,12 @@ export class ItemService {
     if (hasLotNo instanceof Error) {
       return hasLotNo as Error
     }
+
     if (hasLotNo) {
       return new Error('ロットNoが既に存在します。')
     }
-    const data = await this.itemRepository.create(item)
+
+    const data = await this.itemRepository.create({...item, count : new Decimal(0),tempCount: new Decimal(0)})
     if (data instanceof Error) {
       return data as Error
     }
@@ -125,12 +129,13 @@ export class ItemService {
     const 仕入詳細 = {
       itemId: data.id,
       note: data.note,
-      date: new Date(),
+      date: data.arrivalDate ?? new Date(),
       status: Status.入庫,
       reasonId: 1, //入庫理由.仕入
       reduceCount: new Decimal(0),
       addCount: data.count,
       editUserId: editUser.id,
+      editUserName: editUser.name,
       isTemp: false
     }
 

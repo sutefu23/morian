@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE `History` ADD COLUMN `bookUserName` VARCHAR(191) NULL,
+    ADD COLUMN `editUserName` VARCHAR(191) NOT NULL DEFAULT '';

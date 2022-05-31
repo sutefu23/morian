@@ -7,7 +7,7 @@ module.exports = {
     'plugin:@typescript-eslint/eslint-recommended',
     'prettier'
   ],
-  plugins: ['@typescript-eslint', 'react'],
+  plugins: ['@typescript-eslint', 'react', "react-hooks"],
   parser: '@typescript-eslint/parser',
   env: {
     browser: true,
@@ -29,7 +29,9 @@ module.exports = {
     'react/react-in-jsx-scope': 'off',
     'no-throw-literal': "error",
     'require-await': "error",
-    '@typescript-eslint/explicit-module-boundary-types': 'off'
+    '@typescript-eslint/explicit-module-boundary-types': 'off',
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn"
   },
   overrides: [
     {

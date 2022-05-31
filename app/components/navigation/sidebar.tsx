@@ -88,34 +88,8 @@ const Sidebar = () => {
     },
     {
       key: "reports",
-      name: "帳票",
-      children : [
-        {
-          key: "printDefectiveList",
-          name: "不良在庫一覧",
-          path: "/report/barcode"
-        },
-        {
-          key: "printBookList",
-          name: "受注予約一覧",
-          path: "/report/barcode"
-        },
-        {
-          key: "printItemAmountList",
-          name: "ロット別在庫金額",
-          path: "/report/barcode"
-        },
-        {
-          key: "printOrderMonthList",
-          name: "受注出庫一覧",
-          path: "/report/barcode"
-        },
-        {
-          key: "printEstimateList",
-          name: "見積一覧",
-          path: "/report/barcode"
-        },
-      ]
+      name: "帳票出力",
+      path: "/report",
     },
   ]
   const ButtonLinks = (props: {links: Link[]}) => 

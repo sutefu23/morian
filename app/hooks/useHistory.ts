@@ -16,7 +16,9 @@ const defaultData:EditUpdataHistoryData = {
   reduceCount: undefined,
   addCount: undefined,
   editUserId: undefined,
+  editUserName: undefined,
   bookUserId: undefined,
+  bookUserName: undefined,
   bookDate: undefined,
   isTemp: false
 }
@@ -48,8 +50,8 @@ const useHistory = () => {
       console.error('checkValidHistory data is null')
       return null
     }
-    const {itemId, date, status, reasonId, reduceCount, addCount, editUserId} = data
-    let { bookDate, bookUserId } = data
+    const {itemId, date, status, reasonId, reduceCount, addCount, editUserId, editUserName} = data
+    let { bookDate, bookUserId, bookUserName } = data
     if(!itemId){
       alert("itemIdは必須です")
       return null
@@ -78,26 +80,23 @@ const useHistory = () => {
       alert("数量が入っていません")
       return null
     }
-    if(!editUserId){
-      alert("editUserIdは必須です")
+    if(!editUserId || !editUserName){
+      alert("editUserは必須です")
       return null
     }
     if(bookDate && !bookUserId){
-      alert("予約者を入れた場合は予約日は必須です")
+      alert("予約者を入れた場合は予約期限は必須です")
       return null
     }
     if(bookDate && !bookUserId){
-      alert("予約日を入れた場合は予約者は必須です")
+      alert("予約期限を入れた場合は予約者は必須です")
       return null
     }
     const reason = StockReason.find(r => r.id === reasonId)?.name
     if (reason == 出庫理由.受注予約 || reason == 出庫理由.見積){
-      if(!bookUserId || !bookDate){
-        alert("出庫理由が予約か見積の場合は予約者と予約日は必須です")
+      if(!bookUserId || !bookDate || !bookUserName){
+        alert("出庫理由が予約か見積の場合は予約者と予約期限は必須です")
         return null  
-      }else{
-        bookDate = undefined
-        bookUserId = undefined
       }
     }
     return {
@@ -109,6 +108,10 @@ const useHistory = () => {
       reduceCount,
       addCount,
       editUserId,
+      editUserName,
+      bookDate,
+      bookUserId,
+      bookUserName,
       isTemp:false
     }
   }
@@ -120,7 +123,6 @@ const useHistory = () => {
         console.error('postHistoryData is not valid')
         return false
       }
-
       await apiClient.history.post({
         body: {
           data: postHistoryData,

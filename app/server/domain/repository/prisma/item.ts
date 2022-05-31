@@ -80,6 +80,7 @@ export class ItemRepository implements IItemRepository {
       costUnitId: undefined,
       warehouseId: undefined
     }
+    console.log(newEntity.count)
     const result = await this.prisma.item.create({ data: newEntity })
     const newItem = await dbModelToEntity(result)
     return newItem

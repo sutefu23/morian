@@ -94,6 +94,7 @@ export class HistoryRepository implements IHistoryRepository {
       addCount: entity.addCount.toString(),
       itemId: undefined,
       editUserId: undefined,
+      editUserName: entity.editUserName,
       bookUserId: undefined,
       bookDate: null,
       reasonId: undefined
@@ -109,6 +110,7 @@ export class HistoryRepository implements IHistoryRepository {
               id: entity.bookUserId
             }
           },
+          bookUserName: entity.bookUserName ,
           bookDate: entity.bookDate ? entity.bookDate : null
         }
       }
@@ -143,6 +145,7 @@ export class HistoryRepository implements IHistoryRepository {
       reason:undefined,
       itemId: entity.itemId,
       editUserId:entity.editUserId,
+      editUserName:entity.editUserName,
       reasonId: reasonId,
       reduceCount: entity.reduceCount
         ? entity.reduceCount.toString()
@@ -160,7 +163,14 @@ export class HistoryRepository implements IHistoryRepository {
       if (entity.bookUserId) {
         return {
           bookUserId: entity.bookUserId,
-          bookDate: entity.bookDate ? entity.bookDate : null
+          bookUserName: entity.bookUserName,
+          bookDate: entity.bookDate
+        }
+      }else{
+        return {
+          bookUserId: null,
+          bookUserName: null,
+          bookDate: null
         }
       }
     })()

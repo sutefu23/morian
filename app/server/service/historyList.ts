@@ -5,7 +5,6 @@ const prisma = new PrismaClient()
 export type getQuery = {
   lotNo?: string,
   reasonId?: number,
-  isDefective?: boolean,
   fromDate?: Date,
   toDate?: Date
 }
