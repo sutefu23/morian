@@ -16,7 +16,6 @@ const useHistoryReport = (type: ReportType, fromDate?:Date, toDate?: Date) => {
         return useAspidaQuery(apiClient.historyList,{query:{reasonId: StockReason.find(r => r.name === 出庫理由.受注予約)?.id}})
       case "受注出庫一覧":
         if(!fromDate || !toDate){
-          alert("受注出庫一覧では日付パラメーターが必須です。")
           return 
         }
         return useAspidaQuery(apiClient.historyList,{query:{fromDate, toDate, reasonId: StockReason.find(r => r.name === 出庫理由.受注出庫)?.id}})  
