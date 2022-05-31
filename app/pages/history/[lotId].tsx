@@ -197,7 +197,7 @@ const HistoryListPage = () => {
     <VStack>
       <Box overflowY="auto" maxHeight="65vh" w="100vw" bgColor="white" zIndex="10" mt="10px">
         <Table variant="striped" className='hover' borderBottom="1px">
-          <Thead position="sticky" top="0">
+          <Thead position="sticky" top="0" bgColor="white" zIndex="10">
           <Th textAlign="center">入出庫日</Th>
           <Th textAlign="center">ステータス</Th>
           <Th textAlign="center">理由</Th>

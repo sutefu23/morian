@@ -100,11 +100,14 @@ model Item {
   lotNo         String    @unique // ロット番号
   itemType      ItemType  @relation(fields: [itemTypeId], references: [id]) // 材種
   itemTypeId    Int
+  itemTypeName  String   @default("")
   woodSpecies   Species?   @relation(fields: [woodSpeciesId], references: [id]) // 樹種
   woodSpeciesId Int?
+  woodSpeciesName String?
   spec          String? //仕様
   grade         Grade?      @relation(fields: [gradeId], references: [id]) // グレード
   gradeId       Int?
+  gradeName     String?
   length        String? // 寸法（長さ）
   width         Int? // 寸法（幅）
   thickness     Int? // 寸法（厚）
@@ -114,6 +117,7 @@ model Item {
   tempCount     Decimal // 仮想在庫数量
   unit          Unit      @relation(name: "unit",fields: [unitId], references: [id]) // 単位
   unitId        Int
+  unitName      String   @default("")
   supplier      Supplier? @relation(fields: [supplierId], references: [id])
   supplierId    Int?
   supplierName  String?
@@ -121,9 +125,11 @@ model Item {
   arrivalDate   DateTime? // 入荷日
   warehouse     Warehouse @relation(fields: [warehouseId], references: [id]) // 倉庫
   warehouseId   Int // 倉庫
+  warehouseName  String   @default("")
   cost          Decimal // 原価
   costUnit      Unit      @relation(name: "costUnit",fields: [costUnitId], references: [id]) // 原価単位
   costUnitId    Int       
+  costUnitName  String   @default("")
   note          String? // 備考
   manufacturer  String? // 製造元
   defectiveNote  String?   //不良品備考

@@ -43,7 +43,11 @@ const Register = ({isFromIssue, onSuccess = () => {window.location.reload}}:Prop
         <Box>
           <InputGroup>
             <InputLeftAddon aria-required>樹種</InputLeftAddon>
-            <WoodSpeciesSelect required onSelect={(e) => { updateField<"woodSpeciesId">("woodSpeciesId", Number(e.target.value))}}
+            <WoodSpeciesSelect required
+              onSelect={(e) => {
+                const {options, selectedIndex} = e.target
+                setStockData({...stockData, woodSpeciesId : Number(e.target.value), woodSpeciesName: options[selectedIndex].innerHTML})
+              }}
               value={stockData?.woodSpeciesId}
             />
           </InputGroup>
@@ -53,7 +57,10 @@ const Register = ({isFromIssue, onSuccess = () => {window.location.reload}}:Prop
             <InputLeftAddon aria-required>材種</InputLeftAddon>
             <ItemTypeSelect required 
             value={stockData?.itemTypeId}
-            onSelect={(e) => { updateField<"itemTypeId">("itemTypeId", Number(e.target.value))}}/>
+            onSelect={(e) => { 
+              const {options, selectedIndex} = e.target
+              setStockData({ ...stockData, itemTypeId : Number(e.target.value), itemTypeName: options[selectedIndex].innerHTML})
+            }}/>
           </InputGroup>
         </Box>
         <Box>
@@ -71,7 +78,10 @@ const Register = ({isFromIssue, onSuccess = () => {window.location.reload}}:Prop
         <Box>
           <InputGroup>
             <InputLeftAddon aria-required>グレード</InputLeftAddon>
-            <GradeSelect value={stockData.gradeId} onSelect={(e) => { updateField<"gradeId">("gradeId", Number(e.target.value))}}/>
+            <GradeSelect value={stockData.gradeId} onSelect={(e) => { 
+              const {options, selectedIndex} = e.target
+              setStockData({ ...stockData, gradeId : Number(e.target.value), gradeName: options[selectedIndex].innerHTML})
+            }}/>
           </InputGroup>
         </Box>
         <Box>
@@ -114,7 +124,10 @@ const Register = ({isFromIssue, onSuccess = () => {window.location.reload}}:Prop
             <InputLeftAddon aria-required bgColor={isFromIssue?"red.100":undefined}>倉庫</InputLeftAddon>
             <WarehouseSelect required 
             value={stockData?.warehouseId}
-            onSelect={(e) => { updateField<"warehouseId">("warehouseId", Number(e.target.value))}}/>
+            onSelect={(e) => { 
+              const {options, selectedIndex} = e.target
+              setStockData({ ...stockData, warehouseId : Number(e.target.value), warehouseName: options[selectedIndex].innerHTML})
+              }}/>
           </InputGroup>
         </Box>
         <Box>
@@ -138,7 +151,10 @@ const Register = ({isFromIssue, onSuccess = () => {window.location.reload}}:Prop
             <InputLabel style={{fontSize:"1.5em", marginTop:"10px"}}>/</InputLabel>
             <UnitSelect required 
             value={stockData.costUnitId}
-            onSelect={(e) => { updateField<"costUnitId">("costUnitId", Number(e.target.value)) }}/>
+            onSelect={(e) => { 
+              const {options, selectedIndex} = e.target
+              setStockData({ ...stockData, costUnitId : Number(e.target.value), costUnitName: options[selectedIndex].innerHTML})
+              }}/>
           </InputGroup>
         </Box>
         <Box>
@@ -149,7 +165,10 @@ const Register = ({isFromIssue, onSuccess = () => {window.location.reload}}:Prop
             type="number" placeholder="数字" onChange={(e) => { updateField<"count">("count", e.target.value ? new Decimal(e.target.value): undefined)}}/>
             <UnitSelect required 
             value={stockData.unitId}
-            onSelect={(e) => { updateField<"unitId">("unitId", Number(e.target.value)) }}/>
+            onSelect={(e) => { 
+              const {options, selectedIndex} = e.target
+              setStockData({ ...stockData, unitId : Number(e.target.value), unitName: options[selectedIndex].innerHTML})
+            }}/>
           </InputGroup>
         </Box>
         <Box>

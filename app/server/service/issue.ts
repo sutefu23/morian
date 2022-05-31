@@ -68,19 +68,26 @@ export const updateIssue = async (id: number, issueData: IssueProps) => {
 }
 
 export const fetchIssues = async (query:getQuery) => {
+
   const data = await prisma.issue.findMany({
     where: {
       id: query?.id,
       issueItems: {
-        every:{
+        some:{
           isStored:false
         }
       }
     },
     include:{
-      issueItems:  true,
+      issueItems: {
+        where:{
+          isStored: false
+        }
+      }
     }
   })
+
+
   return data
 }
 

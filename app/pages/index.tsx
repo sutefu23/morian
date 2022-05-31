@@ -49,7 +49,7 @@ const Home = () => {
       <aside>
         <Sidebar></Sidebar>
       </aside>
-      {!issues || issues[0].issueItems.length == 0 
+      {!issues || issues[0]?.issueItems?.length == 0 
         ?
         <Heading textAlign="center" mt="20px">現在発注情報はありません</Heading>
         :
@@ -76,8 +76,8 @@ const Home = () => {
             {
               issues && 
               issues.map((issue, i) => (
-                issue.issueItems.length > 0 && 
-                issue.issueItems.map((item, j) => (
+                issue?.issueItems.length > 0 && 
+                issue?.issueItems.map((item, j) => (
                   <Tr key={j}>
                   <Td>
                     {issue.managedId}
@@ -120,10 +120,13 @@ const Home = () => {
                       setStockData({
                         lotNo: issue.managedId,
                         woodSpeciesId: item.woodSpeciesId?? undefined,
+                        woodSpeciesName: item.woodSpeciesName?? undefined,
                         itemTypeId: item.itemTypeId,
+                        itemTypeName: item.itemTypeName,
                         supplierId: issue.supplierId,
                         supplierName: issue.supplierName,
                         gradeId: item.gradeId ?? undefined,
+                        gradeName: item.gradeName ?? undefined,
                         length: item.length ?? undefined,
                         thickness: item.thickness ?? undefined,
                         width: item.width ?? undefined,
@@ -131,11 +134,14 @@ const Home = () => {
                         spec: item.spec ?? undefined,
                         manufacturer: item.manufacturer ?? undefined,
                         warehouseId: undefined,
+                        warehouseName: undefined,
                         arrivalDate: undefined,
                         cost: new Decimal(item.cost.toString()),
                         costUnitId: item.costUnitId,
+                        costUnitName: item.costUnitName,
                         count: new Decimal(item.count.toString()),
                         unitId: item.unitId,
+                        unitName: item.unitName,
                         costPackageCount: new Decimal(item.costPackageCount.toString()),
                         issueItemId: item.id,
                         enable: true
@@ -161,7 +167,7 @@ const Home = () => {
           {
           issues &&
           <IssueDetail 
-            item={issues[issueIndex].issueItems[itemIndex]}
+            item={issues[issueIndex]?.issueItems[itemIndex]}
             issue={issues[issueIndex]}
             onSuccessDelete={refetch}
             ></IssueDetail>

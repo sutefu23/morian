@@ -15,7 +15,7 @@ export const getHistoryList = async ({ lotNo, reasonId, fromDate, toDate}:getQue
     where: {
       lotNo,
       history:{
-        every:{
+        some:{
           reasonId,
           date:{
             gte: fromDate,
@@ -26,6 +26,13 @@ export const getHistoryList = async ({ lotNo, reasonId, fromDate, toDate}:getQue
     },
     include:{
       history:{
+        where:{
+          reasonId,
+          date:{
+            gte: fromDate,
+            lte: toDate
+          }
+        },
         orderBy:[
           {isTemp:'asc'},
           {date:'asc'},

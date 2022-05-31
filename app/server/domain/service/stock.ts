@@ -25,9 +25,12 @@ const prisma = new PrismaClient()
 export type UpdateItemData = {
   readonly lotNo: string
   readonly itemTypeId: number
+  readonly itemTypeName: string
   readonly issueItemId?: number
   readonly woodSpeciesId: number
+  readonly woodSpeciesName: string
   readonly gradeId?: number
+  readonly gradeName?: string
   readonly spec?: string
   readonly length: number | string
   readonly thickness: number
@@ -38,10 +41,13 @@ export type UpdateItemData = {
   readonly count: Decimal
   readonly tempCount: Decimal
   readonly unitId: UnitType['id']
+  readonly unitName: UnitType['name']
   readonly costPackageCount: Decimal
   readonly cost: Decimal
   readonly costUnitId: number
+  readonly costUnitName: string
   readonly warehouseId: number
+  readonly warehouseName: string
   readonly manufacturer?: string
   readonly arrivalDate?: Date
   readonly enable: boolean
