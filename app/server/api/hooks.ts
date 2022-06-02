@@ -9,7 +9,6 @@ export type AdditionalRequest = {
 }
 export default defineHooks((fastify) => ({
   onRequest: async (request, reply) =>{
-    console.log(request.url)
     if(request.url !== '/api/login'){
       const Auth = AuthService.getInstance(new UserRepository)
       const token = request.headers.token
