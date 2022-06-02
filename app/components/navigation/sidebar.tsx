@@ -95,13 +95,24 @@ const Sidebar = () => {
     {
       key:"master",
       name: "マスタ設定",
-      children: masterTypes.map(master => (
+      children: [...masterTypes.map(master => (
         {
           key:master.key,
           name:master.name,
           path: `/master/${master.key}`
         }
-      ))
+      )),
+      {
+        key: "deliveryPlace",
+        name: "出荷場所",
+        path: "/master/deliveryPlace",
+      },
+      {
+        key: "users",
+        name: "ユーザー設定",
+        path: "/master/user",
+      }      
+      ]
     }
   ]
   const ButtonLinks = (props: {links: Link[]}) => 

@@ -14,32 +14,16 @@ import {
 } from "@chakra-ui/react"
 import { useCallback, useEffect, useState } from "react"
 import usePageTitle from "~/hooks/usePageTitle"
-import { Master } from "~/server/domain/entity/stock"
+import { DeliveryPlaceType } from "~/server/domain/entity/stock"
 import { apiClient } from "~/utils/apiClient"
-import { useRouter } from "next/router"
-export type MasterName = '単位'|'材種'|'樹種'|'倉庫'|'配送場所'|'グレード'
-export type MasterKey = 'unit'|'itemType'|'species'|'warehouse'|'grade'
-export type MasterTypes = readonly {key:MasterKey, name:MasterName}[]
 
-export const masterTypes:MasterTypes = [
-  {key:'itemType',name:"材種"},
-  {key:'species',name:"樹種"},
-  {key:'grade',name:"グレード"},
-  {key:'warehouse',name:"倉庫"},
-  {key:'unit',name:"単位"},
-] as const
-
-const MasterManage = () => {
+const DeliveryPlaceTypeManage = () => {
   const { setTitle } = usePageTitle()
-  const [masters, setMasters ] = useState<Master[]>([])
-  const [newMaster, setNewMaster] = useState<Master>()
-  const router = useRouter()
-  const { masterType } = router.query
-  if(!masterType ){
-    return <>Loading..</>
-  }
-  useAspidaQuery(apiClient.master[masterType as unknown as MasterKey],{onSuccess: async (masters) => {
+  const [masters, setDeliveryPlaceTypes ] = useState<DeliveryPlaceType[]>([])
+  const [newDeliveryPlaceType, setNewDeliveryPlaceType] = useState<DeliveryPlaceType>()
+  setTitle(`配送場所 マスタ設定`)
 
+  useAspidaQuery(apiClient.master.deliveryPlace,{onSuccess:async (masters) => {
     const maxId = masters.reduce((prevId, curr)=>(
       prevId < curr.id ? curr.id : prevId
     ), 0)
@@ -48,35 +32,39 @@ const MasterManage = () => {
       prevOrder < curr.order ? curr.order : prevOrder 
     ), 0)
      
-    setNewMaster({
+    setNewDeliveryPlaceType({
       id:maxId + 1,
-      name: newMaster?.name || "",
-      order: maxOrder + 1
+      name: newDeliveryPlaceType?.name || "",
+      order: maxOrder + 1,
+      address:newDeliveryPlaceType?.address || "",
     })
-    setMasters(masters)
-    const title = masterTypes.find(m => m.key === masterType)?.name
-    setTitle(`${title} マスタ設定`)
+    const data = await apiClient.master.deliveryPlace.get()
+    const body = data.body
+    setDeliveryPlaceTypes(body)
   }})
 
+
   const handleSubmit = useCallback(async ()=>{
-    if(!newMaster ) return
-    if(!newMaster?.name || newMaster.name.length === 0){
+    if(!newDeliveryPlaceType ) return
+    if(!newDeliveryPlaceType?.name || newDeliveryPlaceType.name.length === 0){
       alert("名称は必須です。")
       return
     } 
-    if(!newMaster?.order || !isFinite(newMaster.order)){
+    if(!newDeliveryPlaceType?.order || !isFinite(newDeliveryPlaceType.order)){
       alert("並び順は必須です。")
       return
     } 
 
-    const type = masterType as unknown as MasterKey
-    const res = await apiClient.master[type]._id(0).post({body:{body:newMaster}})
+    await apiClient.master.deliveryPlace._id(0).post({body:{body:newDeliveryPlaceType}})
     window.location.reload()
-  },[newMaster])
+  },[newDeliveryPlaceType])
+
+  const handleModifyAddress = useCallback(async (id:number, newAddhandleModifyAddress:string) => {
+    await apiClient.master.deliveryPlace._id(id).patch({body: {id, body: { address: newAddhandleModifyAddress }}})
+  },[masters])
 
   const handleModifyOrder = useCallback(async (id:number, newOrder:number) => {
-    const type = masterType as unknown as MasterKey
-    await apiClient.master[type]._id(id).patch({body: {id, body: { order: newOrder }}})
+    await apiClient.master.deliveryPlace._id(id).patch({body: {id, body: { order: newOrder }}})
   },[masters])
 
   return (
@@ -84,12 +72,15 @@ const MasterManage = () => {
     <Container
       mt="50px"
       border="solid 1px #eee"
+      w="80vw"
+      maxW="80vw"
     >
-    <Table variant="striped" colorScheme="gray">
+    <Table variant="striped" colorScheme="gray" w="100%">
         <Thead>
           <Tr>
             <Th>ID</Th>
             <Th>名称</Th>
+            <Th>住所</Th>
             <Th>並び順</Th>
           </Tr>
         </Thead>
@@ -97,15 +88,26 @@ const MasterManage = () => {
           {
             masters.map(master => (
               <Tr key={master.id}>
-                <Td>
+                <Td width="20%">
                   <Text ml="10px">
                     {master.id}
                   </Text>
                 </Td>
-                <Td>
+                <Td width="20%">
                   {master.name}
                 </Td>
                 <Td>
+                  <Input 
+                  bgColor="white"
+                  type="text"
+                  onChange={(e) => {
+                    e.preventDefault()
+                    handleModifyAddress(master.id, e.currentTarget.value)
+                  }}
+                  defaultValue={master.address}
+                  ></Input>
+                </Td>
+                <Td width="20%">
                   <Input 
                   width="70%"
                   bgColor="white"
@@ -127,16 +129,26 @@ const MasterManage = () => {
               bgColor="white"
               type="text"
               readOnly
-              defaultValue={newMaster?.id}
+              defaultValue={newDeliveryPlaceType?.id}
               ></Input>
             </Td>
             <Td>
             <Input 
               bgColor="white"
               type="text"
-              defaultValue={newMaster?.name}
+              defaultValue={newDeliveryPlaceType?.name}
               onChange={(e)=>{
-                  setNewMaster({...newMaster!, name: e.currentTarget.value})
+                  setNewDeliveryPlaceType({...newDeliveryPlaceType!, name: e.currentTarget.value})
+              }}
+              ></Input>
+            </Td>
+            <Td>
+            <Input 
+              bgColor="white"
+              type="text"
+              defaultValue={newDeliveryPlaceType?.address}
+              onChange={(e)=>{
+                  setNewDeliveryPlaceType({...newDeliveryPlaceType!, address: e.currentTarget.value})
               }}
               ></Input>
             </Td>
@@ -147,9 +159,9 @@ const MasterManage = () => {
                 type="number"
                 onClick={(e)=>
                 {
-                  setNewMaster({...newMaster!, order: Number(e.currentTarget.value)})
+                  setNewDeliveryPlaceType({...newDeliveryPlaceType!, order: Number(e.currentTarget.value)})
                 }}
-                defaultValue={newMaster?.order}
+                defaultValue={newDeliveryPlaceType?.order}
                 ></Input>
                 <Button
                   bgColor="green.100"
@@ -167,6 +179,6 @@ const MasterManage = () => {
     </>
   )
 }
-export default MasterManage
+export default DeliveryPlaceTypeManage
 
 

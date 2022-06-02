@@ -144,10 +144,9 @@ const RegisterIssue = () => {
         <Box>
           <InputGroup>
             <InputLeftAddon bgColor="blue.100" aria-required>納入場所</InputLeftAddon>
-            <DeliveryPlaceSelect required onSelect={(e) => { 
+            <DeliveryPlaceSelect required onSelect={(selected) => { 
               if(issueData.issueItems){
-                const {options, selectedIndex} = e.target
-                setIssueData({...issueData, ...{ deliveryPlaceId : Number(e.target.value), deliveryPlaceName: options[selectedIndex].innerHTML}})  
+                setIssueData({...issueData, deliveryPlaceName: selected.name, deliveryAddress: selected.address})  
               }
             }}
               value={issueData.deliveryPlaceId}

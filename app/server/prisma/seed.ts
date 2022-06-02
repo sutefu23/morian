@@ -25,8 +25,8 @@ async function seed() {
 
   await prisma.user.createMany({
     data: [
-      {id:1 , name: "森庵充久", enable: true},
-      {id:41 , name: "管理者", enable: true}
+      {id:0 , name: "管理者", enable: true},
+      {id:1 , name: "森庵充久", enable: true}
     ]
   })
 
@@ -40,8 +40,8 @@ async function seed() {
 
   await prisma.userPass.createMany({
     data: [
-      {userId:1 , pass: bcrypt.hashSync(DEFAULT_USER_PASS, API_SALT)},
-      {userId:41 , pass:  bcrypt.hashSync(DEFAULT_USER_PASS, API_SALT)}
+      {userId:0 , pass:  bcrypt.hashSync(DEFAULT_USER_PASS, API_SALT)},
+      {userId:1 , pass: bcrypt.hashSync(DEFAULT_USER_PASS, API_SALT)}
     ]
   })
   await prisma.supplier.createMany({

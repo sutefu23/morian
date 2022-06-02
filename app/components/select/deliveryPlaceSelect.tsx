@@ -6,7 +6,7 @@ import StatusBar from '../feedback/statusBar'
 import { DeliveryPlaceType } from '~/server/domain/entity/stock'
 
 type Props = { 
-  onSelect: (event:React.ChangeEvent<HTMLSelectElement>) => void;
+  onSelect: (selected:DeliveryPlaceType) => void
   selected? : DeliveryPlaceType["id"]
   required?: boolean
   value?: DeliveryPlaceType["id"]
@@ -17,7 +17,13 @@ const select = ({ onSelect, selected, required, value }:Props) => {
 
   return (
     <Select 
-      onChange={(e) => onSelect(e)}
+      onChange={(e) => {
+        const id = Number(e.target.value)
+        const selected = deliveryPlaces?.find(d => d.id === id) 
+        if(selected){
+          onSelect(selected)
+        }
+      }}
       placeholder="選択して下さい"
       required={required}
       value={value}

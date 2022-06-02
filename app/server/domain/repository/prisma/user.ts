@@ -11,8 +11,13 @@ export class UserRepository implements IUserRepository {
       {include:{
         UserPass: true
       },
-        data: {
-        ...entity
+      data: {
+        id: entity.id, name: entity.name, enable:entity.enable,
+        UserPass : {
+          create:{
+            pass: entity.pass
+          }
+        }
       }}
     )
 
@@ -22,7 +27,7 @@ export class UserRepository implements IUserRepository {
     const data = {
       id: result.id,
       name: result.name,
-      pass: result.UserPass?.pass,
+      pass: "",
       enable: result.enable
     }
     return data
@@ -30,12 +35,12 @@ export class UserRepository implements IUserRepository {
 
   async update(id: number, entity: Partial<UserProps>): Promise<User|FieldNotFoundError> {
     const result = await prisma.user.update(
-      {where: {id}, data:entity}
+      {where: {id}, data:{name: entity.name, enable:entity.enable}}
     )
     const resultPass = await (async () => {
       if (Object.prototype.hasOwnProperty.call(entity, "pass") && entity.pass){
         return await prisma.userPass.update(
-          {where: {userId: entity.id}, data: { pass: entity.pass}}
+          {where: {userId: id}, data: { pass: entity.pass}}
         )
       }
     })()
@@ -45,7 +50,7 @@ export class UserRepository implements IUserRepository {
     const data = {
       id: result.id,
       name: result.name,
-      pass: resultPass.pass,
+      pass: "",
       enable: result.enable
     }
     return data
@@ -66,7 +71,7 @@ export class UserRepository implements IUserRepository {
     const data = {
       id: result.id,
       name: result.name,
-      pass: result.UserPass?.pass,
+      pass: result.UserPass.pass,
       enable: result.enable
     }
     return data
@@ -93,7 +98,7 @@ export class UserRepository implements IUserRepository {
     if(!result){
       return new FieldNotFoundError("データが見つかりません")
     }
-    const users = result.map(u => ({id: u.id, name: u.name, pass: u.UserPass?u.UserPass.pass:"", enable: u.enable}))
+    const users = result.map(u => ({id: u.id, name: u.name, pass: "", enable: u.enable}))
     return users
   }
 }
