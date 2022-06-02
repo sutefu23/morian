@@ -54,7 +54,9 @@ export class GradeRepository implements IGradeRepository {
   }
 
   async findAll():Promise<GradeType[]|FieldNotFoundError>{
-    const result = await prisma.grade.findMany()
+    const result = await prisma.grade.findMany({
+      orderBy:{order:'asc'}
+    })
     if(!result){
       return new FieldNotFoundError("データが見つかりません")
     }
@@ -110,7 +112,9 @@ export class UnitRepository implements IUnitRepository {
   }
 
   async findAll(){
-    return await prisma.unit.findMany()
+    return await prisma.unit.findMany({
+      orderBy:{order:'asc'}
+    })
   }
 }
 
@@ -162,7 +166,9 @@ export class WarehouseRepository implements IWarehouseRepository {
   }
 
   async findAll():Promise<WarehouseType[]|FieldNotFoundError>{
-    const result = await prisma.warehouse.findMany()
+    const result = await prisma.warehouse.findMany({
+      orderBy:{order:'asc'}
+    })
     if(!result){
       return new FieldNotFoundError("データが見つかりません")
     }
@@ -221,7 +227,9 @@ export class DeliveryPlaceRepository implements IDeliveryPlaceRepository {
   }
 
   async findAll():Promise<DeliveryPlaceType[]|FieldNotFoundError>{
-    const result = await prisma.deliveryPlace.findMany()
+    const result = await prisma.deliveryPlace.findMany({
+      orderBy:{order:'asc'}
+    })
     if(!result){
       return new FieldNotFoundError("データが見つかりません")
     }
@@ -281,7 +289,9 @@ export class ReasonRepository implements IReasonRepository {
   }
 
   async findAll():Promise<ReasonType[]|FieldNotFoundError>{
-    const result = await prisma.reason.findMany()
+    const result = await prisma.reason.findMany({
+      orderBy:{order:'asc'}
+    })
     if(!result){
       return new FieldNotFoundError("データが見つかりません")
     }
@@ -339,7 +349,9 @@ export class WoodSpeciesRepository implements ISpeciesRepository {
   }
 
   async findAll():Promise<WoodSpeciesType[]|FieldNotFoundError>{
-    const result = await prisma.species.findMany()
+    const result = await prisma.species.findMany({
+      orderBy:{order:'asc'}
+    })
     if(!result){
       return new FieldNotFoundError("データが見つかりません")
     }
@@ -395,7 +407,9 @@ export class ItemTypeRepository implements IItemTypeRepository {
   }
 
   async findAll():Promise<ItemTypeType[]|FieldNotFoundError>{
-    const result = await prisma.itemType.findMany()
+    const result = await prisma.itemType.findMany({
+      orderBy:{order:'asc'}
+    })
     if(!result){
       return new FieldNotFoundError("データが見つかりません")
     }

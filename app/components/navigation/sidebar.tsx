@@ -21,6 +21,7 @@ import { apiClient } from '~/utils/apiClient'
 import NextLink from "next/link"
 import StatusBar from '~/components/feedback/statusBar'
 import useSidebar from '~/hooks/useSidebar'
+import { masterTypes } from '~/pages/master/[masterType]'
 
 export type Link = {
   key: number|string
@@ -91,6 +92,17 @@ const Sidebar = () => {
       name: "帳票出力",
       path: "/report",
     },
+    {
+      key:"master",
+      name: "マスタ設定",
+      children: masterTypes.map(master => (
+        {
+          key:master.key,
+          name:master.name,
+          path: `/master/${master.key}`
+        }
+      ))
+    }
   ]
   const ButtonLinks = (props: {links: Link[]}) => 
     (<>

@@ -141,7 +141,7 @@ model Item {
 model Unit {
   id    Int    @id  @default(autoincrement())
   name  String @unique
-  order Int    @unique
+  order Int
   item  Item[] @relation("unit")
   itemCost  Item[] @relation("costUnit")
   issueItem  IssueItem[] @relation("issueItemUnit")
@@ -165,7 +165,7 @@ model Supplier {
 model ItemType {
   id    Int    @id  @default(autoincrement())
   name  String @unique
-  order Int    @unique
+  order Int
   item  Item[]
   issueItem  IssueItem[] @relation("issueItemItemType")
 }
@@ -173,7 +173,7 @@ model ItemType {
 model Species {
   id    Int    @id  @default(autoincrement())
   name  String @unique
-  order Int    @unique
+  order Int
   item  Item[]
   issueItem IssueItem[] @relation("issueItemWoodSpecies")
 }
@@ -181,7 +181,7 @@ model Species {
 model Warehouse {
   id    Int    @id @default(autoincrement())
   name  String @unique
-  order Int    @unique
+  order Int
   item  Item[]
 }
 
@@ -189,7 +189,7 @@ model DeliveryPlace {
   id    Int    @id @default(autoincrement())
   name  String @unique
   address String
-  order Int    @unique
+  order Int
   issue  Issue[] @relation("issueDeliveryPlace")
 }
 
@@ -197,7 +197,7 @@ model DeliveryPlace {
 model Grade {
   id    Int    @id @default(autoincrement())
   name  String @unique
-  order Int    @unique
+  order Int
   item  Item[]
   issueItem  IssueItem[] @relation("issueItemGrade")
 }
