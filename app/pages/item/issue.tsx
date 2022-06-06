@@ -391,7 +391,18 @@ const RegisterIssue = () => {
             <Button type='submit' ml={50} w={100} bgColor="green.400"
             onClick={async (e) => {
               e.preventDefault()
-              await postIssue()
+              try{
+                const ret = await postIssue()
+                if(ret?.id){
+                  router.push(
+                    {
+                      pathname:`/item/issue/`,
+                      query:{issueId: ret.id}
+                  })  
+                }
+              }catch(e){
+                console.error(e)
+              }
               }
             }
             >登録</Button>
@@ -406,6 +417,17 @@ const RegisterIssue = () => {
           }}
           >発注書</Button>
         </Box>
+        {isEdit &&
+        <Box>
+          <Button type='submit' ml={50} w={100} bgColor="blue.400"
+          onClick={async (e) => {
+            e.preventDefault()
+            router.push("/item/issue/")
+            }
+          }
+          >新規作成</Button>
+        </Box>
+        }
       </HStack>
     </Footer>
     </form>

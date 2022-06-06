@@ -467,8 +467,7 @@ const useIssue = () => {
       }
 
       alert('登録しました')
-      setIssueData(defaultData)
-      return
+      return body
     },
     [issueData]
   )
