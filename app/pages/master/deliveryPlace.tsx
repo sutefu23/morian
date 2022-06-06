@@ -75,6 +75,7 @@ const DeliveryPlaceTypeManage = () => {
       w="80vw"
       maxW="80vw"
     >
+    <Text fontSize="12px" textAlign="right" color="gray.500" mt="10px">※並び順と住所の変更は即時保存されます</Text>
     <Table variant="striped" colorScheme="gray" w="100%">
         <Thead>
           <Tr>

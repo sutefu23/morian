@@ -85,6 +85,7 @@ const MasterManage = () => {
       mt="50px"
       border="solid 1px #eee"
     >
+    <Text fontSize="12px" textAlign="right" color="gray.500" mt="10px">※並び順の変更は即時保存されます</Text>
     <Table variant="striped" colorScheme="gray">
         <Thead>
           <Tr>
