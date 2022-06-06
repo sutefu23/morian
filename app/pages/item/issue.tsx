@@ -146,7 +146,7 @@ const RegisterIssue = () => {
             <InputLeftAddon bgColor="blue.100" aria-required>納入場所</InputLeftAddon>
             <DeliveryPlaceSelect required onSelect={(selected) => { 
               if(issueData.issueItems){
-                setIssueData({...issueData, deliveryPlaceName: selected.name, deliveryAddress: selected.address})  
+                setIssueData({...issueData, deliveryPlaceId: selected.id, deliveryPlaceName: selected.name, deliveryAddress: selected.address})  
               }
             }}
               value={issueData.deliveryPlaceId}

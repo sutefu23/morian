@@ -116,7 +116,7 @@ const Home = () => {
                     onClick={(e) => {
                       e.preventDefault()
                       setStockData({
-                        lotNo: issue.managedId,
+                        lotNo: "",
                         woodSpeciesId: item.woodSpeciesId?? undefined,
                         woodSpeciesName: item.woodSpeciesName?? undefined,
                         itemTypeId: item.itemTypeId,

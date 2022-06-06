@@ -30,7 +30,9 @@ const Register = ({isFromIssue, onSuccess = () => {window.location.reload}}:Prop
       <HStack>
         <Box>
           <InputGroup>
-            <InputLeftAddon aria-required>ロットNo</InputLeftAddon>
+            <InputLeftAddon aria-required
+            bgColor={isFromIssue?"red.100":undefined}
+            >ロットNo</InputLeftAddon>
             <Input required
               placeholder="半角英数字のみ可"
               onChange={(e) => { updateField<"lotNo">("lotNo", e.target.value.toNarrowCase())}}

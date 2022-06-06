@@ -16,14 +16,6 @@ export const createIssue = async (issueData: IssueProps) => {
     return new Error("管理IDが既に存在します。")
   }
 
-  const findLotNo = await prisma.item.findFirst({where:{
-    lotNo: issueData.managedId
-  }})
-
-  if(findLotNo){
-    return new Error("ロットNoが既に存在します。")
-  }
-
   const data = await prisma.issue.create({
     data: {
       ...issueData,

@@ -1,5 +1,6 @@
 import { useAspidaQuery } from '@aspida/react-query';
 import ExcelJS from 'exceljs'
+import "../utils/number"
 import { apiClient } from '~/utils/apiClient';
 export type ReportType = 
   '不良在庫一覧' |

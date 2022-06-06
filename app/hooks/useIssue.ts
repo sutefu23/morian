@@ -468,7 +468,6 @@ const useIssue = () => {
 
       alert('登録しました')
       setIssueData(defaultData)
-      window.location.reload()
       return
     },
     [issueData]

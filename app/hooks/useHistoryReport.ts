@@ -20,7 +20,7 @@ const useHistoryReport = (type: ReportType, fromDate?:Date, toDate?: Date) => {
         }
         return useAspidaQuery(apiClient.historyList,{query:{fromDate, toDate, reasonId: StockReason.find(r => r.name === 出庫理由.受注出庫)?.id}})  
       case "見積一覧":
-        return useAspidaQuery(apiClient.historyList,{query:{reasonId: StockReason.find(r => r.name === 出庫理由.受注予約)?.id}})
+        return useAspidaQuery(apiClient.historyList,{query:{reasonId: StockReason.find(r => r.name === 出庫理由.見積)?.id}})
     }
   })()
 

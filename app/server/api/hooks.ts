@@ -12,12 +12,12 @@ export default defineHooks((fastify) => ({
     if(request.url !== '/api/login'){
       const Auth = AuthService.getInstance(new UserRepository)
       const token = request.headers.token
-      if(!token || token.length === 0){
-        reply.code(401).send({ error: 'Unauthorized' })
+      if(!token||token.length ===0){
+        reply.status(401)
       }
       const me = await Auth.getUserFromToken(token as string, fastify.jwt.decode)   
       if(!me){
-        reply.code(401).send({ error: 'Unauthorized' })
+        reply.status(401)
       }
     }
   }

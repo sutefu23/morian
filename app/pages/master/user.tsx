@@ -122,7 +122,7 @@ const UserManage = () => {
               <Tr key={user.id}>
                 <Td>
                   <Text ml="10px">
-                    {( '000' + user.id ).slice( -3 )}
+                    {( '0000' + user.id ).slice( -4 )}
                   </Text>
                 </Td>
                 <Td>
@@ -171,7 +171,7 @@ const UserManage = () => {
               bgColor="white"
               type="text"
               readOnly
-              defaultValue={newUser?.id&&( '000' + newUser.id ).slice( -3 )}
+              defaultValue={newUser?.id&&( '0000' + newUser.id ).slice( -4 )}
               ></Input>
             </Td>
             <Td>
