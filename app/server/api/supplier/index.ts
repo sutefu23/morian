@@ -1,4 +1,4 @@
-import { Supplier } from "$/domain/entity/stock";
+import { SupplierDTO } from "$/domain/dto/supplier";
 
 export type Methods = {
   get: {
@@ -6,6 +6,6 @@ export type Methods = {
       enable?:boolean,
       name?:string
     },
-    resBody: Supplier[]
+    resBody: SupplierDTO[]
   }
 }

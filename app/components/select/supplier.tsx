@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react'
 import { apiClient } from '~/utils/apiClient'
-import { Supplier } from '~/server/domain/entity/stock'
 import { Autocomplete, Item } from "~/components/combobox/autocomplete"
 import { useAsyncList } from "react-stately";
+import { SupplierDTO } from '~/server/domain/dto/supplier';
 
 type Props = { 
   onSelect: (selected: {id: number, name: string}) => void
@@ -34,7 +34,7 @@ const select = ({ onSelect, required, defaultKey, readOnly}:Props) => {
     }
   };
 
-  const list = useAsyncList<Supplier>({
+  const list = useAsyncList<SupplierDTO>({
     async load({ filterText }) {
       const res = await apiClient.supplier.get( { query: { name: filterText} } )
       return {
@@ -54,7 +54,7 @@ const select = ({ onSelect, required, defaultKey, readOnly}:Props) => {
     onLoadMore={list.loadMore}
     onSelectionChange={onSelectionChange}
   >
-    {(item) => <Item key={item.key}>{item.name}</Item>}
+    {(item) => <Item key={item.id}>{item.name}</Item>}
   </Autocomplete>
   )
 }

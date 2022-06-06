@@ -39,7 +39,7 @@ export class furiganaType extends ValueObject<string> {
 
   static getInstance(val: string): furiganaType | ValidationError {
     if (!/^[ぁ-ヴー]+$/gu.test(val)) {
-      return new ValidationError('furiganaの形式が正しくありません。')
+      return new ValidationError('フリガナの形式が正しくありません。(全角ひらがなのみ)')
     }
     return new this(val)
   }
@@ -52,7 +52,7 @@ export class zipType extends ValueObject<string> {
 
   static getInstance(val: string): zipType | ValidationError {
     if (!/^[0-9]{3}-[0-9]{4}$/gu.test(val)) {
-      return new ValidationError('zipの形式が正しくありません。')
+      return new ValidationError('郵便番号の形式が正しくありません。')
     }
     return new this(val)
   }
@@ -213,7 +213,7 @@ export class PrefectureType extends ValueObject<string> {
     super(val)
   }
   static getInstance(val: string): PrefectureType | ValidationError {
-    if (!Prefectures.find((p) => p !== val)) {
+    if (Prefectures.findIndex((p) => p === val) ===-1) {
       return new ValidationError('都道府県が存在しません。')
     }
     return new this(val)

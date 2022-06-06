@@ -10,7 +10,7 @@ export type Methods = {
     resBody: SupplierDTO
   }
   patch: {
-    reqBody: {id: number, body: Partial<Supplier>},
+    reqBody: {id: number, body: Partial<SupplierDTO>},
     resBody: SupplierDTO
   }
 }

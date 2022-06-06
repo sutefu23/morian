@@ -106,13 +106,18 @@ const Sidebar = () => {
         key: "deliveryPlace",
         name: "出荷場所",
         path: "/master/deliveryPlace",
-      },
-      {
-        key: "users",
-        name: "ユーザー設定",
-        path: "/master/user",
-      }      
+      },    
       ]
+    },
+    {
+      key: "supplier",
+      name: "仕入先設定",
+      path: "/master/supplier",
+    },
+    {
+      key: "users",
+      name: "ユーザー設定",
+      path: "/master/user",
     }
   ]
   const ButtonLinks = (props: {links: Link[]}) => 

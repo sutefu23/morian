@@ -1,15 +1,14 @@
 import { furiganaType, PrefectureType, Supplier, telType, zipType } from "@domain/entity/stock";
-import { FieldNotFoundError } from '../type/error';
 
 export type SupplierDTO = {
   readonly	id	:	number
   readonly	name	:	string
   readonly	furigana	:	string
-  readonly	zip	:	string|null
-  readonly	prefecture	:	string|null
-  readonly	address	:	string|null
-  readonly	tel	:	string|null
-  readonly	fax	:	string|null
+  readonly	zip?	:	string|null|undefined
+  readonly	prefecture?	:	string|null|undefined
+  readonly	address?	:	string|null|undefined
+  readonly	tel?	:	string|null|undefined
+  readonly	fax?	:	string|null|undefined
   readonly	enable	:	boolean
   
 }
@@ -36,7 +35,7 @@ export const DTOtoSupplier = (data: SupplierDTO): Supplier => {
    
   const address = data.address ? data.address : undefined
 
-  const zip = ((data:string|null) => {
+  const zip = ((data:string|null|undefined) => {
     if(data){
       const zip = zipType.getInstance(data)
       if(zip instanceof Error){
@@ -47,7 +46,7 @@ export const DTOtoSupplier = (data: SupplierDTO): Supplier => {
   })(data.zip)
 
 
-  const prefecture = ((data:string|null) => {
+  const prefecture = ((data:string|null|undefined) => {
     if(data){
       const prefecture = PrefectureType.getInstance(data)
       if(prefecture instanceof Error){
@@ -57,7 +56,7 @@ export const DTOtoSupplier = (data: SupplierDTO): Supplier => {
     }
   })(data.prefecture)
 
-  const tel = ((dataTel:string|null) => {
+  const tel = ((dataTel:string|null|undefined) => {
     if(dataTel){
       const tel = telType.getInstance(dataTel)
       if(tel instanceof Error){
@@ -68,7 +67,7 @@ export const DTOtoSupplier = (data: SupplierDTO): Supplier => {
   })(data.tel)
   
   
-  const fax = ((dataFax:string|null) => {
+  const fax = ((dataFax:string|null|undefined) => {
     if(dataFax){
       const fax = telType.getInstance(dataFax)
       if(fax instanceof Error){
