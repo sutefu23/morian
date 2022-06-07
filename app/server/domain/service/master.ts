@@ -165,12 +165,40 @@ export class ItemTypeService {
   constructor(itemTypeRepository: IItemTypeRepository){
     this.itemTypeRepository = itemTypeRepository
   }
+  async isValid(entity?:Partial<ItemTypeType>){
+    if(!entity) return new Error("ItemTypeが見つかりません")
+    
+    const { id, name, prefix }  = entity
+    if(prefix && !/^[A-Z]$/.test(prefix)){
+      return new Error("接頭辞は1文字の英大文字のみです。保存できません。")
+    }
+    const items = await this.itemTypeRepository.findAll()
+    if (items instanceof Error){
+      return items as Error
+    } 
+    if (items.findIndex(itm => itm.name === name && itm.id !== id) > -1 ){
+      return new Error("同じ名称がすでに存在します。保存できません。")
+    }
+    if (items.findIndex(itm => itm.prefix === prefix && itm.id !== id) > -1 ){
+      return new Error("同じ接頭辞がすでに存在します。保存できません。")
+    }
+    return true
+  }
+
   async createItemType(entity: ItemTypeType): Promise<ItemTypeType|FieldNotFoundError> {
+    const isValid = await this.isValid(entity)
+    if(isValid instanceof Error){
+      throw isValid
+    }
     const data = await this.itemTypeRepository.create(entity)
     return data
   }
 
   async updateItemType(id: number, entity: Partial<ItemTypeType>): Promise<ItemTypeType|FieldNotFoundError> {
+    const isValid = await this.isValid(entity)
+    if(isValid instanceof Error){
+      throw isValid
+    }
     const data = await this.itemTypeRepository.update(id, entity)
     return data
   }

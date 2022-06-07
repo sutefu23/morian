@@ -1,15 +1,15 @@
-import { WoodSpeciesType } from "$/domain/entity/stock";
+import { ItemTypeType } from "$/domain/entity/stock";
 
 export type Methods = {
   get: {
-    resBody: WoodSpeciesType
+    resBody: ItemTypeType
   },
   post: {
-    reqBody: {body: WoodSpeciesType},
-    resBody: WoodSpeciesType
+    reqBody: {body: ItemTypeType},
+    resBody: ItemTypeType
   },
   patch: {
-    reqBody: {id: number, body: Partial<WoodSpeciesType>},
-    resBody: WoodSpeciesType
+    reqBody: {id: number, body: Partial<ItemTypeType>},
+    resBody: ItemTypeType
   }
 }

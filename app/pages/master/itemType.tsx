@@ -14,101 +14,100 @@ import {
 } from "@chakra-ui/react"
 import { useCallback, useEffect, useState } from "react"
 import usePageTitle from "~/hooks/usePageTitle"
-import { DeliveryPlaceType } from "~/server/domain/entity/stock"
+import { ItemTypeType } from "~/server/domain/entity/stock"
 import { apiClient } from "~/utils/apiClient"
 
-const DeliveryPlaceTypeManage = () => {
+const ItemTypesManage = () => {
   const { setTitle } = usePageTitle()
-  const [masters, setDeliveryPlaceTypes ] = useState<DeliveryPlaceType[]>([])
-  const [newDeliveryPlaceType, setNewDeliveryPlaceType] = useState<DeliveryPlaceType>()
-  setTitle(`配送場所 マスタ設定`)
+  const [itemTypes, setItemTypes ] = useState<ItemTypeType[]>([])
+  const [newItemTypes, setNewItemTypes] = useState<ItemTypeType>()
 
-  useAspidaQuery(apiClient.master.deliveryPlace,{onSuccess:async (masters) => {
-    const maxId = masters.reduce((prevId, curr)=>(
+  useAspidaQuery(apiClient.master.itemType,{onSuccess: async (itemTypes) => {
+
+    const maxId = itemTypes.reduce((prevId, curr)=>(
       prevId < curr.id ? curr.id : prevId
     ), 0)
 
-    const maxOrder = masters.reduce((prevOrder, curr)=>(
+    const maxOrder = itemTypes.reduce((prevOrder, curr)=>(
       prevOrder < curr.order ? curr.order : prevOrder 
     ), 0)
      
-    setNewDeliveryPlaceType({
+    setNewItemTypes({
       id:maxId + 1,
-      name: newDeliveryPlaceType?.name || "",
-      order: maxOrder + 1,
-      address:newDeliveryPlaceType?.address || "",
+      name: newItemTypes?.name || "",
+      prefix: newItemTypes?.prefix || "",
+      order: maxOrder + 1
     })
-    const data = await apiClient.master.deliveryPlace.get()
-    const body = data.body
-    setDeliveryPlaceTypes(body)
+    setItemTypes(itemTypes)
+    setTitle(`材種 マスタ設定`)
   }})
 
-
   const handleSubmit = useCallback(async ()=>{
-    if(!newDeliveryPlaceType ) return
-    if(!newDeliveryPlaceType?.name || newDeliveryPlaceType.name.length === 0){
+    if(!newItemTypes ) return
+
+    if(!newItemTypes?.name || newItemTypes.name.length === 0){
       alert("名称は必須です。")
       return
     } 
-    if(!newDeliveryPlaceType?.order || !isFinite(newDeliveryPlaceType.order)){
+    if(!newItemTypes?.order || !isFinite(newItemTypes.order)){
       alert("並び順は必須です。")
       return
     } 
-
-    await apiClient.master.deliveryPlace._id(0).post({body:{body:newDeliveryPlaceType}})
+    if(!newItemTypes?.prefix){
+      alert("接頭辞は必須です。")
+      return
+    } 
+    const res = await apiClient.master.itemType._id(0).post({body:{body:newItemTypes}})
     window.location.reload()
-  },[newDeliveryPlaceType])
+  },[newItemTypes])
 
-  const handleModifyAddress = useCallback(async (id:number, newAddhandleModifyAddress:string) => {
-    await apiClient.master.deliveryPlace._id(id).patch({body: {id, body: { address: newAddhandleModifyAddress }}})
-  },[masters])
+  const handleModifyPrefix = useCallback(async (id:number, newPrefix:string) => {
+    await apiClient.master.itemType._id(id).patch({body: {id, body: { prefix: newPrefix }}})
+  },[itemTypes])
 
   const handleModifyOrder = useCallback(async (id:number, newOrder:number) => {
-    await apiClient.master.deliveryPlace._id(id).patch({body: {id, body: { order: newOrder }}})
-  },[masters])
+    await apiClient.master.itemType._id(id).patch({body: {id, body: { order: newOrder }}})
+  },[itemTypes])
 
   return (
     <>
     <Container
       mt="50px"
       border="solid 1px #eee"
-      w="80vw"
-      maxW="80vw"
     >
-    <Text fontSize="12px" textAlign="right" color="gray.500" mt="10px">※並び順と住所の変更は即時保存されます</Text>
-    <Table variant="striped" colorScheme="gray" w="100%">
+    <Text fontSize="12px" textAlign="right" color="gray.500" mt="10px">※並び順と接頭辞の変更は即時保存されます</Text>
+    <Table variant="striped" colorScheme="gray">
         <Thead>
           <Tr>
             <Th>ID</Th>
             <Th>名称</Th>
-            <Th>住所</Th>
-            <Th>並び順</Th>
+            <Th w="20%">接頭辞</Th>
+            <Th w="20%">並び順</Th>
           </Tr>
         </Thead>
         <Tbody>
           {
-            masters.map(master => (
+            itemTypes.map(master => (
               <Tr key={master.id}>
-                <Td width="20%">
+                <Td>
                   <Text ml="10px">
                     {master.id}
                   </Text>
                 </Td>
-                <Td width="20%">
+                <Td>
                   {master.name}
                 </Td>
                 <Td>
                   <Input 
                   bgColor="white"
-                  type="text"
                   onChange={(e) => {
                     e.preventDefault()
-                    handleModifyAddress(master.id, e.currentTarget.value)
+                    handleModifyPrefix(master.id, e.currentTarget.value)
                   }}
-                  defaultValue={master.address}
+                  defaultValue={master.prefix}
                   ></Input>
                 </Td>
-                <Td width="20%">
+                <Td>
                   <Input 
                   width="70%"
                   bgColor="white"
@@ -130,28 +129,28 @@ const DeliveryPlaceTypeManage = () => {
               bgColor="white"
               type="text"
               readOnly
-              defaultValue={newDeliveryPlaceType?.id}
+              defaultValue={newItemTypes?.id}
               ></Input>
             </Td>
             <Td>
             <Input 
               bgColor="white"
               type="text"
-              defaultValue={newDeliveryPlaceType?.name}
+              defaultValue={newItemTypes?.name}
               onChange={(e)=>{
-                  setNewDeliveryPlaceType({...newDeliveryPlaceType!, name: e.currentTarget.value})
+                  setNewItemTypes({...newItemTypes!, name: e.currentTarget.value})
               }}
               ></Input>
             </Td>
             <Td>
             <Input 
               bgColor="white"
-              type="text"
-              defaultValue={newDeliveryPlaceType?.address}
-              onChange={(e)=>{
-                  setNewDeliveryPlaceType({...newDeliveryPlaceType!, address: e.currentTarget.value})
+              onChange={(e)=>
+              {
+                setNewItemTypes({...newItemTypes!, prefix: e.currentTarget.value})
               }}
-              ></Input>
+              defaultValue={newItemTypes?.prefix}
+                ></Input>
             </Td>
             <Td>
               <Flex >
@@ -160,9 +159,9 @@ const DeliveryPlaceTypeManage = () => {
                 type="number"
                 onChange={(e)=>
                 {
-                  setNewDeliveryPlaceType({...newDeliveryPlaceType!, order: Number(e.currentTarget.value)})
+                  setNewItemTypes({...newItemTypes!, order: Number(e.currentTarget.value)})
                 }}
-                defaultValue={newDeliveryPlaceType?.order}
+                defaultValue={newItemTypes?.order}
                 ></Input>
                 <Button
                   bgColor="green.100"
@@ -180,6 +179,6 @@ const DeliveryPlaceTypeManage = () => {
     </>
   )
 }
-export default DeliveryPlaceTypeManage
+export default ItemTypesManage
 
 

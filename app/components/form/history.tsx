@@ -42,7 +42,7 @@ const HistoryForm = () => {
             <InputLeftAddon aria-required>材種</InputLeftAddon>
             <ItemTypeSelect required 
             value={stockData?.itemTypeId}
-            onSelect={(e) => { updateField<"itemTypeId">("itemTypeId", Number(e.target.value))}}/>
+            onSelect={(select) => { updateField<"itemTypeId">("itemTypeId", select?.id)}}/>
           </InputGroup>
         </Box>
         <Box>

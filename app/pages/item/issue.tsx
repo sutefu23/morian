@@ -221,10 +221,9 @@ const RegisterIssue = () => {
                   <ItemTypeSelect required 
                   value={item.itemTypeId}
                   readOnly={isEdit}
-                  onSelect={(e) => { 
+                  onSelect={(select) => { 
                     if(issueData.issueItems){
-                      const {options, selectedIndex} = e.target
-                      const newItem = { ...issueData.issueItems[index], ...{ itemTypeId : Number(e.target.value), itemTypeName: options[selectedIndex].innerHTML}}
+                      const newItem = { ...issueData.issueItems[index], ...{ itemTypeId : select?.id, itemTypeName: select?.name}}
                       const newItems = Object.assign([], issueData.issueItems, {[index]: newItem})
                       setIssueData({...issueData, ...{ issueItems: newItems}})  
                     }

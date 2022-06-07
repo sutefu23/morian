@@ -20,6 +20,7 @@ import { HistoryRepository } from '../repository/prisma/history'
 import { StockReason } from '../init/master'
 import { PrismaClient } from '@prisma/client'
 import { AuthService } from './auth'
+import { ItemTypeRepository } from '../repository/prisma/master'
 const prisma = new PrismaClient()
 
 export type UpdateItemData = {
@@ -79,6 +80,7 @@ export type GetParam = {
 export class ItemService {
   private itemRepository: IItemRepository
   private historyService: HistoryService
+  private itemTypeRepository: ItemTypeRepository
   constructor(itemRepo: IItemRepository, historyRepo: HistoryRepository) {
     this.itemRepository = itemRepo
     this.historyService = new HistoryService(historyRepo)
@@ -111,6 +113,16 @@ export class ItemService {
     const data = await this.itemRepository.create({...item, count : new Decimal(0),tempCount: new Decimal(0)})
     if (data instanceof Error) {
       return data as Error
+    }
+    
+    const prefix = item.lotNo.charAt(0)
+    const itemTypes = await this.itemTypeRepository.findAll()
+    if (itemTypes instanceof Error) {
+      return itemTypes as Error
+    }
+    const correctPrefix = itemTypes.find(itm => itm.id === item.itemTypeId)?.prefix
+    if(prefix !== correctPrefix){
+      return new Error('ロットNoと材種の接頭辞の組み合わせが正しくありません')
     }
 
     const editUser = AuthService.user()

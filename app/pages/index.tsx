@@ -31,6 +31,7 @@ const Home = () => {
   const [itemIndex, setItemIndex ] = useState<number>(0)
 
   const {data:issues, refetch} = useAspidaQuery(apiClient.issue, {query: { isStored: false}})
+  const {data:itemTypes} = useAspidaQuery(apiClient.master.itemType)
 
   const { setStockData } = useStock()
   const {isOpen: isRightOpen, onOpen: onRightOpen, onClose: onRightClose} = useDisclosure()
@@ -115,8 +116,9 @@ const Home = () => {
                   <Button ml="5" bgColor="blue.100"
                     onClick={(e) => {
                       e.preventDefault()
+                      const lotPrefix = itemTypes?.find(itm => itm.id === item.itemTypeId)?.prefix
                       setStockData({
-                        lotNo: "",
+                        lotNo: `${lotPrefix}-`,
                         woodSpeciesId: item.woodSpeciesId?? undefined,
                         woodSpeciesName: item.woodSpeciesName?? undefined,
                         itemTypeId: item.itemTypeId,

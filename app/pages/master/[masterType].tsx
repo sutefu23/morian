@@ -17,12 +17,11 @@ import usePageTitle from "~/hooks/usePageTitle"
 import { Master } from "~/server/domain/entity/stock"
 import { apiClient } from "~/utils/apiClient"
 import { useRouter } from "next/router"
-export type MasterName = '単位'|'材種'|'樹種'|'倉庫'|'配送場所'|'グレード'
-export type MasterKey = 'unit'|'itemType'|'species'|'warehouse'|'grade'
+export type MasterName = '単位'|'樹種'|'倉庫'|'配送場所'|'グレード'
+export type MasterKey = 'unit'|'species'|'warehouse'|'grade'
 export type MasterTypes = readonly {key:MasterKey, name:MasterName}[]
 
 export const masterTypes:MasterTypes = [
-  {key:'itemType',name:"材種"},
   {key:'species',name:"樹種"},
   {key:'grade',name:"グレード"},
   {key:'warehouse',name:"倉庫"},
@@ -146,7 +145,7 @@ const MasterManage = () => {
                 <Input 
                 bgColor="white"
                 type="number"
-                onClick={(e)=>
+                onChange={(e)=>
                 {
                   setNewMaster({...newMaster!, order: Number(e.currentTarget.value)})
                 }}

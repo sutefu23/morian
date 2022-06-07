@@ -23,7 +23,7 @@ export interface Master {
   readonly order: number
 }
 
-export type ItemTypeType = Master
+export type ItemTypeType = Master & { prefix : string }
 export type UnitType = Master
 export type WoodSpeciesType = Master
 export type WarehouseType = Master

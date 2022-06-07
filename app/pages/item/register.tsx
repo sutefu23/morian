@@ -8,6 +8,9 @@ import usePageTitle from '~/hooks/usePageTitle'
 import "~/utils/string"
 import "~/utils/number"
 import dayjs from "dayjs"
+import { useAspidaQuery } from '@aspida/react-query'
+import { apiClient } from "~/utils/apiClient"
+import { useEffect } from "react"
 
 type Props = {
   isFromIssue?: boolean //発注情報を入庫化する時
@@ -19,9 +22,9 @@ const Register = ({isFromIssue, onSuccess = () => {window.location.reload}}:Prop
   if(!isFromIssue){
     setTitle("新規在庫登録")
   }
-  
+  const {data:itemTypes} = useAspidaQuery(apiClient.master.itemType)
+    
   const { stockData, setStockData, updateField, calcCostPackageCount, costPerUnit, totalPrice, postStock, useDemo } = useStock()
-
   return (
     <>
     <form
@@ -35,7 +38,12 @@ const Register = ({isFromIssue, onSuccess = () => {window.location.reload}}:Prop
             >ロットNo</InputLeftAddon>
             <Input required
               placeholder="半角英数字のみ可"
-              onChange={(e) => { updateField<"lotNo">("lotNo", e.target.value.toNarrowCase())}}
+              onChange={(e) => {
+                const lotNo = e.target.value.toNarrowCase()
+                const prefix = lotNo.charAt(0)
+                const itemTypeId = itemTypes?.find(itm => itm.prefix === prefix)?.id
+                setStockData({...stockData, lotNo, itemTypeId})                
+              }}
               value={stockData?.lotNo}
             />
           </InputGroup>
@@ -59,9 +67,8 @@ const Register = ({isFromIssue, onSuccess = () => {window.location.reload}}:Prop
             <InputLeftAddon aria-required>材種</InputLeftAddon>
             <ItemTypeSelect required 
             value={stockData?.itemTypeId}
-            onSelect={(e) => { 
-              const {options, selectedIndex} = e.target
-              setStockData({ ...stockData, itemTypeId : Number(e.target.value), itemTypeName: options[selectedIndex].innerHTML})
+            onSelect={(select) => {
+              setStockData({ ...stockData, itemTypeId : select?.id, itemTypeName: select?.name, lotNo:`${select?.prefix}-`})
             }}/>
           </InputGroup>
         </Box>

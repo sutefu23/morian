@@ -6,7 +6,7 @@ import StatusBar from '../feedback/statusBar'
 import { ItemTypeType } from '~/server/domain/entity/stock'
 
 type Props = { 
-  onSelect: (event:React.ChangeEvent<HTMLSelectElement>) => void;
+  onSelect: (select:ItemTypeType|undefined) => void;
   selected? : ItemTypeType["id"]
   required?: boolean
   value?: ItemTypeType["id"]
@@ -18,7 +18,11 @@ const select = ({ onSelect, selected, required, value, readOnly }:Props) => {
 
   return (
     <Select 
-      onChange={(e) => onSelect(e)}
+      onChange={(e) => {
+        const id = Number(e.currentTarget.value)
+        const select = itemTypes?.find(itm => itm.id === id)
+        onSelect(select)
+      }}
       placeholder="選択して下さい"
       isReadOnly={readOnly}
       required={required}

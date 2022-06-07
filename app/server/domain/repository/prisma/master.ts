@@ -370,6 +370,7 @@ export class ItemTypeRepository implements IItemTypeRepository {
     const data = {
       id: result.id,
       name: result.name,
+      prefix: result.prefix,
       order: result.order
     }
     return data
@@ -384,6 +385,7 @@ export class ItemTypeRepository implements IItemTypeRepository {
     const data = {
       id: result.id,
       name: result.name,
+      prefix: result.prefix,
       order: result.order
     }
     return data
@@ -401,6 +403,7 @@ export class ItemTypeRepository implements IItemTypeRepository {
     const data = {
       id: result.id,
       name: result.name,
+      prefix: result.prefix,
       order: result.order
     }
     return data

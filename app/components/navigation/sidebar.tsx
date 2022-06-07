@@ -93,9 +93,25 @@ const Sidebar = () => {
       path: "/report",
     },
     {
+      key: "supplier",
+      name: "仕入先設定",
+      path: "/master/supplier",
+    },
+    {
+      key: "users",
+      name: "ユーザー設定",
+      path: "/master/user",
+    },
+    {
       key:"master",
       name: "マスタ設定",
-      children: [...masterTypes.map(master => (
+      children: [
+        {
+          key: "itemType",
+          name: "材種",
+          path: "/master/itemType",
+        },
+      ...masterTypes.map(master => (
         {
           key:master.key,
           name:master.name,
@@ -108,17 +124,7 @@ const Sidebar = () => {
         path: "/master/deliveryPlace",
       },    
       ]
-    },
-    {
-      key: "supplier",
-      name: "仕入先設定",
-      path: "/master/supplier",
-    },
-    {
-      key: "users",
-      name: "ユーザー設定",
-      path: "/master/user",
-    }
+    },    
   ]
   const ButtonLinks = (props: {links: Link[]}) => 
     (<>

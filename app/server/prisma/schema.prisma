@@ -165,6 +165,7 @@ model Supplier {
 model ItemType {
   id    Int    @id  @default(autoincrement())
   name  String @unique
+  prefix String @unique
   order Int
   item  Item[]
   issueItem  IssueItem[] @relation("issueItemItemType")
