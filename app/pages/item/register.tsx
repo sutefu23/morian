@@ -41,8 +41,8 @@ const Register = ({isFromIssue, onSuccess = () => {window.location.reload}}:Prop
               onChange={(e) => {
                 const lotNo = e.target.value.toNarrowCase()
                 const prefix = lotNo.charAt(0)
-                const itemTypeId = itemTypes?.find(itm => itm.prefix === prefix)?.id
-                setStockData({...stockData, lotNo, itemTypeId})                
+                const itemType = itemTypes?.find(itm => itm.prefix === prefix)
+                setStockData({...stockData, lotNo, itemTypeId:itemType?.id, itemTypeName: itemType?.name})                
               }}
               value={stockData?.lotNo}
             />

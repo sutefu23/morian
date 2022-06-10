@@ -10,7 +10,8 @@ import {
 import {
   IItemRepository,
   IHistoryRepository,
-  Query
+  Query,
+  IItemTypeRepository
 } from '@domain/repository/interface'
 import { InvalidArgumentError, ValidationError } from '../type/error'
 import { ItemDTO, ItemToDTO } from '../dto/item'
@@ -21,6 +22,7 @@ import { StockReason } from '../init/master'
 import { PrismaClient } from '@prisma/client'
 import { AuthService } from './auth'
 import { ItemTypeRepository } from '../repository/prisma/master'
+import { ItemRepository } from '../repository/prisma/item'
 const prisma = new PrismaClient()
 
 export type UpdateItemData = {
@@ -80,10 +82,11 @@ export type GetParam = {
 export class ItemService {
   private itemRepository: IItemRepository
   private historyService: HistoryService
-  private itemTypeRepository: ItemTypeRepository
+  private itemTypeRepository: IItemTypeRepository
   constructor(itemRepo: IItemRepository, historyRepo: HistoryRepository) {
     this.itemRepository = itemRepo
     this.historyService = new HistoryService(historyRepo)
+    this.itemTypeRepository = new ItemTypeRepository()
   }
   async findLotNo(lotNo: string) {
     const data = await this.itemRepository.findByLotNo(lotNo)
@@ -110,17 +113,16 @@ export class ItemService {
       return new Error('ロットNoが既に存在します。')
     }
 
-    const data = await this.itemRepository.create({...item, count : new Decimal(0),tempCount: new Decimal(0)})
-    if (data instanceof Error) {
-      return data as Error
-    }
-    
+   
     const prefix = item.lotNo.charAt(0)
-    const itemTypes = await this.itemTypeRepository.findAll()
+    const itemTypes = await this.itemTypeRepository?.findAll()
     if (itemTypes instanceof Error) {
       return itemTypes as Error
     }
-    const correctPrefix = itemTypes.find(itm => itm.id === item.itemTypeId)?.prefix
+    if(!itemTypes){
+      return new Error('ItemTypeデータが見つかりません')
+    }
+    const correctPrefix = itemTypes?.find(itm => itm.id === item.itemTypeId)?.prefix
     if(prefix !== correctPrefix){
       return new Error('ロットNoと材種の接頭辞の組み合わせが正しくありません')
     }
@@ -128,6 +130,14 @@ export class ItemService {
     const editUser = AuthService.user()
     if (!editUser) {
       return new Error('認証されたユーザーが見つかりません。')
+    }
+    if (!/^[A-Z]+-([0-9]|-)+$/gu.test(item.lotNo)) {
+      return new ValidationError('lotNoの形式が正しくありません。英語-数字'+ item.lotNo)
+    }
+
+    const data = await this.itemRepository.create({...item, count : new Decimal(0),tempCount: new Decimal(0)})
+    if (data instanceof Error) {
+      return data as Error
     }
     if(item.issueItemId){
       await prisma.issueItem.update({
@@ -140,12 +150,12 @@ export class ItemService {
 
     const 仕入詳細 = {
       itemId: data.id,
-      note: data.note,
-      date: data.arrivalDate ?? new Date(),
+      note: item.note,
+      date: item.arrivalDate ?? new Date(),
       status: Status.入庫,
       reasonId: 1, //入庫理由.仕入
       reduceCount: new Decimal(0),
-      addCount: data.count,
+      addCount: item.count,
       editUserId: editUser.id,
       editUserName: editUser.name,
       isTemp: false
