@@ -4,7 +4,7 @@ dotenv.config()
 
 const HOST = process.env.HOST ?? 'localhost:3000'
 const API_JWT_SECRET = process.env.API_JWT_SECRET ?? ''
-const API_SERVER_PORT = +(process.env.API_SERVER_PORT ?? '8080')
+const API_SERVER_PORT = process.env.PORT ?? process.env.API_SERVER_PORT ?? '8080'
 const API_BASE_PATH = process.env.API_BASE_PATH ?? ''
 const API_ORIGIN = process.env.API_ORIGIN ?? ''
 const API_UPLOAD_DIR = process.env.API_UPLOAD_DIR ?? ''
