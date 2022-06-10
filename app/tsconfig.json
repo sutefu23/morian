@@ -26,5 +26,5 @@
     "jsx": "preserve"
   },
   "exclude": ["node_modules", "server"],
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/pdf/index.jsx"]
 }

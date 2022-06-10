@@ -85,7 +85,7 @@ const Sidebar = () => {
     {
       key: "barcode",
       name: "バーコード印刷",
-      path: "/report/barcode"
+      path: "/pdf"
     },
     {
       key: "reports",
@@ -133,6 +133,7 @@ const Sidebar = () => {
         return (
         !link?.children ?
         <NextLink
+        key={link?.key}
         href={link.path!}
         >
         <Button
