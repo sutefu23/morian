@@ -40,7 +40,7 @@ export const BarCodePdf = () => {
     },
     title: { fontSize: '12pt', fontFamily: 'Nasu-Regular', textAlign:"center", marginBottom:"10px" },
     subtitle: { fontSize: '10pt', fontFamily: 'Nasu-Regular', textAlign:"center", marginBottom:"10px" },
-    text3: { fontSize: '7pt', fontFamily: 'Nasu-Regular' },
+    text: { fontSize: '7pt', fontFamily: 'Nasu-Regular' },
     display: { flexDirection: 'row',justifyContent:'space-between'},
     barcode: { width: '100px', height:'auto', textAlign:"center"},
   });
@@ -48,9 +48,7 @@ export const BarCodePdf = () => {
   const MyPDF = () => {
     return (
       <Document>
-        {/* orientationは用紙の縦横を指定する（公式ドキュメント参照） */}
         <Page size="A4" style={styles.body}>
-          {/* View要素で罫線を出力、Text要素で文字列を出力 */}
             <Text style={styles.title}>倉庫名など</Text>
             <Text style={styles.subtitle}>樹種名など</Text>
             <View style={styles.display}>
@@ -58,8 +56,8 @@ export const BarCodePdf = () => {
               dataArray.map((data) => (
                 <View style={styles.barcode}>
                 <Image src={data.url} style={{height:50}}/>
-                <Text style={styles.text3}>{data.name}</Text>
-                <Text style={styles.text3}>{data.size}</Text>
+                <Text style={styles.text}>{data.name}</Text>
+                <Text style={styles.text}>{data.size}</Text>
                 </View>
               ))
             }

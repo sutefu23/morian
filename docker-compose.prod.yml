@@ -1,0 +1,15 @@
+version: '3.3'
+services:
+  frourio:
+    container_name: frourio-${PROJECT_NAME}
+    tty: true
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+      - "30743:30743"
+    volumes:
+      - ./app:/app

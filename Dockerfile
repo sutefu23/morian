@@ -1,5 +1,6 @@
 FROM node:14.17-alpine
 
+
 WORKDIR /app
 
 ADD /app /app
@@ -7,9 +8,11 @@ ADD /app /app
 EXPOSE  8000
 EXPOSE  30743
 EXPOSE  5555
-RUN rm -f yarn.lock
+
 RUN yarn install
+RUN yarn --cwd ./server install
+
 RUN export PATH=$PATH:./node_modules/.bin
+RUN export PATH=$PATH:./server/node_modules/.bin
 
-CMD ["ash"]
-
+CMD yarn build && yarn migrate:prod && yarn start
