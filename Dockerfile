@@ -5,9 +5,8 @@ WORKDIR /app
 
 ADD /app /app
 
+EXPOSE  3000
 EXPOSE  8000
-EXPOSE  30743
-EXPOSE  5555
 
 RUN yarn install
 RUN yarn --cwd ./server install

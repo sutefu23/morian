@@ -9,7 +9,6 @@ services:
     depends_on:
       - db
     ports:
-      - "8000:8000"
-      - "30743:30743"
+      - "3000:3000"
     volumes:
       - ./app:/app

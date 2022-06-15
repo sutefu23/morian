@@ -442,7 +442,7 @@ const useIssue = () => {
       await apiClient.issue.patch({
         body: {
           id:issueData.id,
-          body:issueData
+          body:issueData as IssueProps
         },
       })
 
@@ -460,7 +460,7 @@ const useIssue = () => {
         return
       }
       const { body } = await apiClient.issue.post({
-        body: postIssueData,
+        body: postIssueData as IssueProps,
       })
       if (body instanceof Error){
         return

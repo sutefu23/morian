@@ -1,7 +1,8 @@
+  // @ts-nocheck
 import '../styles/globals.css'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import type { AppProps } from 'next/app'
-import { ChakraProvider } from '@chakra-ui/react'
+import { useColorMode, ChakraProvider } from '@chakra-ui/react'
 import { parseCookies } from 'nookies';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
@@ -10,7 +11,18 @@ import { RecoilRoot } from 'recoil';
 import dynamic from 'next/dynamic'
 import ErrorBoundary from '~/components/ErrorBoundary';
 import AdminLayout from '~/components/layout/AdminLayout';
+import theme from '../styles/theme'
 const queryClient = new QueryClient()
+
+function ForceLightMode(props: { children: JSX.Element }) {
+  const { colorMode, toggleColorMode } = useColorMode();
+  useEffect(() => {
+    if (colorMode === "light") return;
+    toggleColorMode();
+  }, [colorMode]);
+
+  return props.children;
+}
 
 function MyApp({ Component, pageProps }: AppProps, context: NextPageContext) {
   const router = useRouter();
@@ -28,7 +40,8 @@ function MyApp({ Component, pageProps }: AppProps, context: NextPageContext) {
   return (
     <NoSsr>
     <ErrorBoundary>
-    <ChakraProvider>
+    <ChakraProvider theme={theme}>
+      <ForceLightMode>
       <RecoilRoot>
       <QueryClientProvider client={queryClient}>
         <AdminLayout>
@@ -36,6 +49,7 @@ function MyApp({ Component, pageProps }: AppProps, context: NextPageContext) {
         </AdminLayout>
       </QueryClientProvider>
       </RecoilRoot>
+      </ForceLightMode>
     </ChakraProvider>
     </ErrorBoundary>
     </NoSsr>

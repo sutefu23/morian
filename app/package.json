@@ -29,6 +29,7 @@
   "dependencies": {
     "@aspida/axios": "^1.7.0",
     "@aspida/react-query": "^1.7.0",
+    "@chakra-ui/color-mode": "^2.0.4",
     "@chakra-ui/icons": "^1.0.15",
     "@chakra-ui/react": "^1.6.7",
     "@emotion/react": "^11.4.1",

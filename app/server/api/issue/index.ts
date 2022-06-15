@@ -1,6 +1,6 @@
 import { getQuery } from "$/service/issue"
 import { Issue, IssueItem } from "@prisma/client"
-import { IssueProps } from "domain/entity/issue"
+import { IssueProps } from "@domain/entity/issue"
 
 
 export type Methods = {

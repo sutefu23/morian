@@ -24,6 +24,9 @@ td {
 table.hover tr:hover{
   background-color: lightyellow!important;
 }
+.chakra-slide .chakra-heading{
+  color: var(--chakra-colors-teal-600);
+}
 .chakra-breadcrumb a:hover{
   text-decoration: underline;
 }

@@ -177,7 +177,7 @@ const HistoryListPage = () => {
           </InputGroup>
         </Box>
         <Box>
-          {(item?.history.length ?? 0 )> 10 &&
+          {(item?.history?.length ?? 0 )> 10 &&
           <Button type='submit' bgColor="gray.200" ml="10px"
           onClick={ (e) => {
             e.preventDefault()
