@@ -57,7 +57,7 @@ export const defaultData = {
 
 
 const demoData = {
-  managedId: 'MR-742-1',
+  managedId: '220210-0001-001',
   date: new Date('2022-2-10'),
   userId: 1,
   userName: '森庵充久',
@@ -133,6 +133,10 @@ const useIssue = () => {
   )
 
   const addItemData = useCallback(() => {
+    if(issueData.issueItems?.length === 14){
+      alert("1伝票14明細までです。\n別伝票として起こしてください。")
+      return
+    }
     const newItems = produce(issueData.issueItems, draft => {
       draft?.push(defaultItemData)
     })
@@ -229,10 +233,6 @@ const useIssue = () => {
       return
     }
     const {managedId, date, supplierId, deliveryPlaceId } = issue
-    if (!managedId) {
-      alert('管理番号は必須です。')
-      return null
-    }
     if (!date) {
       alert('発注日は必須です。')
       return null

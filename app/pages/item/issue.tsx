@@ -85,10 +85,11 @@ const RegisterIssue = () => {
         <Box>
           <InputGroup>
             <InputLeftAddon bgColor="blue.100" aria-required>管理番号</InputLeftAddon>
-            <Input required
+            <Input
               readOnly={isEdit}
+              disabled
               type="text"
-              placeholder="半角英数字のみ可"
+              placeholder="自動採番"
               onChange={(e) => { updateField<"managedId">("managedId", e.target.value.toNarrowCase())}}
               value={issueData.managedId}
             />
@@ -333,7 +334,7 @@ const RegisterIssue = () => {
               <Box>
                 <InputGroup>
                   <InputLeftAddon aria-required>原価単位数量</InputLeftAddon>
-                  <Input required placeholder="原価算出基準となる数量" step="0.001" value={String(item.costPackageCount ? item.costPackageCount : '')} onChange={(e) => { updateItemField<"costPackageCount">(index, "costPackageCount", e.target.value ? new Decimal(e.target.value): undefined)}}/>
+                  <Input required placeholder="原価算出基準となる数量" step="0.001" type="number" value={String(item.costPackageCount ? item.costPackageCount : '')} onChange={(e) => { updateItemField<"costPackageCount">(index, "costPackageCount", e.target.value ? new Decimal(e.target.value): undefined)}}/>
                   <Button onClick={() => {
                     const computedValue = calcCostPackageCount(item)
                     if(computedValue){

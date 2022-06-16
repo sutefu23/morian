@@ -183,7 +183,7 @@ const Register = ({isFromIssue, onSuccess = () => {window.location.reload}}:Prop
         <Box>
           <InputGroup>
             <InputLeftAddon aria-required>原価単位数量</InputLeftAddon>
-            <Input required placeholder="原価算出基準となる数量" step="0.001" value={stockData.costPackageCount?.toString()} onChange={(e) => { updateField<"costPackageCount">("costPackageCount", e.target.value ? new Decimal(e.target.value): undefined)}}/>
+            <Input required placeholder="原価算出基準となる数量" step="0.001" type="number" value={stockData.costPackageCount?.toString()} onChange={(e) => { updateField<"costPackageCount">("costPackageCount", e.target.value ? new Decimal(e.target.value): undefined)}}/>
             <Button onClick={() => {
               const computedValue = calcCostPackageCount()
               if(computedValue){

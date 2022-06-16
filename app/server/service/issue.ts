@@ -1,5 +1,6 @@
 import { PrismaClient, Issue } from "@prisma/client"
 import { IssueProps, IssueItemProps } from "../domain/entity/issue";
+import dayjs from 'dayjs'
 const prisma = new PrismaClient();
 
 export type getQuery = {
@@ -8,8 +9,29 @@ export type getQuery = {
 }
 
 export const createIssue = async (issueData: IssueProps) => {
+  const maxIssue = await prisma.issue.aggregate({
+    _max:{
+      managedId:true
+    },
+    where:{
+      managedId: {
+        startsWith : dayjs().format("YYMMDD") + "-" + ( '000' + issueData.userId ).slice( -3 ) + '-'
+      }
+    }
+  })
+  const newManagedId = (()=>{
+    const maxManagedId = maxIssue._max.managedId 
+    const split = maxManagedId?.split("-")
+    const daySerial = (()=>{//日付毎の連番
+      if(!maxManagedId) return 0
+      if(!split) return 0 
+      return Number(split[split?.length -1])
+    })()
+    return `${dayjs().format("YYMMDD")}-${( '000' + issueData.userId ).slice( -3 )}-${(daySerial + 1)}`
+  })()
+
   const findManagedId = await prisma.issue.findFirst({where:{
-    managedId: issueData.managedId
+    managedId: newManagedId
   }})
 
   if(findManagedId){
@@ -19,6 +41,7 @@ export const createIssue = async (issueData: IssueProps) => {
   const data = await prisma.issue.create({
     data: {
       ...issueData,
+      managedId: newManagedId,
       date: new Date(issueData.date),
       issueItems: {
         createMany: {
