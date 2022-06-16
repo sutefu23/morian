@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>JavaScript Plugin API Code Sample</title>
+    <script type="text/javascript">
+     window.onload = function() {
+      var bht_js = eval(bht_init.LoadPluginsCode());
+      window.onbeforeunload = function() {
+        var ret = bht_js.BarCodeScannerClose();
+        if (ret.success) {
+          console.log("BarCodeScannerClose returned true.");
+        }
+      }
+      window.onfocus = function() {
+        var ret = bht_js.BarCodeScannerClaim();
+        if (ret.success) {
+          console.log("BarCodeScannerClaim returned true.");
+        }
+      }
+      window.ScanCallback = function(arg) {
+        window.bardata.data.value = arg.data;
+        window.bardata.symbologyDenso.value = arg.symbologyDenso;
+        window.bardata.symbologyAim.value = arg.symbologyAim;
+      }
+      var ret = bht_js.BarCodeScannerSetCallBackFunc({
+        func: "ScanCallback"
+      });
+      if (ret.success) {
+        console.log("BarCodeScannerSetCallBackFunc returned true.");
+      }
+      var settings = bht_js.BarCodeScannerGetSettings();
+      if (settings.success) {
+        console.log("BarCodeScannerGetSettings returned true.");
+      }
+      settings.decode.multiLineMode.symbology1st.symbologyType = "CODE39";
+      settings.decode.multiLineMode.symbology1st.verifyCheckDigit = true;
+      settings.decode.multiLineMode.symbology2nd.symbologyType = "CODE39";
+      settings.decode.multiLineMode.symbology2nd.verifyCheckDigit = true;
+      
+      settings.decode.symbologies.code39.enabled = true;
+      settings.decode.symbologies.code39.verifyCheckDigit = true;
+
+      var ret = bht_js.BarCodeScannerSetSettings(settings);
+      if (ret.success) {
+        alert("BarCodeScannerSetSettings returned true.");
+      }
+      var ret = bht_js.BarCodeScannerClaim();
+      if (ret.success) {
+        console.log("BarCodeScannerClaim returned true.");
+      }
+      var error = bht_js.getWebPageLastError();
+      alert(JSON.stringify(error))
+    }
+    </script>
+  </head>
+  <body>
+    <form name="bardata">
+      <p>Data<br><input type="text" readonly name="data"></p>
+      <p>Symbology (DENSO)<br><input type="text" readonly name="symbologyDenso"></p>
+      <p>Symbology (AIM)<br><input type="text" readonly name="symbologyAim"></p>
+    </form>
+  </body>
+</html>

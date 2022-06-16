@@ -1,23 +1,40 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { ReasonSelect, StatusSelect, UserSelect } from '~/components/select'
 import Dialog from '~/components/feedback/dialog'
 import useHistory from '~/hooks/useHistory'
-import { HStack, Box, VStack, InputGroup, InputLeftAddon, Input } from "@chakra-ui/react"
+import { HStack, Box, VStack, InputGroup, InputLeftAddon, Input, Text } from "@chakra-ui/react"
 import dayjs from 'dayjs'
 import { StockReason } from '~/server/domain/init/master'
 import { Decimal } from "decimal.js"
 import { 出庫理由 } from '~/server/domain/entity/stock'
+import useUser from '~/hooks/useUser'
 
+type ItemSummary = {
+  lotNo: string,
+  name: string,
+  size: string,
+  count: string,
+  unit: string
+}
 type Props = {
   isOpen:boolean
   onClose:()=>void
-  editHistoryId: number|undefined 
+  editHistoryId?: number|undefined,
   mode: '新規作成'|'編集'
+  itemId:number, 
+  summary?: ItemSummary,
+  onlyUseSettledReason?: boolean,
   onDone:()=>void
 } 
-const editHistory = ({isOpen , onClose, onDone, editHistoryId, mode}:Props) => {
-  const { historyData, setHistoryData, updateField, updateHistory, postHistory } = useHistory()
+const editHistory = ({isOpen , onClose, onDone, editHistoryId, itemId, mode, summary, onlyUseSettledReason}:Props) => {
+  const { historyData, setHistoryData, updateField, updateHistory, postHistory, defaultData } = useHistory()
   const [isBook, setIsBook] = useState<boolean>(false)
+  const { user } = useUser()
+
+  useEffect(()=>{
+    setHistoryData({...defaultData, itemId: itemId, editUserId: user?.id, editUserName: user?.name})  
+  },[])
+
   const handleRegister = useCallback(async ()=>{
     switch (mode) {
       case "新規作成":
@@ -46,7 +63,10 @@ const editHistory = ({isOpen , onClose, onDone, editHistoryId, mode}:Props) => {
       button1={{text:mode,color:"green",event:handleRegister}}
       button2={{text:"キャンセル", color:"blue", event:onClose}}
       >
-
+      {summary && 
+      <Text textAlign="center" mb="4px">
+        {summary.name} {summary.size}  {summary.count} {summary.unit}  
+      </Text>}
       <VStack align="left" pl="10">
         <HStack>
           <Box>
@@ -89,6 +109,7 @@ const editHistory = ({isOpen , onClose, onDone, editHistoryId, mode}:Props) => {
               <ReasonSelect required
                 value={historyData.reasonId}
                 status={historyData.status}
+                filter={onlyUseSettledReason?(r) => r.name !==出庫理由.見積 && r.name !== 出庫理由.受注予約:undefined}
                 onSelect={(e) => { 
                 const reasonBookId = StockReason.find(r => r.name === 出庫理由.受注予約)?.id
                 const reasonEstimateId = StockReason.find(r => r.name === 出庫理由.見積)?.id

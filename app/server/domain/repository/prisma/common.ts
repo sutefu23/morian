@@ -9,6 +9,6 @@ export function buildWhereStatement<T>(query: Query<T> | Query<T>[]): string {
     })
     return qArray.join(' AND ')
   } else {
-    return `${query.field} ${query.operator} '${query.value}'`
+    return `${String(query.field)} ${query.operator} '${query.value}'`
   }
 }

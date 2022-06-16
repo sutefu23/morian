@@ -16,7 +16,7 @@ export const BarCodePdf = () => {
 
   const dataArray = items.map((item) => {
     const canvas = document.createElement('canvas');
-    JsBarcode(canvas, item.lotNo);
+    JsBarcode(canvas, item.lotNo, {format:"code39"});
     const barcode = canvas.toDataURL();
 
     return {
@@ -42,7 +42,7 @@ export const BarCodePdf = () => {
     subtitle: { fontSize: '10pt', fontFamily: 'Nasu-Regular', textAlign:"center", marginBottom:"10px" },
     text: { fontSize: '7pt', fontFamily: 'Nasu-Regular' },
     display: { flexDirection: 'row',justifyContent:'space-between'},
-    barcode: { width: '100px', height:'auto', textAlign:"center"},
+    barcode: { width: '30%', height:'auto', textAlign:"center"},
   });
 
   const MyPDF = () => {

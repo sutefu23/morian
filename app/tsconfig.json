@@ -1,14 +1,26 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "baseUrl": ".",
     "downlevelIteration": true,
     "paths": {
-      "~/*": ["./*"],
-      "$/*": ["./server/*"],
-      "@domain/*": ["./server/domain/*"],
-      "$prisma/*": ["./server/node_modules/.prisma/*"]
+      "~/*": [
+        "./*"
+      ],
+      "$/*": [
+        "./server/*"
+      ],
+      "@domain/*": [
+        "./server/domain/*"
+      ],
+      "$prisma/*": [
+        "./server/node_modules/.prisma/*"
+      ]
     },
     "allowJs": true,
     "skipLibCheck": true,
@@ -23,8 +35,17 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve"
+    "jsx": "preserve",
+    "incremental": true
   },
-  "exclude": ["node_modules", "server"],
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/pdf/index.jsx"]
+  "exclude": [
+    "node_modules",
+    "server"
+  ],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "pages/pdf/index.jsx"
+  ]
 }

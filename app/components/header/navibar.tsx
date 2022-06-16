@@ -15,7 +15,7 @@ import { useRouter }from 'next/router'
 import { destroyCookie } from 'nookies'
 
 
-const Navibar = () => {
+const Navibar = ({hidden}:{hidden?:boolean}) => {
   const { isOpen: isOpenSidebar, setIsOpen: setIsOpenSidebar } = useSidebar()
   const { title } = usePageTitle() 
   const { user, setUser } = useUser()
@@ -30,6 +30,9 @@ const Navibar = () => {
     [],
   )
   if(!user){
+    return <></>
+  }
+  if(hidden){
     return <></>
   }
   return (

@@ -3,6 +3,7 @@ import Navibar from '~/components/header/navibar'
 import styles from '~/styles/Home.module.css'
 import Sidebar from '~/components/navigation/sidebar'
 import useUser from '~/hooks/useUser';
+import useHandy from '~/hooks/useHandy';
 import { useRouter } from 'next/router'
 
 type Props = {
@@ -10,25 +11,33 @@ type Props = {
 };
 const AdminLayout = ({children} :Props) => {
   const router = useRouter();
-      
-  const {user, setUser, fetchUser, logout} = useUser()
+  const { isHandy } = useHandy()
+  const {user, setUser, fetchUser} = useUser()
   const url = router.pathname
 
   useEffect(()=>{(async () => {
     if(!user){
       const userData = await fetchUser()
-      if(userData instanceof Error){
-        throw userData
+      if(userData instanceof Error || !userData){
+        router.push('/login')
+        return
       }
-      if(userData){
-        setUser(userData)
-      }
+
+      setUser(userData)
     }
   })()
   },[user])
+
+  useEffect(()=>{(async () => {
+    if(isHandy&& url!=='/handy'){
+      router.push('/handy')
+    }
+  })()
+  },[isHandy])
+
   return (url !== '/login' ?
     <>
-    <Navibar/>
+    <Navibar hidden={isHandy}/>
     <div className={styles.container}>
       <main className={styles.main}>
       {children}

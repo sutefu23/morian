@@ -11,12 +11,15 @@ type Props = {
   required?: boolean
   status?:Status
   value?: ReasonType["id"]
+  filter?:(value: ReasonType, index: number, array: ReasonType[]) => boolean
 }
-const select = ({ onSelect, selected, required, value, status}:Props) => {
+const select = ({ onSelect, selected, required, value, status, filter}:Props) => {
   const { data, error: reasonErr } = useAspidaQuery(apiClient.master.reason)
   if (reasonErr) return <StatusBar status="error" message="理由カテゴリの取得に失敗しました。"/>
-  const reasons = data?.filter(r => r.status === status && r.name !== 入庫理由.発注)
-  
+  let reasons = data?.filter(r => r.status === status && r.name !== 入庫理由.発注)
+  if(filter){
+    reasons = reasons?.filter(filter)
+  }
   return (
     <Select 
       onChange={(e) => onSelect(e)}

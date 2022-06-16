@@ -83,6 +83,11 @@ const Sidebar = () => {
       path: "/item/issue"
     },
     {
+      key: "handy",
+      name: "ハンディターミナル",
+      path: "/handy",
+    },
+    {
       key: "barcode",
       name: "バーコード印刷",
       path: "/pdf"

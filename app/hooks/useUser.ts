@@ -38,8 +38,8 @@ const useUser = () => {
       return user
     }
   }
-  const logout = useRecoilCallback(({ set }) => (user: User|null) => {
-    set(userState, user);
+  const logout = useRecoilCallback(({ set }) => () => {
+    set(userState, null);
     destroyCookie(null, 'token')
   });
   const user = useRecoilValue(userState)

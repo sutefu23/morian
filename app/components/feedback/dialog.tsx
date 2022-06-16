@@ -44,7 +44,7 @@ const Dialog = (
       <Modal isOpen={isOpen} onClose={onClose} size={size} closeOnOverlayClick={closeOnOverlayClick}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>{title}</ModalHeader>
+          <ModalHeader fontSize="md">{title}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             {children}

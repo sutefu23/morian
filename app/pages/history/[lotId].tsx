@@ -8,12 +8,11 @@ import RightDrawer from '~/components/drawer/rightDrawer'
 import Breadcrumbs from '~/components/navigation/breadcrumb'
 import {RiDeleteBinLine, RiErrorWarningFill} from 'react-icons/ri'
 import { useState, useCallback, createRef } from 'react'
-import EditHistoryModal from './editHistory'
+import EditHistoryModal from '../../components/form/editHistory'
 import useHistory from '~/hooks/useHistory'
-import useUser from '~/hooks/useUser'
 import HistoryDetail from './historyDetail'
+import useUser from '~/hooks/useUser'
 const DeleteIcon = chakra(RiDeleteBinLine)
-const WarnIcon = chakra(RiErrorWarningFill)
 
 const HistoryListPage = () => {
   const router = useRouter()
@@ -24,9 +23,8 @@ const HistoryListPage = () => {
     lotNo: String(lotId)
   }})
   
-  const { setHistoryData, deleteHistory, defaultData } = useHistory()
-  const { user } = useUser()
-
+  const { deleteHistory } = useHistory()
+  const {user} = useUser()
   const [ hoverIndex, setHoverIndex ] = useState<number>(0)
   const [ editHistoryId, setEditHistoryId ] = useState<number|undefined>(undefined)
 
@@ -272,7 +270,6 @@ const HistoryListPage = () => {
           }
           setEditMode("新規作成")
           setEditHistoryId(undefined)
-          setHistoryData({...defaultData, itemId:item?.id, editUserId: user?.id, editUserName: user?.name})
           onModalOpen()
           }
         }
@@ -288,15 +285,15 @@ const HistoryListPage = () => {
           }
         </RightDrawer>
       </aside>
-    <EditHistoryModal 
+    {item && <EditHistoryModal 
       isOpen={isModalOpen}
       onClose={onModalClose}
+      itemId={item.id}
       mode={mode}
-      editHistoryId={editHistoryId}
       onDone={()=>{
         onModalClose()
         refetch()
-    }}/>
+    }}/>}
     </>
   )
 }
