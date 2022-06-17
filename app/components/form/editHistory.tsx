@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { ReasonSelect, StatusSelect, UserSelect } from '~/components/select'
 import Dialog from '~/components/feedback/dialog'
 import useHistory from '~/hooks/useHistory'
-import { HStack, Box, VStack, InputGroup, InputLeftAddon, Input, Text } from "@chakra-ui/react"
+import { HStack, Box, VStack, InputGroup, InputLeftAddon, Input, Text, InputRightAddon } from "@chakra-ui/react"
 import dayjs from 'dayjs'
 import { StockReason } from '~/server/domain/init/master'
 import { Decimal } from "decimal.js"
@@ -23,10 +23,11 @@ type Props = {
   mode: '新規作成'|'編集'
   itemId:number, 
   summary?: ItemSummary,
+  unit:string,
   onlyUseSettledReason?: boolean,
   onDone:()=>void
 } 
-const EditHistory = ({isOpen , onClose, onDone, editHistoryId, itemId, mode, summary, onlyUseSettledReason}:Props) => {
+const EditHistory = ({isOpen , onClose, onDone, editHistoryId, itemId, mode, summary, unit, onlyUseSettledReason}:Props) => {
   const { historyData, setHistoryData, updateField, updateHistory, postHistory, defaultData } = useHistory()
   const [isBook, setIsBook] = useState<boolean>(false)
   const { user } = useUser()
@@ -60,11 +61,11 @@ const EditHistory = ({isOpen , onClose, onDone, editHistoryId, itemId, mode, sum
       title={mode}
       closeOnOverlayClick={false}
       size="xl"
-      button1={{text:mode,color:"green",event:handleRegister}}
+      button1={{text:"登録",color:"green",event:handleRegister}}
       button2={{text:"キャンセル", color:"blue", event:onClose}}
       >
       {summary && 
-      <Text textAlign="center" mb="4px">
+      <Text textAlign="center" fontSize="1.2em" mb="4px">
         {summary.name} {summary.size}  {summary.count} {summary.unit}  
       </Text>}
       <VStack align="left" pl="10">
@@ -126,6 +127,7 @@ const EditHistory = ({isOpen , onClose, onDone, editHistoryId, itemId, mode, sum
               <Input required 
               value={String(historyData.addCount)}
               type="number" placeholder="数字" onChange={(e) => { updateField<"addCount">("addCount", e.target.value ? new Decimal(e.target.value): undefined)}}/>
+              <InputRightAddon>{unit}</InputRightAddon>
             </InputGroup>
             )}
             {historyData.status == 2 && (
@@ -134,8 +136,10 @@ const EditHistory = ({isOpen , onClose, onDone, editHistoryId, itemId, mode, sum
               <Input required 
               value={String(historyData.reduceCount)}
               type="number" placeholder="数字" onChange={(e) => { updateField<"reduceCount">("reduceCount", e.target.value ? new Decimal(e.target.value): undefined)}}/>
+              <InputRightAddon>{unit}</InputRightAddon>
             </InputGroup>
             )}
+            
           </Box>
         </HStack>
         <HStack>

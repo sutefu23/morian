@@ -290,6 +290,7 @@ const HistoryListPage = () => {
       onClose={onModalClose}
       itemId={item.id}
       mode={mode}
+      unit={item.unitName}
       onDone={()=>{
         onModalClose()
         refetch()

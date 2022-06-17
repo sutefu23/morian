@@ -17,6 +17,7 @@ const userState = atom<User|null>({
 
 const fetchUser = async () => {
   const cookies = parseCookies()
+
   if(cookies.token){
     const res = await apiClient.me.get({headers: {authorization: cookies.token}})
     if(res instanceof Error){

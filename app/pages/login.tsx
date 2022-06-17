@@ -18,6 +18,7 @@ import { FaUserAlt, FaLock } from "react-icons/fa";
 import { useRouter } from "next/router";
 import Dialog from '~/components/feedback/dialog'
 import useUser from '~/hooks/useUser'
+import useHandy from "~/hooks/useHandy";
 
 const CFaUserAlt = chakra(FaUserAlt);
 const CFaLock = chakra(FaLock);
@@ -30,6 +31,7 @@ const Login = () => {
   const { isOpen, onOpen : ModalOpen, onClose } = useDisclosure()
   const handleShowClick = () => setShowPassword(!showPassword)
   const { setUser, login } = useUser()
+  const { isHandy } = useHandy()
   const router = useRouter()
 
   const handleLogin = useCallback(
@@ -49,7 +51,11 @@ const Login = () => {
         const user = await login({userId: Number(userId), userPass })
         if (user && !(user instanceof Error)){
           setUser(user)
-          router.push('/')
+          if(isHandy){
+            router.push('/handy')
+          }else{
+            router.push('/')
+          }
         }
       }catch(error){
         setErrorMessage("ログインできませんでした。")

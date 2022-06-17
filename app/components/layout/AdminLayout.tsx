@@ -16,25 +16,24 @@ const AdminLayout = ({children} :Props) => {
   const url = router.pathname
 
   useEffect(()=>{(async () => {
-    if(!user){
+    if(!user && url !== '/login'){
       const userData = await fetchUser()
       if(userData instanceof Error || !userData){
         router.push('/login')
         return
       }
-
       setUser(userData)
     }
   })()
-  },[fetchUser, router, setUser, user])
+  },[fetchUser, router, setUser, url, user])
 
-  useEffect(()=>{(() => {
-    if(isHandy&& url!=='/handy'){
+  useEffect(()=>{( () => {
+    if(isHandy&& url!=='/handy' && url !== '/login'){
       router.push('/handy')
     }
   })()
   },[isHandy, router, url])
-
+  
   return (url !== '/login' ?
     <>
     <Navibar hidden={isHandy}/>

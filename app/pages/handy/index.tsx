@@ -37,7 +37,7 @@ interface BHT_INIT {
 declare let bht_init: BHT_INIT
 
 const Handy = () => {
-  const [lotNo, setLotNo] = useState<string>("S-11111")
+  const [lotNo, setLotNo] = useState<string>()
   const { user } = useUser()
   const { isOpen, onOpen, onClose } = useDisclosure()
 
@@ -48,8 +48,8 @@ const Handy = () => {
     onOpen()
   }
   })
-  const { data: itemHistory } = useAspidaQuery(apiClient.historyList.userEditedHistory, {query: {
-    editUserId: user!.id
+  const { data: itemHistory, refetch } = useAspidaQuery(apiClient.historyList.userEditedHistory, { query: {
+    editUserId: user?.id ?? 0
   },
   onSuccess:()=>{
     onOpen()
@@ -73,8 +73,13 @@ const Handy = () => {
       bht_js.SetFullScreenMode({mode: 1});//フルスクリーンモード 
     }
     const settings = bht_js.BarCodeScannerGetSettings();
+    settings.decode.multiLineMode.symbology1st.symbologyType = "CODE39";
+    settings.decode.multiLineMode.symbology1st.verifyCheckDigit = false;
+    settings.decode.multiLineMode.symbology2nd.symbologyType = "CODE39";
+    settings.decode.multiLineMode.symbology2nd.verifyCheckDigit = false;
+    
     settings.decode.symbologies.code39.enabled = true;
-    settings.decode.symbologies.code39.verifyCheckDigit = true;
+    settings.decode.symbologies.code39.verifyCheckDigit = false;
     bht_js.BarCodeScannerSetSettings(settings);
   },[])
 
@@ -93,14 +98,13 @@ const Handy = () => {
   const handleOnDone = useCallback(()=>{
     onClose()
     setLotNo("")
-
-  },[onClose])
+    refetch()
+  },[onClose, refetch])
 
   return (
     <>
       <Container>
         {lotNo || <Text textAlign="center" mt="20px">バーコードをスキャンしてください。</Text>}
-        {lotNo}
         {item && 
         <EditHistory
         summary={{
@@ -110,6 +114,7 @@ const Handy = () => {
           count:item.count.toString(),
           unit:item.unitName
         }}
+        unit={item.unitName}
         isOpen={isOpen}
         itemId={item.id}
         onClose={handleOnClose}
@@ -119,7 +124,7 @@ const Handy = () => {
         />}
       {itemHistory && itemHistory?.length > 0 && 
         <Container mt="20px" padding="0">
-        <Text fontWeight="bold">最近の履歴</Text>
+        <Text fontWeight="bold">最近の履歴(7日間)</Text>
         <Table>
         <Tbody>
           {
