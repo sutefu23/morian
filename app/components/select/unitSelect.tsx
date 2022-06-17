@@ -11,7 +11,7 @@ type Props = {
   required?: boolean
   value?: UnitType["id"]
 }
-const select = ({ onSelect, selected, required, value }:Props) => {
+const UnitSelect = ({ onSelect, selected, required, value }:Props) => {
   const { data: units, error: unitErr } = useAspidaQuery(apiClient.master.unit)
   if (unitErr) return <StatusBar status="error" message="単位の取得に失敗しました。"/>
 
@@ -34,4 +34,4 @@ const select = ({ onSelect, selected, required, value }:Props) => {
 
 
 
-export default select
+export default UnitSelect

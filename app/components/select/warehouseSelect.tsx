@@ -11,7 +11,7 @@ type Props = {
   required?: boolean
   value?: WarehouseType["id"]
 }
-const select = ({ onSelect, selected, required, value }:Props) => {
+const WarehouseSelect = ({ onSelect, selected, required, value }:Props) => {
   const { data: warehouses, error: warehouseErr } = useAspidaQuery(apiClient.master.warehouse)
   if (warehouseErr) return <StatusBar status="error" message="倉庫一覧の取得に失敗しました。"/>
 
@@ -34,4 +34,4 @@ const select = ({ onSelect, selected, required, value }:Props) => {
 
 
 
-export default select
+export default WarehouseSelect

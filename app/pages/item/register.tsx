@@ -1,7 +1,6 @@
-import { HStack, Box, VStack, InputGroup, InputLeftAddon, Input, Spacer, Button, } from "@chakra-ui/react"
+import { HStack, Box, VStack, InputGroup, InputLeftAddon, Input, Spacer, Button,FormLabel } from "@chakra-ui/react"
 import { WoodSpeciesSelect, ItemTypeSelect, SupplierSelect, GradeSelect, UnitSelect, WarehouseSelect } from "~/components/select/"
 import Footer from "~/components/Footer"
-import { InputLabel } from "@material-ui/core"
 import useStock from "~/hooks/useStock"
 import { Decimal } from "decimal.js"
 import usePageTitle from '~/hooks/usePageTitle'
@@ -10,7 +9,6 @@ import "~/utils/number"
 import dayjs from "dayjs"
 import { useAspidaQuery } from '@aspida/react-query'
 import { apiClient } from "~/utils/apiClient"
-import { useEffect } from "react"
 
 type Props = {
   isFromIssue?: boolean //発注情報を入庫化する時
@@ -24,7 +22,7 @@ const Register = ({isFromIssue, onSuccess = () => {window.location.reload}}:Prop
   }
   const {data:itemTypes} = useAspidaQuery(apiClient.master.itemType)
     
-  const { stockData, setStockData, updateField, calcCostPackageCount, costPerUnit, totalPrice, postStock, useDemo } = useStock()
+  const { stockData, setStockData, updateField, calcCostPackageCount, costPerUnit, totalPrice, postStock } = useStock()
   return (
     <>
     <form
@@ -105,9 +103,9 @@ const Register = ({isFromIssue, onSuccess = () => {window.location.reload}}:Prop
           <InputGroup>
             <InputLeftAddon aria-required>長さｘ厚みｘ幅</InputLeftAddon>
             <Input placeholder="長さ" value={stockData.length} onChange={(e) => { updateField<"length">("length", e.target.value as number | "乱尺")}}/>
-            <InputLabel style={{fontSize:"1.2em", marginTop:"10px"}}>ｘ</InputLabel>
+            <FormLabel style={{fontSize:"1.2em", marginTop:"5px"}}>ｘ</FormLabel>
             <Input placeholder="厚み" type="number" value={stockData.thickness} onChange={(e) => { updateField<"thickness">("thickness", Number(e.target.value))}}/>
-            <InputLabel style={{fontSize:"1.2em", marginTop:"10px"}}>ｘ</InputLabel>
+            <FormLabel style={{fontSize:"1.2em", marginTop:"5px"}}>ｘ</FormLabel>
             <Input placeholder="幅" type="number" value={stockData.width} onChange={(e) => { updateField<"width">("width", Number(e.target.value))}}/>
           </InputGroup>
         </Box>
@@ -157,7 +155,7 @@ const Register = ({isFromIssue, onSuccess = () => {window.location.reload}}:Prop
             <Input required type="number" 
             value={stockData.cost?.toString()}
             placeholder="数字" onChange={(e) => { updateField<"cost">("cost", e.target.value ? new Decimal(e.target.value): undefined)}}/>
-            <InputLabel style={{fontSize:"1.5em", marginTop:"10px"}}>/</InputLabel>
+            <FormLabel fontSize="1.2em" mt="5px">/</FormLabel>
             <UnitSelect required 
             value={stockData.costUnitId}
             onSelect={(e) => { 

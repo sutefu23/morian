@@ -1,7 +1,5 @@
 import { createClient, RedisClient } from 'redis'
-import { REDIS_USERNAME, REDIS_PASSWORD, REDIS_HOST, REDIS_POST} from '$/envValues'
-import bcrypt from 'bcrypt'
-import { API_SALT } from '$/envValues'
+import {  REDIS_HOST, REDIS_POST} from '$/envValues'
 
 export enum CACHE_TYPE{
     USER_SESSION = "user_session",

@@ -1,6 +1,5 @@
 import React, { ReactNode } from "react"
 import {  Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay } from "@chakra-ui/react"
-import { number } from "yup"
 
 type Props = {
   title?: string,

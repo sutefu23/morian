@@ -2,12 +2,11 @@ import {
   Flex,
   Box,
   Spacer,
-  Text,
   Button,
   Heading,
 } from '@chakra-ui/react'
 import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons'
-import React, { useEffect, useCallback} from 'react'
+import React, { useCallback} from 'react'
 import useUser from '~/hooks/useUser'
 import useSidebar from '~/hooks/useSidebar'
 import usePageTitle from '~/hooks/usePageTitle'
@@ -27,7 +26,7 @@ const Navibar = ({hidden}:{hidden?:boolean}) => {
       destroyCookie(null, 'token')
       router.push('/login')
     },
-    [],
+    [router, setUser],
   )
   if(!user){
     return <></>

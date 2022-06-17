@@ -11,7 +11,7 @@ type Props = {
   required?: boolean
   value?: DeliveryPlaceType["id"]
 }
-const select = ({ onSelect, selected, required, value }:Props) => {
+const DeliveryPlaceSelect = ({ onSelect, selected, required, value }:Props) => {
   const { data: deliveryPlaces, error: deliveryPlaceErr } = useAspidaQuery(apiClient.master.deliveryPlace)
   if (deliveryPlaceErr) return <StatusBar status="error" message="配送場所一覧の取得に失敗しました。"/>
 
@@ -40,4 +40,4 @@ const select = ({ onSelect, selected, required, value }:Props) => {
 
 
 
-export default select
+export default DeliveryPlaceSelect

@@ -1,10 +1,8 @@
 import { useAspidaQuery } from "@aspida/react-query"
 import {
   Table,
-  Thead,
   Tbody,
   Tr,
-  Th,
   Td,
   Text,
   Container,
@@ -22,7 +20,7 @@ interface Window {
     data: string
   }
 }
-declare var window: Window
+declare let window: Window
 
 type ScanArg = {
  rawData: string,
@@ -36,7 +34,7 @@ type ScanArg = {
 interface BHT_INIT {
   LoadPluginsCode: () => string
 }
-declare var bht_init: BHT_INIT
+declare let bht_init: BHT_INIT
 
 const Handy = () => {
   const [lotNo, setLotNo] = useState<string>("S-11111")
@@ -51,7 +49,7 @@ const Handy = () => {
   }
   })
   const { data: itemHistory } = useAspidaQuery(apiClient.historyList.userEditedHistory, {query: {
-    editUserId: user?.id!
+    editUserId: user!.id
   },
   onSuccess:()=>{
     onOpen()
@@ -64,7 +62,7 @@ const Handy = () => {
     if(typeof bht_init === undefined) {
       return;
     }
-    var bht_js = eval(bht_init.LoadPluginsCode());
+    const bht_js = eval(bht_init.LoadPluginsCode());
     bht_js.BarCodeScannerClaim();//読み取り許可
     
     bht_js.BarCodeScannerSetCallBackFunc({
@@ -74,7 +72,7 @@ const Handy = () => {
     if(process.env.NODE_ENV!=='development'){
       bht_js.SetFullScreenMode({mode: 1});//フルスクリーンモード 
     }
-    var settings = bht_js.BarCodeScannerGetSettings();
+    const settings = bht_js.BarCodeScannerGetSettings();
     settings.decode.symbologies.code39.enabled = true;
     settings.decode.symbologies.code39.verifyCheckDigit = true;
     bht_js.BarCodeScannerSetSettings(settings);
@@ -90,13 +88,13 @@ const Handy = () => {
   const handleOnClose = useCallback(()=>{
     onClose()
     setLotNo("")
-  },[])
+  },[onClose])
 
   const handleOnDone = useCallback(()=>{
     onClose()
     setLotNo("")
 
-  },[])
+  },[onClose])
 
   return (
     <>
@@ -127,7 +125,7 @@ const Handy = () => {
           {
             itemHistory?.map(itm => (
               itm.history.map( history=> (
-                <Tr>
+                <Tr key={history.id}>
                 <Td>{dayjs(history.date).format("YY/MM/DD")}</Td>  
                 <Td>{itm.lotNo}</Td>
                 <Td>{history.status ==1 ?"出庫":"入庫"}</Td>

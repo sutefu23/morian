@@ -1,6 +1,4 @@
-import client, { CACHE_TYPE } from "$/cache"
-import bcrypt from "bcrypt-nodejs"
-import { API_SALT } from "$/envValues"
+import client from "$/cache"
 
 test("プレーンなキャッシュ値テスト", async () =>{
   const key = "test"

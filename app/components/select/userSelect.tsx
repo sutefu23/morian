@@ -11,7 +11,7 @@ type Props = {
   enableOnly?: boolean
   value?: User["id"]
 }
-const select = ({ onSelect, selected, required , enableOnly, value}:Props) => {
+const UserSelect = ({ onSelect, selected, required , enableOnly, value}:Props) => {
   const [ users, setUsers ] = useState<User[]>()
   const [ error , setError ] = useState<Error>()
 
@@ -24,7 +24,7 @@ const select = ({ onSelect, selected, required , enableOnly, value}:Props) => {
       setError(error)
     }
   })()
-  },[users])
+  },[enableOnly, users])
 
   if(error) return <StatusBar status="error" message={error.message}></StatusBar>
 
@@ -47,4 +47,4 @@ const select = ({ onSelect, selected, required , enableOnly, value}:Props) => {
 
 
 
-export default select
+export default UserSelect

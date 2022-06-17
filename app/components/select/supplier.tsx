@@ -11,7 +11,7 @@ type Props = {
   readOnly?:boolean
 }
 
-const select = ({ onSelect, required, defaultKey, readOnly}:Props) => {
+const SupplierSelect = ({ onSelect, required, defaultKey, readOnly}:Props) => {
 
   useEffect(() => {
     (async() => {
@@ -61,4 +61,4 @@ const select = ({ onSelect, required, defaultKey, readOnly}:Props) => {
 
 
 
-export default select
+export default SupplierSelect

@@ -20,10 +20,6 @@ const WoodSpeciesPage = () => {
   const { setTitle } = usePageTitle()
   const { itemTypeId, woodSpeciesId } = router.query
 
-
-  if(!woodSpeciesId || !itemTypeId){
-    return <><p>Loading...</p></>
-  }
   const { data: stocks } = useAspidaQuery(apiClient.itemList, {query: {
     woodSpeciesId: Number(woodSpeciesId),
     itemTypeId: Number(itemTypeId)
@@ -36,6 +32,10 @@ const WoodSpeciesPage = () => {
   const { data: woodSpecies } = useAspidaQuery(apiClient.master.species._id(Number(woodSpeciesId)))
 
   setTitle(`${woodSpecies?.name} ${itemType?.name} 在庫一覧`)
+
+  if(!woodSpeciesId || !itemTypeId){
+    return <><p>Loading...</p></>
+  }
   return (
     <>
     <Breadcrumbs links={[{name:`${woodSpecies?.name} ${itemType?.name}一覧`}]}></Breadcrumbs>

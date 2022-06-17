@@ -1,3 +1,4 @@
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-nocheck
 import '../styles/globals.css'
 import { QueryClient, QueryClientProvider } from 'react-query'
@@ -19,7 +20,7 @@ function ForceLightMode(props: { children: JSX.Element }) {
   useEffect(() => {
     if (colorMode === "light") return;
     toggleColorMode();
-  }, [colorMode]);
+  }, [colorMode, toggleColorMode]);
 
   return props.children;
 }
@@ -35,7 +36,7 @@ function MyApp({ Component, pageProps }: AppProps, context: NextPageContext) {
         router.push('/login');
       }
     }
-  }, []);
+  }, [cookies.token, router]);
   const NoSsr = dynamic(() => import('../components/NoSsr'))
   return (
     <NoSsr>

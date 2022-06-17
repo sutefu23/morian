@@ -26,14 +26,14 @@ const AdminLayout = ({children} :Props) => {
       setUser(userData)
     }
   })()
-  },[user])
+  },[fetchUser, router, setUser, user])
 
-  useEffect(()=>{(async () => {
+  useEffect(()=>{(() => {
     if(isHandy&& url!=='/handy'){
       router.push('/handy')
     }
   })()
-  },[isHandy])
+  },[isHandy, router, url])
 
   return (url !== '/login' ?
     <>

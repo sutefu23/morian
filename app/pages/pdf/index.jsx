@@ -54,7 +54,7 @@ export const BarCodePdf = () => {
             <View style={styles.display}>
             {
               dataArray.map((data) => (
-                <View style={styles.barcode}>
+                <View style={styles.barcode} key={data.name}>
                 <Image src={data.url} style={{height:50}}/>
                 <Text style={styles.text}>{data.name}</Text>
                 <Text style={styles.text}>{data.size}</Text>

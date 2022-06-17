@@ -24,10 +24,4 @@ services:
     - "8080:80"
     links:
       - db
-  redis:
-    container_name: redis-${PROJECT_NAME}
-    image: "redis:latest"
-    ports:
-      - "6379:6379"
-    volumes:
-      - "./data/redis:/db_data/redis"
+

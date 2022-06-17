@@ -12,7 +12,7 @@ import {
   Button,
   Flex
 } from "@chakra-ui/react"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useState } from "react"
 import usePageTitle from "~/hooks/usePageTitle"
 import { ItemTypeType } from "~/server/domain/entity/stock"
 import { apiClient } from "~/utils/apiClient"
@@ -22,7 +22,7 @@ const ItemTypesManage = () => {
   const [itemTypes, setItemTypes ] = useState<ItemTypeType[]>([])
   const [newItemTypes, setNewItemTypes] = useState<ItemTypeType>()
 
-  useAspidaQuery(apiClient.master.itemType,{onSuccess: async (itemTypes) => {
+  useAspidaQuery(apiClient.master.itemType,{onSuccess: (itemTypes) => {
 
     const maxId = itemTypes.reduce((prevId, curr)=>(
       prevId < curr.id ? curr.id : prevId
@@ -57,17 +57,17 @@ const ItemTypesManage = () => {
       alert("接頭辞は必須です。")
       return
     } 
-    const res = await apiClient.master.itemType._id(0).post({body:{body:newItemTypes}})
+    await apiClient.master.itemType._id(0).post({body:{body:newItemTypes}})
     window.location.reload()
   },[newItemTypes])
 
   const handleModifyPrefix = useCallback(async (id:number, newPrefix:string) => {
     await apiClient.master.itemType._id(id).patch({body: {id, body: { prefix: newPrefix }}})
-  },[itemTypes])
+  },[])
 
   const handleModifyOrder = useCallback(async (id:number, newOrder:number) => {
     await apiClient.master.itemType._id(id).patch({body: {id, body: { order: newOrder }}})
-  },[itemTypes])
+  },[])
 
   return (
     <>

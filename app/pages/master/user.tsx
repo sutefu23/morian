@@ -65,7 +65,7 @@ const UserManage = () => {
     
       window.location.reload()
     }
-  },[users])
+  },[])
 
   const handleShowClick = (id?:User["id"]) => {
     if(!id) return

@@ -34,13 +34,13 @@ export function Autocomplete<T extends Record<string, unknown>>(props: Autocompl
     if (props.inputValue && props.onInputChange){ 
       props.onInputChange(props.inputValue)
     }
-  },[props.inputValue, props.onInputChange, props.readOnly])
+  },[props])
 
   const inputRef = React.useRef(null);
   const listBoxRef = React.useRef(null);
   const popoverRef = React.useRef(null);
 
-  const { inputProps, listBoxProps, labelProps } = useComboBox(
+  const { inputProps, listBoxProps } = useComboBox(
     {
       ...props,
       inputRef,

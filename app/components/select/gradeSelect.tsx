@@ -11,7 +11,7 @@ type Props = {
   value? : GradeType["id"]
   required?: boolean
 }
-const select = ({ onSelect, selected, required, value }:Props) => {
+const GradeSelect = ({ onSelect, selected, required, value }:Props) => {
   const { data: grades, error: gradeErr } = useAspidaQuery(apiClient.master.grade)
   if (gradeErr) return <StatusBar status="error" message="グレードの取得に失敗しました。"/>
 
@@ -39,4 +39,4 @@ const select = ({ onSelect, selected, required, value }:Props) => {
 
 
 
-export default select
+export default GradeSelect

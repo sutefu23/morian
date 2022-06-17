@@ -1,7 +1,6 @@
-import { HStack, Box, VStack, InputGroup, InputLeftAddon, Divider, InputRightAddon, Input, Button, Link } from "@chakra-ui/react"
+import { HStack, Box, VStack, InputGroup, InputLeftAddon, Divider, InputRightAddon, Input, Button, FormLabel } from "@chakra-ui/react"
 import { WoodSpeciesSelect, ItemTypeSelect, SupplierSelect, GradeSelect, UnitSelect, DeliveryPlaceSelect } from "~/components/select/"
 import Footer from "~/components/Footer"
-import { InputLabel } from "@material-ui/core"
 import useIssue, { defaultData } from "~/hooks/useIssue"
 import { Decimal } from "decimal.js"
 import usePageTitle from '~/hooks/usePageTitle'
@@ -30,7 +29,7 @@ const RegisterIssue = () => {
     updateIssue } = useIssue()
 
     const router = useRouter();
-    const {data:editIssues, status, refetch} = useAspidaQuery(apiClient.issue,{query:{id: Number(router.query["issueId"])},enabled:Boolean(router.query["issueId"])})
+    const {data:editIssues, status} = useAspidaQuery(apiClient.issue,{query:{id: Number(router.query["issueId"])},enabled:Boolean(router.query["issueId"])})
     const [isEdit, setIsEdit] = useState<boolean>(false) 
 
     const { setTitle } = usePageTitle()
@@ -50,7 +49,7 @@ const RegisterIssue = () => {
       if(editIssues && editIssues.length > 0){
         setIssueData(editIssues[0])  
       }  
-    },[])
+    },[editIssues, setIssueData])
 
     const { user } = useUser()
     useEffect(() => {
@@ -59,23 +58,26 @@ const RegisterIssue = () => {
       }
     },[user])
 
-    const pageChangeHandler = () => {
-      if(!isEdit && issueData?.issueItems?.length && issueData?.issueItems[0].itemTypeId){
-        const answer = window.confirm('内容がリセットされます、本当にページ遷移しますか？');
-        if(!answer) {
-          // eslint-disable-next-line no-throw-literal
-          throw 'Abort route change. Please ignore this error.'
-        }  
-      }
-    };
+
     
     useEffect(() => {
+      const pageChangeHandler = () => {
+        if(!isEdit && issueData?.issueItems?.length && issueData?.issueItems[0].itemTypeId){
+          const answer = window.confirm('内容がリセットされます、本当にページ遷移しますか？');
+          if(!answer) {
+            // eslint-disable-next-line no-throw-literal
+            throw 'Abort route change. Please ignore this error.'
+          }  
+        }
+      };
       router.events.on('routeChangeStart', pageChangeHandler);
       return () => {
         router.events.off('routeChangeStart', pageChangeHandler)
       };
     }, []);
-
+  if(status === "loading"){
+    <>Loading</>
+  }
   return (
     <>
     <form
@@ -277,9 +279,9 @@ const RegisterIssue = () => {
                 <InputGroup>
                   <InputLeftAddon aria-required>長さｘ厚みｘ幅</InputLeftAddon>
                   <Input placeholder="長さ" value={item.length ?? undefined} onChange={(e) => { updateItemField<"length">(index, "length", e.target.value)}}/>
-                  <InputLabel style={{fontSize:"1.2em", marginTop:"10px"}}>ｘ</InputLabel>
+                  <FormLabel style={{fontSize:"1.2em", marginTop:"5px"}}>ｘ</FormLabel>
                   <Input placeholder="厚み" type="number" value={item.thickness?? undefined} onChange={(e) => { updateItemField<"thickness">(index, "thickness", (e.target.value)?Number(e.target.value):undefined)}}/>
-                  <InputLabel style={{fontSize:"1.2em", marginTop:"10px"}}>ｘ</InputLabel>
+                  <FormLabel style={{fontSize:"1.2em", marginTop:"5px"}}>ｘ</FormLabel>
                   <Input placeholder="幅" type="number" value={item.width ?? undefined} onChange={(e) => { updateItemField<"width">(index, "width", (e.target.value)?Number(e.target.value):undefined)}}/>
                 </InputGroup>
               </Box>
@@ -300,7 +302,7 @@ const RegisterIssue = () => {
                   <Input required type="number" 
                   value={String(item.cost)}
                   placeholder="数字" onChange={(e) => { updateItemField<"cost">(index, "cost", e.target.value ? new Decimal(e.target.value): undefined)}}/>
-                  <InputLabel style={{fontSize:"1.5em", marginTop:"10px"}}>/</InputLabel>
+                  <FormLabel fontSize="1.2em" mt="5px">/</FormLabel>
                   <UnitSelect required 
                   value={item.costUnitId}
                   onSelect={(e) => { 
@@ -420,7 +422,7 @@ const RegisterIssue = () => {
         {isEdit &&
         <Box>
           <Button type='submit' ml={50} w={100} bgColor="blue.400"
-          onClick={async (e) => {
+          onClick={(e) => {
             e.preventDefault()
             router.push("/item/issue/")
             }

@@ -26,14 +26,14 @@ type Props = {
   onlyUseSettledReason?: boolean,
   onDone:()=>void
 } 
-const editHistory = ({isOpen , onClose, onDone, editHistoryId, itemId, mode, summary, onlyUseSettledReason}:Props) => {
+const EditHistory = ({isOpen , onClose, onDone, editHistoryId, itemId, mode, summary, onlyUseSettledReason}:Props) => {
   const { historyData, setHistoryData, updateField, updateHistory, postHistory, defaultData } = useHistory()
   const [isBook, setIsBook] = useState<boolean>(false)
   const { user } = useUser()
 
   useEffect(()=>{
     setHistoryData({...defaultData, itemId: itemId, editUserId: user?.id, editUserName: user?.name})  
-  },[])
+  },[defaultData, itemId, setHistoryData, user?.id, user?.name])
 
   const handleRegister = useCallback(async ()=>{
     switch (mode) {
@@ -52,7 +52,7 @@ const editHistory = ({isOpen , onClose, onDone, editHistoryId, itemId, mode, sum
         }
         break;
     }
-  },[historyData, editHistoryId])
+  },[mode, postHistory, editHistoryId, updateHistory, onDone])
   return (
     <Dialog
       isOpen={isOpen} 
@@ -186,4 +186,4 @@ const editHistory = ({isOpen , onClose, onDone, editHistoryId, itemId, mode, sum
   )
 }
 
-export default editHistory
+export default EditHistory

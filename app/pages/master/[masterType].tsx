@@ -12,7 +12,7 @@ import {
   Button,
   Flex
 } from "@chakra-ui/react"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useState } from "react"
 import usePageTitle from "~/hooks/usePageTitle"
 import { Master } from "~/server/domain/entity/stock"
 import { apiClient } from "~/utils/apiClient"
@@ -34,10 +34,8 @@ const MasterManage = () => {
   const [newMaster, setNewMaster] = useState<Master>()
   const router = useRouter()
   const { masterType } = router.query
-  if(!masterType ){
-    return <>Loading..</>
-  }
-  useAspidaQuery(apiClient.master[masterType as unknown as MasterKey],{onSuccess: async (masters) => {
+
+  useAspidaQuery(apiClient.master[masterType as unknown as MasterKey],{onSuccess: (masters) => {
 
     const maxId = masters.reduce((prevId, curr)=>(
       prevId < curr.id ? curr.id : prevId
@@ -69,15 +67,18 @@ const MasterManage = () => {
     } 
 
     const type = masterType as unknown as MasterKey
-    const res = await apiClient.master[type]._id(0).post({body:{body:newMaster}})
+    await apiClient.master[type]._id(0).post({body:{body:newMaster}})
     window.location.reload()
-  },[newMaster])
+  },[masterType, newMaster])
 
   const handleModifyOrder = useCallback(async (id:number, newOrder:number) => {
     const type = masterType as unknown as MasterKey
     await apiClient.master[type]._id(id).patch({body: {id, body: { order: newOrder }}})
-  },[masters])
+  },[masterType])
 
+  if(!masterType ){
+    return <>Loading..</>
+  }
   return (
     <>
     <Container

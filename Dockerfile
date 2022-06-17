@@ -14,4 +14,4 @@ RUN yarn --cwd ./server install
 RUN export PATH=$PATH:./node_modules/.bin
 RUN export PATH=$PATH:./server/node_modules/.bin
 
-CMD yarn build && yarn migrate:prod && yarn start
+CMD yarn build && yarn --cwd ./server migrate:prod && yarn start

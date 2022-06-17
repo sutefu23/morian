@@ -12,7 +12,7 @@ type Props = {
   value?: WoodSpeciesType["id"]
   readOnly?: boolean
 }
-const select = ({ onSelect, selected, required, value, readOnly }:Props) => {
+const WoodSpeciesSelect = ({ onSelect, selected, required, value, readOnly }:Props) => {
   const { data: woodSpecieses, error: woodSpeciesErr } = useAspidaQuery(apiClient.master.species)
   if (woodSpeciesErr) return <StatusBar status="error" message="樹種の取得に失敗しました。"/>
 
@@ -36,4 +36,4 @@ const select = ({ onSelect, selected, required, value, readOnly }:Props) => {
 
 
 
-export default select
+export default WoodSpeciesSelect
