@@ -1,17 +1,27 @@
-FROM node:14.17-alpine
+FROM node:14.17-alpine as builder
 
 
 WORKDIR /app
 
 ADD /app /app
 
-EXPOSE  3000
-EXPOSE  8000
+RUN yarn install --frozen-lockfile --production=false
+RUN yarn --cwd ./server install --frozen-lockfile --production=false
 
-RUN yarn install
-RUN yarn --cwd ./server install
+RUN yarn build
 
-RUN export PATH=$PATH:./node_modules/.bin
-RUN export PATH=$PATH:./server/node_modules/.bin
+FROM node:14.17-alpine AS production
 
-CMD yarn build && yarn --cwd ./server migrate:prod && yarn start
+ENV NODE_ENV=production
+WORKDIR /app
+
+COPY --from=builder /app/next.config.js ./
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/static ./.next/static
+
+COPY --from=builder /app/.next/standalone ./
+
+COPY --from=builder /app/server/index.js ./server/
+
+EXPOSE 3000
+CMD ["yarn", "start"]

@@ -3,3 +3,5 @@ data/redis/dump.rdb
 *.log
 .vscode
 ~*
+.env.production
+.env.development

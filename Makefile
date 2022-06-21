@@ -16,3 +16,6 @@ destroy:
 
 dev:
 	@make up && yarn --cwd ./app dev
+
+product-up:
+	docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
