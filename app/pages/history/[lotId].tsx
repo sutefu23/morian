@@ -191,14 +191,16 @@ const HistoryListPage = () => {
       <Box overflowY="auto" maxHeight="65vh" w="100vw" bgColor="white" zIndex="10" mt="10px">
         <Table variant="striped" className='hover' borderBottom="1px">
           <Thead position="sticky" top="0" bgColor="white" zIndex="10">
-          <Th textAlign="center">入出庫日</Th>
-          <Th textAlign="center">ステータス</Th>
-          <Th textAlign="center">理由</Th>
-          <Th textAlign="center">備考</Th>
-          <Th textAlign="center">入庫数</Th>
-          <Th textAlign="center">出庫数</Th>
-          <Th textAlign="center">予約期限</Th>
-          <Th textAlign="center"></Th>
+            <Tr>
+              <Th textAlign="center">入出庫日</Th>
+              <Th textAlign="center">ステータス</Th>
+              <Th textAlign="center">理由</Th>
+              <Th textAlign="center">備考</Th>
+              <Th textAlign="center">入庫数</Th>
+              <Th textAlign="center">出庫数</Th>
+              <Th textAlign="center">予約期限</Th>
+              <Th textAlign="center"></Th>
+            </Tr>
           </Thead>
           <Tbody overflowY="scroll">
             {item?.history && 

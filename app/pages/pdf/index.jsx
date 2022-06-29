@@ -41,7 +41,7 @@ export const BarCodePdf = () => {
     title: { fontSize: '12pt', fontFamily: 'Nasu-Regular', textAlign:"center", marginBottom:"10px" },
     subtitle: { fontSize: '10pt', fontFamily: 'Nasu-Regular', textAlign:"center", marginBottom:"10px" },
     text: { fontSize: '7pt', fontFamily: 'Nasu-Regular' },
-    display: { flexDirection: 'row',justifyContent:'space-between'},
+    display: { flexDirection: 'row',justifyContent:'space-between',flexWrap:'wrap'},
     barcode: { width: '30%', height:'auto', textAlign:"center"},
   });
 

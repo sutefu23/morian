@@ -12,8 +12,8 @@ type Props = {
 import { apiClient } from '~/utils/apiClient'
 const HistoryDetail = ({id}:Props) => {
   const {data: history} = useAspidaQuery(apiClient.history._id(id))
-  const {data: bookUser} = useAspidaQuery(apiClient.user._id(history?.bookUserId ?? -1))
-  const {data: editUser} = useAspidaQuery(apiClient.user._id(history?.editUserId ?? -1))
+  const {data: bookUser} = useAspidaQuery(apiClient.user._id(history?.bookUserId??-1),{enabled: Boolean(history?.bookUserId)})
+  const {data: editUser} = useAspidaQuery(apiClient.user._id(history?.editUserId??-1),{enabled: Boolean(history?.editUserId)})
   return (
     <Table variant="striped" colorScheme="gray">
     <Tr><Th>予約期限</Th><Td>{history?.bookDate?dayjs(history?.bookDate).format("YYYY-MM-DD"):""}</Td></Tr>

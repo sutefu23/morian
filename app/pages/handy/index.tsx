@@ -133,9 +133,9 @@ const Handy = () => {
                 <Tr key={history.id}>
                 <Td>{dayjs(history.date).format("YY/MM/DD")}</Td>  
                 <Td>{itm.lotNo}</Td>
-                <Td>{history.status ==1 ?"出庫":"入庫"}</Td>
+                <Td>{history.status ==1 ? "入庫": "出庫"}</Td>
                 <Td>{itm.woodSpeciesName} {itm.itemTypeName}</Td>
-                <Td>{history.addCount ?? history.reduceCount}</Td>
+                <Td>{Number(history.addCount) > 0  ? history.addCount : history.reduceCount}</Td>
               </Tr>
               ))
     
