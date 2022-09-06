@@ -79,8 +79,13 @@ const Sidebar = () => {
     },
     {
       key: "issueItem",
-      name: "発注",
+      name: "新規発注",
       path: "/item/issue"
+    },
+    {
+      key: "issueItemList",
+      name: "過去発注情報検索",
+      path: "/item/issueList"
     },
     {
       key: "handy",

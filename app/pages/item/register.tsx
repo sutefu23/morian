@@ -94,7 +94,8 @@ const Register = ({isFromIssue, onSuccess = () => {window.location.reload}}:Prop
         <Box>
           <InputGroup>
             <InputLeftAddon>仕様</InputLeftAddon>
-            <Input placeholder="自由入力" value={stockData.spec} onChange={(e) => { updateField<"spec">("spec", e.target.value)}}/>
+            <Input placeholder="自由入力" defaultValue={stockData.spec}
+            onBlur={(e) => { updateField<"spec">("spec", e.target.value)}}/>
           </InputGroup>
         </Box>
       </HStack>
@@ -102,19 +103,20 @@ const Register = ({isFromIssue, onSuccess = () => {window.location.reload}}:Prop
         <Box>
           <InputGroup>
             <InputLeftAddon aria-required>長さｘ厚みｘ幅</InputLeftAddon>
-            <Input placeholder="長さ" value={stockData.length} onChange={(e) => { updateField<"length">("length", e.target.value as number | "乱尺")}}/>
+            <Input placeholder="長さ" defaultValue={stockData.length} onBlur={(e) => { updateField<"length">("length", e.target.value as number | "乱尺")}}/>
             <FormLabel style={{fontSize:"1.2em", marginTop:"5px"}}>ｘ</FormLabel>
-            <Input placeholder="厚み" type="number" value={stockData.thickness} onChange={(e) => { updateField<"thickness">("thickness", Number(e.target.value))}}/>
+            <Input placeholder="厚み" type="number" defaultValue={stockData.thickness} onBlur={(e) => { updateField<"thickness">("thickness", Number(e.target.value))}}/>
             <FormLabel style={{fontSize:"1.2em", marginTop:"5px"}}>ｘ</FormLabel>
-            <Input placeholder="幅" type="number" value={stockData.width} onChange={(e) => { updateField<"width">("width", Number(e.target.value))}}/>
+            <Input placeholder="幅" type="number" defaultValue={stockData.width} onBlur={(e) => { updateField<"width">("width", Number(e.target.value))}}/>
           </InputGroup>
         </Box>
         <Box>
           <InputGroup>
             <InputLeftAddon aria-required>入数</InputLeftAddon>
             <Input required type="number" 
-            value={stockData.packageCount?.toString()}
-            placeholder="数字" onChange={(e) => {
+            defaultValue={stockData.packageCount?.toString()}
+            placeholder="数字" 
+            onBlur={(e) => {
               updateField<"packageCount">("packageCount", e.target.value ? new Decimal(e.target.value): undefined)}}/>
           </InputGroup>
         </Box>
@@ -123,7 +125,7 @@ const Register = ({isFromIssue, onSuccess = () => {window.location.reload}}:Prop
         <Box>
           <InputGroup>
           <InputLeftAddon>製造元</InputLeftAddon>
-            <Input placeholder="自由入力" value={stockData.manufacturer} onChange={(e) => { updateField<"manufacturer">("manufacturer", e.target.value)}}/>
+            <Input placeholder="自由入力" defaultValue={stockData.manufacturer} onBlur={(e) => { updateField<"manufacturer">("manufacturer", e.target.value)}}/>
           </InputGroup>
         </Box>
         <Box>
@@ -153,8 +155,9 @@ const Register = ({isFromIssue, onSuccess = () => {window.location.reload}}:Prop
           <InputGroup>
             <InputLeftAddon aria-required>原価</InputLeftAddon>
             <Input required type="number" 
-            value={stockData.cost?.toString()}
-            placeholder="数字" onChange={(e) => { updateField<"cost">("cost", e.target.value ? new Decimal(e.target.value): undefined)}}/>
+            defaultValue={stockData.cost?.toString()}
+            placeholder="数字"
+            onBlur={(e) => { updateField<"cost">("cost", e.target.value ? new Decimal(e.target.value): undefined)}}/>
             <FormLabel fontSize="1.2em" mt="5px">/</FormLabel>
             <UnitSelect required 
             value={stockData.costUnitId}
@@ -168,8 +171,9 @@ const Register = ({isFromIssue, onSuccess = () => {window.location.reload}}:Prop
           <InputGroup>
             <InputLeftAddon aria-required>数量</InputLeftAddon>
             <Input required 
-            value={stockData.count?.toString()}
-            type="number" placeholder="数字" onChange={(e) => { updateField<"count">("count", e.target.value ? new Decimal(e.target.value): undefined)}}/>
+            defaultValue={stockData.count?.toString()}
+            type="number" placeholder="数字" 
+            onBlur={(e) => { updateField<"count">("count", e.target.value ? new Decimal(e.target.value): undefined)}}/>
             <UnitSelect required 
             value={stockData.unitId}
             onSelect={(e) => { 
@@ -181,7 +185,8 @@ const Register = ({isFromIssue, onSuccess = () => {window.location.reload}}:Prop
         <Box>
           <InputGroup>
             <InputLeftAddon aria-required>原価単位数量</InputLeftAddon>
-            <Input required placeholder="原価算出基準となる数量" step="0.001" type="number" value={stockData.costPackageCount?.toString()} onChange={(e) => { updateField<"costPackageCount">("costPackageCount", e.target.value ? new Decimal(e.target.value): undefined)}}/>
+            <Input required placeholder="原価算出基準となる数量" step="0.001" type="number" defaultValue={stockData.costPackageCount?.toString()}
+            onBlur={(e) => { updateField<"costPackageCount">("costPackageCount", e.target.value ? new Decimal(e.target.value): undefined)}}/>
             <Button onClick={() => {
               const computedValue = calcCostPackageCount()
               if(computedValue){

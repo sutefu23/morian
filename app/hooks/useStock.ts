@@ -95,7 +95,7 @@ const useStock = () => {
         const dWidth = new Decimal(width)
         const dLength = new Decimal(length)
         const dThickness = new Decimal(thickness)
-        const dPackageCount = new Decimal(packageCount)
+        const dPackageCount = new Decimal(packageCount.toString())
         switch (unit) {
           case '㎥': // 幅/1000*長さ/1000*厚み/1000
             return dWidth
@@ -275,7 +275,7 @@ const useStock = () => {
   }
 
   const useDemo = () => {
-    setStockData(demoData)
+    setStockData({...demoData,packageCount: new Decimal(demoData.packageCount)})
   }
 
   const fetchOrderSheet = useCallback(async () => {

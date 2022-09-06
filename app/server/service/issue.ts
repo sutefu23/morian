@@ -1,11 +1,14 @@
 import { PrismaClient, Issue } from "@prisma/client"
-import { IssueProps, IssueItemProps } from "../domain/entity/issue";
+import { IssueProps } from "../domain/entity/issue";
 import dayjs from 'dayjs'
 const prisma = new PrismaClient();
 
 export type getQuery = {
   id?: number
   isStored?: boolean,
+  supplierId?: number,
+  fromDate?: Date,
+  toDate?: Date,
 }
 
 export const createIssue = async (issueData: IssueProps) => {
@@ -83,20 +86,25 @@ export const updateIssue = async (id: number, issueData: IssueProps) => {
 }
 
 export const fetchIssues = async (query:getQuery) => {
-
+  const { id, isStored, supplierId, fromDate, toDate } = query
   const data = await prisma.issue.findMany({
     where: {
-      id: query?.id,
+      id,
+      supplierId,
+      date:{
+        gte: fromDate,
+        lte: toDate
+      },
       issueItems: {
         some:{
-          isStored:false
+          isStored
         }
       }
     },
     include:{
       issueItems: {
         where:{
-          isStored: false
+          isStored
         }
       }
     }

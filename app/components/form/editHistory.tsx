@@ -147,8 +147,8 @@ const EditHistory = ({isOpen , onClose, onDone, editHistoryId, itemId, mode, sum
             <InputGroup>
               <InputLeftAddon bgColor="blue.100">備考</InputLeftAddon>
               <Input 
-              value={historyData.note}
-              onChange={(e) => { updateField<"note">("note", e.target.value)}}/>
+              defaultValue={historyData.note}
+              onBlur={(e) => { updateField<"note">("note", e.target.value)}}/>
             </InputGroup>
           </Box>
         </HStack>

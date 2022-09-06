@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback } from 'react'
 import { IssueItemProps, IssueProps } from '$/domain/entity/issue'
 import { Units } from '~/server/domain/init/master'
 import { apiClient } from '~/utils/apiClient'
@@ -8,6 +8,13 @@ import produce from "immer"
 import dayjs from 'dayjs'
 import ExcelJS from "exceljs"
 import stream from "stream"
+import { atom , useRecoilState, useResetRecoilState } from 'recoil'
+import { recoilPersist } from 'recoil-persist'
+
+const { persistAtom } = recoilPersist({
+	key: "recoil-persist",
+	storage: typeof window === "undefined" ? undefined : sessionStorage
+})
 
 export type EditIssueData = DeepPartial<IssueProps>
 export type EditIssueItemData = DeepPartial<IssueItemProps>
@@ -119,8 +126,15 @@ const demoData = {
   ]
 }
 
+const issueDataAtom = atom<EditIssueData>({
+  key: 'issueDataAtom',
+  default: defaultData,
+  effects_UNSTABLE: [persistAtom] 
+});
+
 const useIssue = () => {
-  const [issueData, setIssueData] = useState<EditIssueData>(defaultData)
+  const [issueData, setIssueData] =  useRecoilState<EditIssueData>(issueDataAtom)
+  const resetIssueData = useResetRecoilState(issueDataAtom);
 
   const updateField = useCallback(
     <K extends keyof EditIssueData>(
@@ -459,6 +473,7 @@ const useIssue = () => {
         console.error('postIssueData is not valid')
         return
       }
+      console.log(postIssueData)
       const { body } = await apiClient.issue.post({
         body: postIssueData as IssueProps,
       })
@@ -467,6 +482,7 @@ const useIssue = () => {
       }
 
       alert('登録しました')
+      resetIssueData()
       return body
     },
     [issueData]
@@ -475,6 +491,7 @@ const useIssue = () => {
   return {
     issueData,
     setIssueData,
+    resetIssueData,
     updateField,
     updateItemField,
     addItemData,

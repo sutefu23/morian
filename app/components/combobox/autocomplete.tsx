@@ -1,4 +1,4 @@
-import React, {useCallback} from "react";
+import React, {useCallback,} from "react";
 import type { ComboBoxProps } from "@react-types/combobox";
 import type { LoadingState } from "@react-types/shared";
 import { useComboBoxState } from "react-stately";
@@ -28,14 +28,14 @@ export function Autocomplete<T extends Record<string, unknown>>(props: Autocompl
   const { contains } = useFilter({ sensitivity: "base" });
   const state = useComboBoxState({ ...props, defaultFilter: contains });
   
-  const keyEnter = useCallback((e:React.CompositionEvent) =>{
+  const keyEnter = useCallback((e:React.CompositionEvent|React.KeyboardEvent) =>{
     e.preventDefault()
     if(props.readOnly) return
     if (props.inputValue && props.onInputChange){ 
       props.onInputChange(props.inputValue)
     }
   },[props])
-
+  
   const inputRef = React.useRef(null);
   const listBoxRef = React.useRef(null);
   const popoverRef = React.useRef(null);

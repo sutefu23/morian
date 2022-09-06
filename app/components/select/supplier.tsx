@@ -24,6 +24,7 @@ const SupplierSelect = ({ onSelect, required, defaultKey, readOnly}:Props) => {
       }
     })()
   }, [defaultKey])
+
   const onSelectionChange = async (key:React.Key) => {
     const response = await apiClient.supplier._id(Number(key)).get()
     if(response.body){

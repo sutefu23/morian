@@ -54,7 +54,8 @@
     "react-query": "^3.13.11",
     "react-scripts": "^5.0.0",
     "react-stately": "^3.11.0",
-    "recoil": "^0.5.2"
+    "recoil": "^0.5.2",
+    "recoil-persist": "^4.2.0"
   },
   "devDependencies": {
     "@fastify/static": "^5.0.2",

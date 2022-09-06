@@ -13,9 +13,10 @@ import NextLink from "next/link"
 type Props = {
   issue: IssueProps
   item: IssueItemProps
+  editable?: boolean
   onSuccessDelete: ()=>void
 }
-const IssueDetail = ({issue, item, onSuccessDelete}:Props) => {
+const IssueDetail = ({issue, item, editable = true, onSuccessDelete}:Props) => {
   return (
     <>
     <Table variant="striped" colorScheme="gray">
@@ -41,7 +42,8 @@ const IssueDetail = ({issue, item, onSuccessDelete}:Props) => {
     <Tr><Th>数量</Th><Td>{item.count} {item.unitName}</Td></Tr>
     <Tr><Th>原価</Th><Td>{Number(item.cost).toLocaleString()} / {item.costUnitName}</Td></Tr>
     </Table>
-
+    {editable &&
+    <>
     <Button bgColor="red.200"
       ml="10px"
       mt="20px"
@@ -65,12 +67,14 @@ const IssueDetail = ({issue, item, onSuccessDelete}:Props) => {
       }}
       >
       <Button bgColor="green.200"
-        ml="10px"
-        mt="20px"
-      >
-      編集
-    </Button>
+          ml="10px"
+          mt="20px"
+        >
+        編集
+      </Button>    
     </NextLink>
+    </>
+    }
     </>
   )
 }

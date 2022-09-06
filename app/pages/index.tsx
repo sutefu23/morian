@@ -45,11 +45,10 @@ const Home = () => {
   return (
     <>
     <div className={styles.container}>
-      <main className={styles.main}>
-      </main>
       <aside>
         <Sidebar></Sidebar>
       </aside>
+      <main className={styles.main}>
       {!issues || issues?.length ==0 || issues[0]?.issueItems?.length == 0 
         ?
         <Heading textAlign="center" mt="20px">現在発注情報はありません</Heading>
@@ -69,7 +68,7 @@ const Home = () => {
             <Th>希望納期</Th>
             <Th>納入場所</Th>
             <Th>発注内部備考</Th>
-            <Th color="red.400" textAlign="center">入荷予定</Th>
+            <Th>入荷予定</Th>
             <Th></Th>
           </Tr>
         </Thead>
@@ -101,17 +100,7 @@ const Home = () => {
                   <Td>{issue.expectDeliveryDate}</Td>
                   <Td>{issue.deliveryPlaceName}</Td>
                   <Td>{issue.innerNote}</Td>
-                  <Td 
-                  >
-                    <Input 
-                    border="solid 1px #ddd"
-                    bgColor="white"
-                    onBlur={async (e) => {
-                      await apiClient.issueItem.patch({body:{id:item.id, data:{itemNote: e.currentTarget.value}}})
-                    }}
-                    defaultValue={item.itemNote??undefined}
-                    />
-                  </Td>
+                  <Td>{item.itemNote??undefined}</Td>
                   <Td textAlign="right">
                   <Button ml="5" bgColor="blue.100"
                     onClick={(e) => {
@@ -158,6 +147,7 @@ const Home = () => {
         </Tbody>
       </Table>
       }
+      </main>
 
       <aside >
         <RightDrawer
