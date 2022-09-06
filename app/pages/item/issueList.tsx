@@ -25,8 +25,8 @@ import useUser from '~/hooks/useUser'
 import type { EditIssueData } from '~/hooks/useIssue'
 import IssueDetail from "./issueDetail"
 import { useAspidaQuery } from '@aspida/react-query'
-import NextLink from "next/link"
 import { SupplierSelect } from "../../components/select"
+import { useRouter } from 'next/router'
 
 const IssueList = () => {
   
@@ -54,9 +54,6 @@ const IssueList = () => {
     }
   )
 
-  const { setIssueData, resetIssueData } = useIssue()
-  const [ selectIssueData, setSelectIssueData ] = useState<EditIssueData>({})
- 
   const {isOpen: isRightOpen, onOpen: onRightOpen, onClose: onRightClose} = useDisclosure()
 
   const handleSearch = useCallback(()=>{
@@ -67,33 +64,10 @@ const IssueList = () => {
     setSearchEnable(true)
     refetch()
     setSearchEnable(false)
-  },[searchSupplierId, searchDate])
+  },[searchSupplierId, refetch])
 
-  // 発注データがセットされたら遷移
-  useEffect(() => {
-    if(Object.keys(selectIssueData).length > 0){
-      resetIssueData()
-      const items = selectIssueData.issueItems?.map((item) => {
-        return {
-          ...item,
-          id: undefined,
-          IssueId:undefined,
-          isStored:false,
-          updateAt: undefined,
-          createAt: undefined,
-        }
-      })
-      setIssueData({...selectIssueData,
-          id: undefined,
-          managedId: undefined,
-          date: new Date(),
-          userId: user?.id,
-          userName: user?.name,
-          innerNote: "",
-          issueItems:items,
-        })
-    }
- }, [selectIssueData])
+  const router = useRouter()
+
 
   return (
     <>
@@ -190,16 +164,36 @@ const IssueList = () => {
                   <Td>{issue.deliveryPlaceName}</Td>
                   <Td>{issue.innerNote}</Td>
                   <Td textAlign="right">
-                  <NextLink
-                    href={{
-                      pathname:`/item/issue/`,
-                    }}>
                   <Button ml="5" bgColor="pink.100"
                     onClick={(e) => {
-                      setSelectIssueData(issue)
+                      e.preventDefault()
+                      const items = issue.issueItems?.map((item) => {
+                        return {
+                          ...item,
+                          id: undefined,
+                          IssueId:undefined,
+                          isStored:false,
+                          updateAt: undefined,
+                          createAt: undefined,
+                        }
+                      })
+                      const issueData = {...issue,
+                          id: undefined,
+                          managedId: undefined,
+                          date: new Date(),
+                          userId: user?.id,
+                          userName: user?.name,
+                          innerNote: "",
+                          issueItems:items,
+                      }
+                      router.push({
+                        pathname: '/item/issue',
+                        query:{
+                          defaultData: JSON.stringify(issueData)
+                        }
+                      })
                     }}
                   >コピー作成</Button>
-                  </NextLink>
                   </Td>
                   </Tr>
                 ))

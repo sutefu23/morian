@@ -1,7 +1,7 @@
 import { HStack, Box, VStack, InputGroup, InputLeftAddon, Divider, InputRightAddon, Input, Button, FormLabel } from "@chakra-ui/react"
 import { WoodSpeciesSelect, ItemTypeSelect, SupplierSelect, GradeSelect, UnitSelect, DeliveryPlaceSelect, UserSelect } from "~/components/select/"
 import Footer from "~/components/Footer"
-import useIssue, { defaultData } from "~/hooks/useIssue"
+import useIssue, { defaultData ,EditIssueData} from "~/hooks/useIssue"
 import { Decimal } from "decimal.js"
 import usePageTitle from '~/hooks/usePageTitle'
 import "~/utils/string"
@@ -19,6 +19,8 @@ const RegisterIssue = () => {
 const { 
   issueData,
   setIssueData,
+  saveEditIssue,
+  restoreEditIssue,
   updateField,
   addItemData,
   deleteItemData,
@@ -38,27 +40,44 @@ const {
   setTitle(`在庫発注 ${isEditMode?"編集":"新規作成"}`)
   
   useEffect(()=>{
-    if(status==="success" && editIssues && editIssues.length > 0){
+    if(Boolean(router.query["issueId"]) && status==="success" && editIssues && editIssues.length > 0){
       setIssueData(editIssues[0])
       setIsEditMode(true)
     }else{
-      setIssueData(defaultData)  
+      if(router.query["defaultData"]){
+        console.log(router.query["defaultData"])
+        const issueData = JSON.parse(router.query["defaultData"] as string)
+        setIssueData(issueData)
+      }else{
+        setIssueData(defaultData)
+      }
       setIsEditMode(false)
     }
-  },[status, editIssues])
+  },[status, editIssues, setIssueData, restoreEditIssue, router.query])
   
-  useEffect(()=>{
-    if(editIssues && editIssues.length > 0){
-      setIssueData(editIssues[0])  
-    }  
-  },[editIssues, setIssueData])
 
   const { user } = useUser()
   useEffect(() => {
     if(user && !issueData.userId){
       setIssueData({...issueData, ...{userId: user.id, userName: user.name}})
     }
-  },[user, issueData])
+  },[user, issueData, setIssueData])
+
+  useEffect(() => {
+    const pageChangeHandler = () => {
+      if(!isEditMode && issueData?.issueItems?.length && issueData?.issueItems[0].itemTypeId){
+        const answer = window.confirm('内容がリセットされます、本当にページ遷移しますか？');
+        if(!answer) {
+          // eslint-disable-next-line no-throw-literal
+          throw 'Abort route change. Please ignore this error.'
+        }  
+      }
+    };
+    router.events.on('routeChangeStart', pageChangeHandler);
+    return () => {
+      router.events.off('routeChangeStart', pageChangeHandler)
+    };
+  }, []);
 
   if(status === "loading"){
     <>Loading</>
@@ -66,8 +85,7 @@ const {
 
   return (
     <>
-    <form
-    >
+    <form>
     <VStack align="left" pl="10" mb="4">
       <HStack>
         <Box>
@@ -278,6 +296,8 @@ const {
               <Box>
                 <InputGroup>
                   <InputLeftAddon aria-required>長さｘ厚みｘ幅</InputLeftAddon>
+                  {item.length}
+                  {item.packageCount}
                   <Input placeholder="長さ" defaultValue={item.length ?? undefined} onBlur={(e) => { updateItemField<"length">(index, "length", e.target.value)}}/>
                   <FormLabel style={{fontSize:"1.2em", marginTop:"5px"}}>ｘ</FormLabel>
                   <Input placeholder="厚み" type="number" defaultValue={item.thickness?? undefined} onBlur={(e) => { updateItemField<"thickness">(index, "thickness", (e.target.value)?Number(e.target.value):undefined)}}/>
@@ -289,7 +309,7 @@ const {
                 <InputGroup>
                   <InputLeftAddon aria-required>入数</InputLeftAddon>
                   <Input required type="number" 
-                  defaultValue={String(item.packageCount)}
+                  defaultValue={item.cost ? Number(item.packageCount): undefined}
                   placeholder="数字" onBlur={(e) => {
                     updateItemField<"packageCount">(index, "packageCount", e.target.value ? new Decimal(e.target.value): undefined)}}/>
                 </InputGroup>
@@ -300,7 +320,7 @@ const {
                 <InputGroup>
                   <InputLeftAddon aria-required>原価</InputLeftAddon>
                   <Input required type="number" 
-                  defaultValue={String(item.cost)}
+                  defaultValue={item.cost ? Number(item.cost): undefined}
                   placeholder="数字" onBlur={(e) => { updateItemField<"cost">(index, "cost", e.target.value ? new Decimal(e.target.value): undefined)}}/>
                   <FormLabel fontSize="1.2em" mt="5px">/</FormLabel>
                   <UnitSelect required 
@@ -319,7 +339,7 @@ const {
                 <InputGroup>
                   <InputLeftAddon aria-required>数量</InputLeftAddon>
                   <Input required 
-                  defaultValue={String(item.count)}
+                  defaultValue={item.cost ? Number(item.count): undefined}
                   type="number" placeholder="数字" onBlur={(e) => { updateItemField<"count">(index, "count", e.target.value ? new Decimal(e.target.value): undefined)}}/>
                   <UnitSelect required 
                   value={item.unitId}
@@ -419,7 +439,7 @@ const {
           }}
           >発注書</Button>
         </Box>
-        {isEditMode &&
+        {isEditMode ?
         <Box>
           <Button type='submit' ml={50} w={100} bgColor="blue.400"
           onClick={(e) => {
@@ -428,6 +448,23 @@ const {
             }
           }
           >新規作成</Button>
+        </Box>
+        :
+        <Box pl={100}>
+          <Button type='submit' ml={50} w={100} bgColor="green.100"
+          onClick={(e) => {
+            e.preventDefault()
+            saveEditIssue()
+          }
+          }
+          >下書き保存</Button>
+          <Button type='submit' ml={50} w={100} bgColor="blue.100"
+            onClick={(e) => {
+              e.preventDefault()
+              restoreEditIssue()
+            }
+          }
+          >下書き反映</Button>
         </Box>
         }
       </HStack>

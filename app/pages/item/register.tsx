@@ -114,7 +114,7 @@ const Register = ({isFromIssue, onSuccess = () => {window.location.reload}}:Prop
           <InputGroup>
             <InputLeftAddon aria-required>入数</InputLeftAddon>
             <Input required type="number" 
-            defaultValue={stockData.packageCount?.toString()}
+            defaultValue={stockData.packageCount ? Number(stockData.packageCount): undefined}
             placeholder="数字" 
             onBlur={(e) => {
               updateField<"packageCount">("packageCount", e.target.value ? new Decimal(e.target.value): undefined)}}/>
@@ -155,7 +155,7 @@ const Register = ({isFromIssue, onSuccess = () => {window.location.reload}}:Prop
           <InputGroup>
             <InputLeftAddon aria-required>原価</InputLeftAddon>
             <Input required type="number" 
-            defaultValue={stockData.cost?.toString()}
+            defaultValue={stockData.cost ? Number(stockData.cost): undefined}
             placeholder="数字"
             onBlur={(e) => { updateField<"cost">("cost", e.target.value ? new Decimal(e.target.value): undefined)}}/>
             <FormLabel fontSize="1.2em" mt="5px">/</FormLabel>
@@ -171,7 +171,7 @@ const Register = ({isFromIssue, onSuccess = () => {window.location.reload}}:Prop
           <InputGroup>
             <InputLeftAddon aria-required>数量</InputLeftAddon>
             <Input required 
-            defaultValue={stockData.count?.toString()}
+            defaultValue={stockData.count ? Number(stockData.count): undefined}
             type="number" placeholder="数字" 
             onBlur={(e) => { updateField<"count">("count", e.target.value ? new Decimal(e.target.value): undefined)}}/>
             <UnitSelect required 
@@ -185,7 +185,7 @@ const Register = ({isFromIssue, onSuccess = () => {window.location.reload}}:Prop
         <Box>
           <InputGroup>
             <InputLeftAddon aria-required>原価単位数量</InputLeftAddon>
-            <Input required placeholder="原価算出基準となる数量" step="0.001" type="number" defaultValue={stockData.costPackageCount?.toString()}
+            <Input required placeholder="原価算出基準となる数量" step="0.001" type="number" defaultValue={stockData.costPackageCount ? Number(stockData.costPackageCount): undefined}
             onBlur={(e) => { updateField<"costPackageCount">("costPackageCount", e.target.value ? new Decimal(e.target.value): undefined)}}/>
             <Button onClick={() => {
               const computedValue = calcCostPackageCount()

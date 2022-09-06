@@ -14,6 +14,7 @@ const RightDrawer = ({title, width, isOpen, onClose, children}:Props )=> {
     isOpen={isOpen}
     placement='right'
     onClose={onClose}
+    onOverlayClick={onClose}
   >
     <DrawerOverlay />
     <DrawerContent maxWidth={width}>

@@ -129,12 +129,19 @@ const demoData = {
 const issueDataAtom = atom<EditIssueData>({
   key: 'issueDataAtom',
   default: defaultData,
+});
+
+const issueSaveDataAtom = atom<EditIssueData>({//一時保存用
+  key: 'issueSaveDataAtom',
+  default: defaultData,
   effects_UNSTABLE: [persistAtom] 
 });
 
 const useIssue = () => {
   const [issueData, setIssueData] =  useRecoilState<EditIssueData>(issueDataAtom)
+  const [issueSaveData, setIssueSaveData] =  useRecoilState<EditIssueData>(issueSaveDataAtom)
   const resetIssueData = useResetRecoilState(issueDataAtom);
+  const resetEditIssue = useResetRecoilState(issueSaveDataAtom);
 
   const updateField = useCallback(
     <K extends keyof EditIssueData>(
@@ -145,6 +152,15 @@ const useIssue = () => {
     },
     [issueData]
   )
+
+  const saveEditIssue = useCallback(()=>{
+    setIssueSaveData(issueData)
+  },[issueData, setIssueSaveData])
+
+  const restoreEditIssue = useCallback(()=>{
+    setIssueData(issueSaveData)
+  },[issueSaveData, setIssueData])
+
 
   const addItemData = useCallback(() => {
     if(issueData.issueItems?.length === 14){
@@ -246,7 +262,7 @@ const useIssue = () => {
     if(issue === undefined){
       return
     }
-    const {managedId, date, supplierId, deliveryPlaceId } = issue
+    const {date, supplierId, deliveryPlaceId } = issue
     if (!date) {
       alert('発注日は必須です。')
       return null
@@ -404,12 +420,13 @@ const useIssue = () => {
     sheet.getCell('P1').value = issueData.managedId
     sheet.getCell('A3').value = issueData.supplierName
     sheet.getCell('C5').value = issueData.supplierManagerName
-    sheet.getCell('P7').value = issueData.userName
+    sheet.getCell('O7').value = issueData.userName
   
     //フッター部
     sheet.getCell('C24').value = issueData.issueNote
     sheet.getCell('C25').value = issueData.deliveryPlaceName
     sheet.getCell('G25').value = issueData.deliveryAddress
+    sheet.getCell('M25').value = issueData.expectDeliveryDate
     sheet.getCell('D27').value = issueData.receiveingStaff
   
     //明細部
@@ -421,12 +438,12 @@ const useIssue = () => {
       sheet.getCell(`F${row}`).value = item.spec
       sheet.getCell(`G${row}`).value = item.manufacturer
       sheet.getCell(`H${row}`).value = `${item.length}`
-      sheet.getCell(`J${row}`).value = `${item.thickness}`
-      sheet.getCell(`K${row}`).value = `${item.width}`
-      sheet.getCell(`L${row}`).value = `${String(item.packageCount)}` // 入数
-      sheet.getCell(`M${row}`).value = `${(item.cost)} / ${item.costUnitName}` // 単価
+      sheet.getCell(`I${row}`).value = `${item.thickness}`
+      sheet.getCell(`J${row}`).value = `${item.width}`
+      sheet.getCell(`K${row}`).value = `${String(item.packageCount)}` // 入数
+      sheet.getCell(`M${row}`).value = `${Number(item.cost).toYenFormat()} / ${item.costUnitName}` // 単価
       sheet.getCell(`O${row}`).value = `${(item.count)} ${item.unitName}`// 数量
-      sheet.getCell(`P${row}`).value = `${totalPrice(item)}`
+      sheet.getCell(`P${row}`).value = totalPrice(item)
     })    
   
     const uint8Array = await wb.xlsx.writeBuffer();
@@ -482,7 +499,7 @@ const useIssue = () => {
       }
 
       alert('登録しました')
-      resetIssueData()
+      resetEditIssue()
       return body
     },
     [issueData]
@@ -491,6 +508,9 @@ const useIssue = () => {
   return {
     issueData,
     setIssueData,
+    saveEditIssue,
+    restoreEditIssue,
+    resetEditIssue,
     resetIssueData,
     updateField,
     updateItemField,
