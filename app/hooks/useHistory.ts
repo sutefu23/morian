@@ -51,7 +51,7 @@ const useHistory = () => {
       return null
     }
     const {itemId, date, status, reasonId, reduceCount, addCount, editUserId, editUserName} = data
-    let { bookDate, bookUserId, bookUserName } = data
+    const { bookDate, bookUserId, bookUserName } = data
     if(!itemId){
       alert("itemIdは必須です")
       return null

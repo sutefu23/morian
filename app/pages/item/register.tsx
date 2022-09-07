@@ -2,7 +2,8 @@ import { HStack, Box, VStack, InputGroup, InputLeftAddon, Input, Spacer, Button,
 import { WoodSpeciesSelect, ItemTypeSelect, SupplierSelect, GradeSelect, UnitSelect, WarehouseSelect } from "~/components/select/"
 import Footer from "~/components/Footer"
 import useStock from "~/hooks/useStock"
-import { Decimal } from "decimal.js"
+import { Decimal } from 'decimal.js'
+import type { Decimal as ServerDecimal } from "server/node_modules/decimal.js"
 import usePageTitle from '~/hooks/usePageTitle'
 import "~/utils/string"
 import "~/utils/number"
@@ -117,7 +118,7 @@ const Register = ({isFromIssue, onSuccess = () => {window.location.reload}}:Prop
             defaultValue={stockData.packageCount ? Number(stockData.packageCount): undefined}
             placeholder="数字" 
             onBlur={(e) => {
-              updateField<"packageCount">("packageCount", e.target.value ? new Decimal(e.target.value): undefined)}}/>
+              updateField<"packageCount">("packageCount", e.target.value ? new Decimal(e.target.value) as unknown as ServerDecimal : undefined)}}/>
           </InputGroup>
         </Box>
       </HStack>
@@ -157,7 +158,7 @@ const Register = ({isFromIssue, onSuccess = () => {window.location.reload}}:Prop
             <Input required type="number" 
             defaultValue={stockData.cost ? Number(stockData.cost): undefined}
             placeholder="数字"
-            onBlur={(e) => { updateField<"cost">("cost", e.target.value ? new Decimal(e.target.value): undefined)}}/>
+            onBlur={(e) => { updateField<"cost">("cost", e.target.value ? new Decimal(e.target.value) as unknown as ServerDecimal: undefined)}}/>
             <FormLabel fontSize="1.2em" mt="5px">/</FormLabel>
             <UnitSelect required 
             value={stockData.costUnitId}
@@ -173,7 +174,7 @@ const Register = ({isFromIssue, onSuccess = () => {window.location.reload}}:Prop
             <Input required 
             defaultValue={stockData.count ? Number(stockData.count): undefined}
             type="number" placeholder="数字" 
-            onBlur={(e) => { updateField<"count">("count", e.target.value ? new Decimal(e.target.value): undefined)}}/>
+            onBlur={(e) => { updateField<"count">("count", e.target.value ? new Decimal(e.target.value) as unknown as ServerDecimal: undefined)}}/>
             <UnitSelect required 
             value={stockData.unitId}
             onSelect={(e) => { 
@@ -186,11 +187,11 @@ const Register = ({isFromIssue, onSuccess = () => {window.location.reload}}:Prop
           <InputGroup>
             <InputLeftAddon aria-required>原価単位数量</InputLeftAddon>
             <Input required placeholder="原価算出基準となる数量" step="0.001" type="number" defaultValue={stockData.costPackageCount ? Number(stockData.costPackageCount): undefined}
-            onBlur={(e) => { updateField<"costPackageCount">("costPackageCount", e.target.value ? new Decimal(e.target.value): undefined)}}/>
+            onBlur={(e) => { updateField<"costPackageCount">("costPackageCount", e.target.value ? new Decimal(e.target.value) as unknown as ServerDecimal: undefined)}}/>
             <Button onClick={() => {
               const computedValue = calcCostPackageCount()
               if(computedValue){
-                updateField<"costPackageCount">("costPackageCount",computedValue)
+                updateField<"costPackageCount">("costPackageCount",computedValue as unknown as ServerDecimal)
               }
             }
             }>計算</Button>

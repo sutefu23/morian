@@ -20,6 +20,9 @@
       ],
       "$prisma/*": [
         "./server/node_modules/.prisma/*"
+      ],
+      "$decimal/*": [
+        "./server/node_modules/decimal.js/*"
       ]
     },
     "allowJs": true,
@@ -46,6 +49,6 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "pages/pdf/index.jsx"
+    "pages/pdf/index.jsx",
   ]
 }

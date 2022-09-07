@@ -1,6 +1,7 @@
 import { useCallback} from 'react'
 import { UpdateItemData } from '~/server/domain/service/stock'
 import { Decimal } from 'decimal.js'
+import type { Decimal as ServerDecimal } from "server/node_modules/decimal.js"
 import { Units } from '~/server/domain/init/master'
 import { apiClient } from '~/utils/apiClient'
 import { atom , useRecoilState } from 'recoil'
@@ -46,16 +47,16 @@ const demoData = {
   length: 5000,
   thickness: 50,
   width: 500,
-  packageCount: new Decimal(10),
+  packageCount: new Decimal(10) as unknown as ServerDecimal,
   warehouseId: 1,
   warehouseName: "本社",
-  cost: new Decimal(100000),
+  cost: new Decimal(100000) as unknown as ServerDecimal,
   costUnitId: 1,
   costUnitName: "㎥",
-  count: new Decimal(10),
+  count: new Decimal(10) as unknown as ServerDecimal,
   unitId: 1,
   unitName: "㎥",
-  costPackageCount: new Decimal(0.125),
+  costPackageCount: new Decimal(0.125) as unknown as ServerDecimal,
   enable: true
 }
 
@@ -275,7 +276,7 @@ const useStock = () => {
   }
 
   const useDemo = () => {
-    setStockData({...demoData,packageCount: new Decimal(demoData.packageCount)})
+    setStockData({...demoData, packageCount: new Decimal(demoData.packageCount.toString()) as unknown as ServerDecimal})
   }
 
   const fetchOrderSheet = useCallback(async () => {

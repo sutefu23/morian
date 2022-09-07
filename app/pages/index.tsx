@@ -20,6 +20,7 @@ import { useCallback, useState } from 'react'
 import Register from './item/register'
 import useStock from '~/hooks/useStock'
 import { Decimal } from 'decimal.js'
+import type { Decimal as ServerDecimal } from "server/node_modules/decimal.js"
 import IssueDetail from "./item/issueDetail"
 import { useAspidaQuery } from '@aspida/react-query'
 
@@ -119,19 +120,19 @@ const Home = () => {
                         length: item.length ?? undefined,
                         thickness: item.thickness ?? undefined,
                         width: item.width ?? undefined,
-                        packageCount: new Decimal(item.packageCount.toString()) ?? undefined,
+                        packageCount: new Decimal(item.packageCount.toString()) as unknown as ServerDecimal?? undefined,
                         spec: item.spec ?? undefined,
                         manufacturer: item.manufacturer ?? undefined,
                         warehouseId: undefined,
                         warehouseName: undefined,
                         arrivalDate: undefined,
-                        cost: new Decimal(item.cost.toString()),
+                        cost: new Decimal(item.cost.toString()) as unknown as ServerDecimal,
                         costUnitId: item.costUnitId,
                         costUnitName: item.costUnitName,
-                        count: new Decimal(item.count.toString()),
+                        count: new Decimal(item.count.toString()) as unknown as ServerDecimal,
                         unitId: item.unitId,
                         unitName: item.unitName,
-                        costPackageCount: new Decimal(item.costPackageCount.toString()),
+                        costPackageCount: new Decimal(item.costPackageCount.toString()) as unknown as ServerDecimal,
                         issueItemId: item.id,
                         enable: true
                       })

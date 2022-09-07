@@ -5,7 +5,8 @@ import useHistory from '~/hooks/useHistory'
 import { HStack, Box, VStack, InputGroup, InputLeftAddon, Input, Text, InputRightAddon } from "@chakra-ui/react"
 import dayjs from 'dayjs'
 import { StockReason } from '~/server/domain/init/master'
-import { Decimal } from "decimal.js"
+import { Decimal } from 'decimal.js'
+import type { Decimal as ServerDecimal } from "server/node_modules/decimal.js"
 import { 出庫理由 } from '~/server/domain/entity/stock'
 import useUser from '~/hooks/useUser'
 
@@ -93,8 +94,8 @@ const EditHistory = ({isOpen , onClose, onDone, editHistoryId, itemId, mode, sum
                   const newHistory = {
                     ...historyData,
                     status: Number(e.currentTarget.value),
-                    reduceCount: new Decimal(0),
-                    addCount: new Decimal(0),
+                    reduceCount: new Decimal(0) as unknown as ServerDecimal,
+                    addCount: new Decimal(0) as unknown as ServerDecimal,
                     reason: undefined
                   }
                   setHistoryData(newHistory)
@@ -126,7 +127,7 @@ const EditHistory = ({isOpen , onClose, onDone, editHistoryId, itemId, mode, sum
               <InputLeftAddon aria-required>入庫数</InputLeftAddon>
               <Input required 
               value={String(historyData.addCount)}
-              type="number" placeholder="数字" onChange={(e) => { updateField<"addCount">("addCount", e.target.value ? new Decimal(e.target.value): undefined)}}/>
+              type="number" placeholder="数字" onChange={(e) => { updateField<"addCount">("addCount", e.target.value ? new Decimal(e.target.value) as unknown as ServerDecimal: undefined)}}/>
               <InputRightAddon>{unit}</InputRightAddon>
             </InputGroup>
             )}
@@ -135,7 +136,7 @@ const EditHistory = ({isOpen , onClose, onDone, editHistoryId, itemId, mode, sum
               <InputLeftAddon aria-required>出庫数</InputLeftAddon>
               <Input required 
               value={String(historyData.reduceCount)}
-              type="number" placeholder="数字" onChange={(e) => { updateField<"reduceCount">("reduceCount", e.target.value ? new Decimal(e.target.value): undefined)}}/>
+              type="number" placeholder="数字" onChange={(e) => { updateField<"reduceCount">("reduceCount", e.target.value ? new Decimal(e.target.value) as unknown as ServerDecimal: undefined)}}/>
               <InputRightAddon>{unit}</InputRightAddon>
             </InputGroup>
             )}
