@@ -130,7 +130,7 @@ const Sidebar = () => {
       )),
       {
         key: "deliveryPlace",
-        name: "出荷場所",
+        name: "配送場所",
         path: "/master/deliveryPlace",
       },    
       ]
