@@ -80,12 +80,12 @@ const Sidebar = () => {
     {
       key: "issueItem",
       name: "新規発注",
-      path: "/item/issue"
+      path: "/issue/issue"
     },
     {
       key: "issueItemList",
       name: "過去発注情報検索",
-      path: "/item/issueList"
+      path: "/issue/issueList"
     },
     {
       key: "handy",

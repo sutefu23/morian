@@ -62,7 +62,7 @@ const IssueDetail = ({issue, item, editable = true, onSuccessDelete}:Props) => {
     </Button>
     <NextLink
       href={{
-        pathname:`/item/issue/`,
+        pathname:`/issue/issue/`,
         query:{issueId: issue.id}
       }}
       >

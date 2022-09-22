@@ -32,25 +32,6 @@ const Register = ({isFromIssue, onSuccess = () => {window.location.reload}}:Prop
       <HStack>
         <Box>
           <InputGroup>
-            <InputLeftAddon aria-required
-            bgColor={isFromIssue?"red.100":undefined}
-            >ロットNo</InputLeftAddon>
-            <Input required
-              placeholder="半角英数字のみ可"
-              onChange={(e) => {
-                const lotNo = e.target.value.toNarrowCase()
-                const prefix = lotNo.charAt(0)
-                const itemType = itemTypes?.find(itm => itm.prefix === prefix)
-                setStockData({...stockData, lotNo, itemTypeId:itemType?.id, itemTypeName: itemType?.name})                
-              }}
-              value={stockData?.lotNo}
-            />
-          </InputGroup>
-        </Box>
-      </HStack>
-      <HStack>
-        <Box>
-          <InputGroup>
             <InputLeftAddon aria-required>樹種</InputLeftAddon>
             <WoodSpeciesSelect required
               onSelect={(e) => {
@@ -67,7 +48,11 @@ const Register = ({isFromIssue, onSuccess = () => {window.location.reload}}:Prop
             <ItemTypeSelect required 
             value={stockData?.itemTypeId}
             onSelect={(select) => {
-              setStockData({ ...stockData, itemTypeId : select?.id, itemTypeName: select?.name, lotNo:`${select?.prefix}-`})
+              if(select?.prefix){
+                setStockData({ ...stockData, itemTypeId : select?.id, itemTypeName: select?.name, lotNo:`${select?.prefix}-`})
+              }else{
+                setStockData({ ...stockData, itemTypeId : undefined, itemTypeName: undefined, lotNo:undefined})
+              }
             }}/>
           </InputGroup>
         </Box>
@@ -82,6 +67,7 @@ const Register = ({isFromIssue, onSuccess = () => {window.location.reload}}:Prop
           </InputGroup>
         </Box>
       </HStack>
+ 
       <HStack>
         <Box>
           <InputGroup>
@@ -100,6 +86,25 @@ const Register = ({isFromIssue, onSuccess = () => {window.location.reload}}:Prop
           </InputGroup>
         </Box>
       </HStack>
+      <HStack>
+        <Box>
+          <InputGroup>
+            <InputLeftAddon aria-required
+            bgColor={isFromIssue?"red.100":undefined}
+            >ロットNo</InputLeftAddon>
+            <Input required
+              placeholder="半角英数字のみ可"
+              onChange={(e) => {
+                const lotNo = e.target.value.toNarrowCase()
+                const prefix = lotNo.charAt(0)
+                const itemType = itemTypes?.find(itm => itm.prefix === prefix)
+                setStockData({...stockData, lotNo, itemTypeId:itemType?.id, itemTypeName: itemType?.name})                
+              }}
+              value={stockData?.lotNo}
+            />
+          </InputGroup>
+        </Box>
+      </HStack>     
       <HStack>
         <Box>
           <InputGroup>

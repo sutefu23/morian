@@ -21,7 +21,7 @@ import Register from './item/register'
 import useStock from '~/hooks/useStock'
 import { Decimal } from 'decimal.js'
 import type { Decimal as ServerDecimal } from "server/node_modules/decimal.js"
-import IssueDetail from "./item/issueDetail"
+import IssueDetail from "./issue/issueDetail"
 import { useAspidaQuery } from '@aspida/react-query'
 
 const Home = () => {

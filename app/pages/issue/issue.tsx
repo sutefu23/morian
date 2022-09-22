@@ -1,12 +1,13 @@
-import { HStack, Box, VStack, InputGroup, InputLeftAddon, Divider, InputRightAddon, Input, Button, FormLabel } from "@chakra-ui/react"
+import { HStack, Box, VStack, InputGroup, InputLeftAddon, Divider, InputRightAddon, Input, Button, FormLabel , useDisclosure} from "@chakra-ui/react"
 import { WoodSpeciesSelect, ItemTypeSelect, SupplierSelect, GradeSelect, UnitSelect, DeliveryPlaceSelect, UserSelect } from "~/components/select/"
 import Footer from "~/components/Footer"
-import useIssue, { defaultData ,EditIssueData} from "~/hooks/useIssue"
+import TemplateModal from "./templateModal"
+import useIssue from "~/hooks/useIssue"
 import { Decimal } from "decimal.js"
 import usePageTitle from '~/hooks/usePageTitle'
 import "~/utils/string"
 import "~/utils/number"
-import { useState, useEffect } from 'react'
+import { useEffect, useCallback } from 'react'
 import { useRouter } from 'next/router';
 import dayjs from 'dayjs'
 import { useAspidaQuery } from "@aspida/react-query"
@@ -19,43 +20,51 @@ const RegisterIssue = () => {
 const { 
   issueData,
   setIssueData,
-  saveEditIssue,
-  restoreEditIssue,
+  issueSaveData,
+  editMode,
+  setEditMode,
+  pushTemplate,
   updateField,
   addItemData,
   deleteItemData,
+  copyItemLine,
   updateItemField,
   calcCostPackageCount,
   costPerUnit,
   totalPrice,
   postIssue,
   downloadOrderSheet,
+  templates,
+  removeTemplates,
   updateIssue } = useIssue()
 
   const router = useRouter();
   const {data:editIssues, status} = useAspidaQuery(apiClient.issue,{query:{id: Number(router.query["issueId"])},enabled:Boolean(router.query["issueId"])})
-  const [isEditMode, setIsEditMode] = useState<boolean>(false) 
 
   const { setTitle } = usePageTitle()
-  setTitle(`在庫発注 ${isEditMode?"編集":"新規作成"}`)
-  
+
+  //初回レンダリング時データリストア
   useEffect(()=>{
+    // 編集モード
     if(Boolean(router.query["issueId"]) && status==="success" && editIssues && editIssues.length > 0){
+      setEditMode("update")
       setIssueData(editIssues[0])
-      setIsEditMode(true)
     }else{
-      if(router.query["defaultData"]){
-        console.log(router.query["defaultData"])
+      // 新規作成モード
+      setEditMode("create")
+      if(router.query["defaultData"]){//値の指定がある（コピー作成時など）
         const issueData = JSON.parse(router.query["defaultData"] as string)
         setIssueData(issueData)
-      }else{
-        setIssueData(defaultData)
-      }
-      setIsEditMode(false)
-    }
-  },[status, editIssues, setIssueData, restoreEditIssue, router.query])
-  
 
+        
+      }else{
+        setIssueData(issueSaveData)//自動保存データのリストア
+      }
+    }
+    setTitle(`在庫発注 ${editMode=="create"?"新規作成":"編集"}`)
+  },[])
+  
+ 
   const { user } = useUser()
   useEffect(() => {
     if(user && !issueData.userId){
@@ -63,25 +72,19 @@ const {
     }
   },[user, issueData, setIssueData])
 
-  useEffect(() => {
-    const pageChangeHandler = () => {
-      if(!isEditMode && issueData?.issueItems?.length && issueData?.issueItems[0].itemTypeId){
-        const answer = window.confirm('内容がリセットされます、本当にページ遷移しますか？');
-        if(!answer) {
-          // eslint-disable-next-line no-throw-literal
-          throw 'Abort route change. Please ignore this error.'
-        }  
-      }
-    };
-    router.events.on('routeChangeStart', pageChangeHandler);
-    return () => {
-      router.events.off('routeChangeStart', pageChangeHandler)
-    };
-  }, []);
-
   if(status === "loading"){
     <>Loading</>
   }
+
+  const {isOpen:isTemplateOpen, onClose: onTemplateClose, onOpen: onTemplateOpen} = useDisclosure()
+
+  const handlePushTemplate = useCallback(()=> {
+    const key = prompt("テンプレート保存名を入力してください")
+    if(key){
+      pushTemplate({key, data: issueData})
+      alert("保存しました。")
+    }
+  },[issueData, pushTemplate])
 
   return (
     <>
@@ -92,7 +95,7 @@ const {
           <InputGroup>
             <InputLeftAddon bgColor="blue.100" aria-required>管理番号</InputLeftAddon>
             <Input
-              readOnly={isEditMode}
+              readOnly={editMode==="update"}
               disabled
               type="text"
               placeholder="自動採番"
@@ -106,7 +109,7 @@ const {
             <InputLeftAddon bgColor="blue.100" aria-required>発注日</InputLeftAddon>
             <Input required
               type="date"
-              readOnly={isEditMode}
+              readOnly={editMode==="update"}
               placeholder="半角英数字のみ可"
               onChange={(e) => { 
                 updateField<"date">("date", new Date(e.target.value))
@@ -132,7 +135,7 @@ const {
           <InputGroup>
             <InputLeftAddon bgColor="blue.100" aria-required>仕入先</InputLeftAddon>
             <SupplierSelect  
-              readOnly={isEditMode}
+              readOnly={editMode==="update"}
               onSelect={
                 (selected) => {
                   setIssueData({...issueData, supplierId: selected.id, supplierName: selected.name})}
@@ -223,7 +226,7 @@ const {
                 <InputGroup>
                   <InputLeftAddon aria-required>樹種</InputLeftAddon>
                   <WoodSpeciesSelect required
-                    readOnly={isEditMode}
+                    readOnly={editMode==="update"}
                     onSelect={(e) => {
                     if(issueData.issueItems){
                       const {options, selectedIndex} = e.target
@@ -241,7 +244,7 @@ const {
                   <InputLeftAddon aria-required>材種</InputLeftAddon>
                   <ItemTypeSelect required 
                   value={item.itemTypeId}
-                  readOnly={isEditMode}
+                  readOnly={editMode==="update"}
                   onSelect={(select) => { 
                     if(issueData.issueItems){
                       const newItem = { ...issueData.issueItems[index], ...{ itemTypeId : select?.id, itemTypeName: select?.name}}
@@ -255,7 +258,7 @@ const {
                 <Button 
                 bgColor="red.100"
                 ml="10"
-                visibility={!isEditMode?"visible":"hidden"}
+                visibility={editMode!=="update"?"visible":"hidden"}
                 onClick={() => {
                   if(confirm("こちらの明細を削除しますか？")){
                     deleteItemData(index)
@@ -263,6 +266,17 @@ const {
                 }
                 }
                 >行削除</Button>
+              </Box>
+              <Box>
+                <Button 
+                bgColor="yellow.100"
+                ml="10"
+                visibility={editMode!=="update"?"visible":"hidden"}
+                onClick={() => {
+                  copyItemLine(index)
+                }
+                }
+                >行コピー</Button>
               </Box>
             </HStack>
             <HStack>
@@ -296,8 +310,6 @@ const {
               <Box>
                 <InputGroup>
                   <InputLeftAddon aria-required>長さｘ厚みｘ幅</InputLeftAddon>
-                  {item.length}
-                  {item.packageCount}
                   <Input placeholder="長さ" defaultValue={item.length ?? undefined} onBlur={(e) => { updateItemField<"length">(index, "length", e.target.value)}}/>
                   <FormLabel style={{fontSize:"1.2em", marginTop:"5px"}}>ｘ</FormLabel>
                   <Input placeholder="厚み" type="number" defaultValue={item.thickness?? undefined} onBlur={(e) => { updateItemField<"thickness">(index, "thickness", (e.target.value)?Number(e.target.value):undefined)}}/>
@@ -310,7 +322,8 @@ const {
                   <InputLeftAddon aria-required>入数</InputLeftAddon>
                   <Input required type="number" 
                   defaultValue={item.cost ? Number(item.packageCount): undefined}
-                  placeholder="数字" onBlur={(e) => {
+                  placeholder="数字"
+                  onBlur={(e) => {
                     updateItemField<"packageCount">(index, "packageCount", e.target.value ? new Decimal(e.target.value): undefined)}}/>
                 </InputGroup>
               </Box>
@@ -321,7 +334,8 @@ const {
                   <InputLeftAddon aria-required>原価</InputLeftAddon>
                   <Input required type="number" 
                   defaultValue={item.cost ? Number(item.cost): undefined}
-                  placeholder="数字" onBlur={(e) => { updateItemField<"cost">(index, "cost", e.target.value ? new Decimal(e.target.value): undefined)}}/>
+                  placeholder="数字" 
+                  onBlur={(e) => { updateItemField<"cost">(index, "cost", e.target.value ? new Decimal(e.target.value): undefined)}}/>
                   <FormLabel fontSize="1.2em" mt="5px">/</FormLabel>
                   <UnitSelect required 
                   value={item.costUnitId}
@@ -391,7 +405,7 @@ const {
       }
       <Box textAlign="left">
       <Button ml="50" w={80} bgColor="green.100"
-        visibility={!isEditMode?"visible":"hidden"}
+        visibility={editMode!=="update"?"visible":"hidden"}
         onClick={() => addItemData()}
         >行追加</Button>
       </Box>      
@@ -400,7 +414,7 @@ const {
     <HStack>
         <Box>
           {
-            isEditMode?
+            editMode==="update"?
             <Button type='submit' ml={50} w={100} bgColor="green.400"
             onClick={async (e) => {
               e.preventDefault()
@@ -418,7 +432,7 @@ const {
                 if(ret?.id){
                   router.push(
                     {
-                      pathname:`/item/issue/`,
+                      pathname:`/issue/issue/`,
                       query:{issueId: ret.id}
                   })  
                 }
@@ -439,35 +453,46 @@ const {
           }}
           >発注書</Button>
         </Box>
-        {isEditMode ?
+        {editMode==="update" ?
         <Box>
           <Button type='submit' ml={50} w={100} bgColor="blue.400"
           onClick={(e) => {
             e.preventDefault()
-            router.push("/item/issue/")
+            router.push("/issue/issue/")
             }
           }
           >新規作成</Button>
         </Box>
         :
         <Box pl={100}>
-          <Button type='submit' ml={50} w={100} bgColor="green.100"
+          <Button type='submit' ml={50} bgColor="green.100"
           onClick={(e) => {
             e.preventDefault()
-            saveEditIssue()
+            handlePushTemplate()
           }
           }
-          >下書き保存</Button>
-          <Button type='submit' ml={50} w={100} bgColor="blue.100"
+          >テンプレート保存</Button>
+          <Button type='submit' ml={50} bgColor="blue.100"
             onClick={(e) => {
               e.preventDefault()
-              restoreEditIssue()
+              onTemplateOpen()
             }
           }
-          >下書き反映</Button>
+          >テンプレート一覧</Button>
         </Box>
         }
       </HStack>
+      <TemplateModal 
+        templates={templates}
+        onDecide={(template)=>{
+          setIssueData(template.data)
+        }}
+        onRemove={(index)=>{
+          removeTemplates(index)
+        }}
+        isOpen={isTemplateOpen}
+        onClose={onTemplateClose}
+      />
     </Footer>
     </form>
     </>

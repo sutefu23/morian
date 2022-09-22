@@ -8,17 +8,26 @@ import produce from "immer"
 import dayjs from 'dayjs'
 import ExcelJS from "exceljs"
 import stream from "stream"
-import { atom , useRecoilState, useResetRecoilState } from 'recoil'
+import { atom , useRecoilState, useResetRecoilState, selector } from 'recoil'
 import { recoilPersist } from 'recoil-persist'
 
-const { persistAtom } = recoilPersist({
-	key: "recoil-persist",
+const { persistAtom : persistAtomSaveData } = recoilPersist({
+	key: "recoil-persist-save-data",
+	storage: typeof window === "undefined" ? undefined : sessionStorage
+})
+
+const { persistAtom : persistAtomTemplate} = recoilPersist({
+	key: "recoil-persist-template-data",
 	storage: typeof window === "undefined" ? undefined : sessionStorage
 })
 
 export type EditIssueData = DeepPartial<IssueProps>
 export type EditIssueItemData = DeepPartial<IssueItemProps>
 
+export type Template = {
+  key:string,
+  data: EditIssueData
+}
 const defaultItemData = {
   itemTypeName: '',
   itemTypeId:undefined,
@@ -134,14 +143,38 @@ const issueDataAtom = atom<EditIssueData>({
 const issueSaveDataAtom = atom<EditIssueData>({//一時保存用
   key: 'issueSaveDataAtom',
   default: defaultData,
-  effects_UNSTABLE: [persistAtom] 
+  effects_UNSTABLE: [persistAtomSaveData] 
+});
+
+const issueTemplatesAtom = atom<Template[]>({//テンプレート保存用
+  key: 'issueTemplatesAtom',
+  default: [],
+  effects_UNSTABLE: [persistAtomTemplate] 
+});
+
+const editModeAtom = atom<"create"|"update">({
+  key: 'editModeAtom',
+  default: "create",
+});
+
+const issueSelector = selector({
+  key: 'issueSelector',
+  get: ({get}) => get(issueDataAtom),
+  set: ({set, get}, newValue) => {
+    if(get(editModeAtom) == "create"){
+      set(issueSaveDataAtom, newValue)
+    }
+    set(issueDataAtom, newValue)
+  }
 });
 
 const useIssue = () => {
-  const [issueData, setIssueData] =  useRecoilState<EditIssueData>(issueDataAtom)
+  const [issueData, setIssueData] =  useRecoilState<EditIssueData>(issueSelector)
   const [issueSaveData, setIssueSaveData] =  useRecoilState<EditIssueData>(issueSaveDataAtom)
+  const [templates, setTemplates] =  useRecoilState(issueTemplatesAtom)
+  const [editMode, setEditMode] =  useRecoilState(editModeAtom)
   const resetIssueData = useResetRecoilState(issueDataAtom);
-  const resetEditIssue = useResetRecoilState(issueSaveDataAtom);
+  const resetSaveIssue = useResetRecoilState(issueSaveDataAtom);
 
   const updateField = useCallback(
     <K extends keyof EditIssueData>(
@@ -152,15 +185,6 @@ const useIssue = () => {
     },
     [issueData]
   )
-
-  const saveEditIssue = useCallback(()=>{
-    setIssueSaveData(issueData)
-  },[issueData, setIssueSaveData])
-
-  const restoreEditIssue = useCallback(()=>{
-    setIssueData(issueSaveData)
-  },[issueSaveData, setIssueData])
-
 
   const addItemData = useCallback(() => {
     if(issueData.issueItems?.length === 14){
@@ -177,6 +201,32 @@ const useIssue = () => {
     const newItems = issueData.issueItems?.filter((_, i) => i !== deleteIndex)
     setIssueData({...issueData, ...{ issueItems: newItems}})  
   }, [issueData.issueItems])
+
+  const copyItemLine = useCallback((copyIndex: number) => {
+    if(!issueData?.issueItems) return 
+
+    const newItem = issueData?.issueItems[copyIndex] 
+
+    if(newItem === undefined ) return;
+
+    const newItems = produce(issueData.issueItems, draft => {
+      draft?.push(newItem)
+    })
+    
+    setIssueData({...issueData, ...{ issueItems: newItems}})  
+  }, [issueData.issueItems])
+
+  const pushTemplate = useCallback((template:Template)=>{
+    const newTemplates = produce(templates, draft => {
+      draft?.push(template)
+    })
+    setTemplates(newTemplates)
+  },[setTemplates, templates])
+
+  const removeTemplates = useCallback((index:number)=>{
+    const newTemplates = templates.filter((_, i )=> i !== index)
+    setTemplates(newTemplates)
+  },[setTemplates, templates])
 
   const updateItemField = useCallback(
     <K extends keyof EditIssueItemData>(
@@ -442,7 +492,7 @@ const useIssue = () => {
       sheet.getCell(`J${row}`).value = `${item.width}`
       sheet.getCell(`K${row}`).value = `${String(item.packageCount)}` // 入数
       sheet.getCell(`M${row}`).value = `${Number(item.cost).toYenFormat()} / ${item.costUnitName}` // 単価
-      sheet.getCell(`O${row}`).value = `${(item.count)} ${item.unitName}`// 数量
+      sheet.getCell(`N${row}`).value = `${(item.count)} ${item.unitName}`// 数量
       sheet.getCell(`P${row}`).value = totalPrice(item)
     })    
   
@@ -499,23 +549,29 @@ const useIssue = () => {
       }
 
       alert('登録しました')
-      resetEditIssue()
+      resetSaveIssue()
       return body
     },
     [issueData]
   )
 
   return {
-    issueData,
-    setIssueData,
-    saveEditIssue,
-    restoreEditIssue,
-    resetEditIssue,
+    issueData, //発注データ
+    setIssueData, // 発注データセット
+    issueSaveData, // 保存データ（新規作成時のみ自動保存）
+    editMode, // 編集モード（新規作成｜編集）
+    setEditMode,// 編集モードセット
+    templates, // テンプレート
+    pushTemplate, // テンプレート追加
+    removeTemplates, // 
+    setIssueSaveData,
+    resetSaveIssue,
     resetIssueData,
     updateField,
     updateItemField,
     addItemData,
     deleteItemData,
+    copyItemLine,
     calcCostPackageCount,
     costPerUnit,
     totalPrice,

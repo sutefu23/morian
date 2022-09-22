@@ -19,10 +19,8 @@ import dayjs from 'dayjs'
 import RightDrawer from '~/components/drawer/rightDrawer'
 import usePageTitle from '~/hooks/usePageTitle'
 import { apiClient }from '~/utils/apiClient'
-import { useState, useEffect, useCallback } from 'react'
-import useIssue from '~/hooks/useIssue'
+import { useState, useCallback } from 'react'
 import useUser from '~/hooks/useUser'
-import type { EditIssueData } from '~/hooks/useIssue'
 import IssueDetail from "./issueDetail"
 import { useAspidaQuery } from '@aspida/react-query'
 import { SupplierSelect } from "../../components/select"
@@ -57,10 +55,6 @@ const IssueList = () => {
   const {isOpen: isRightOpen, onOpen: onRightOpen, onClose: onRightClose} = useDisclosure()
 
   const handleSearch = useCallback(()=>{
-    if(!searchSupplierId) {
-      alert("仕入先を入れてください。")
-      return
-    }
     setSearchEnable(true)
     refetch()
     setSearchEnable(false)
@@ -98,7 +92,7 @@ const IssueList = () => {
         </Box>
         <Box>
           <InputGroup>
-            <InputLeftAddon bgColor="blue.100" ml="10" aria-required>仕入先検索</InputLeftAddon>
+            <InputLeftAddon bgColor="blue.100" ml="10">仕入先検索</InputLeftAddon>
             <SupplierSelect   
               onSelect={
                 (selected) => {
@@ -187,7 +181,7 @@ const IssueList = () => {
                           issueItems:items,
                       }
                       router.push({
-                        pathname: '/item/issue',
+                        pathname: '/issue/issue',
                         query:{
                           defaultData: JSON.stringify(issueData)
                         }
