@@ -156,7 +156,7 @@ const useStock = () => {
       return null
     }
     if (!itemTypeId || !itemTypeName) {
-      alert('材種は必須です。')
+      alert('分類は必須です。')
       return null
     }
     if (!woodSpeciesId || !woodSpeciesName) {

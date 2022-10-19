@@ -34,7 +34,7 @@ export const Units: UnitType[] = [
   { id: 5, name: '坪', order: 5 }
 ]
 
-///材種
+///分類
 export const ItemTypes: ItemTypeType[] = [
   { id: 1, name: '集成材', prefix: "S",order: 1 },
   { id: 2, name: 'フローリング', prefix: "F",order: 2 },

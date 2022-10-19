@@ -30,7 +30,7 @@ const useItemReport = (type: ReportType) => {
     worksheet.columns = [
       { header: 'ロットNo', key: 'lotNo' },
       { header: '樹種', key: 'woodSpeciesName' },
-      { header: '材種', key: 'itemTypeName' },
+      { header: '分類', key: 'itemTypeName' },
       { header: 'グレード', key: 'grade' },
       { header: '仕様', key: 'spec' },
       { header: '製造元', key: 'manufacturer' },

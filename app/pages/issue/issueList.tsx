@@ -116,7 +116,7 @@ const IssueList = () => {
             <Th>管理番号</Th>
             <Th>発注日</Th>
             <Th>樹種</Th>
-            <Th>材種</Th>
+            <Th>分類</Th>
             <Th>グレード</Th>
             <Th>仕様</Th>
             <Th>寸法</Th>

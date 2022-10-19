@@ -351,7 +351,7 @@ const useIssue = () => {
 
     const { itemTypeId, woodSpeciesId, length } = item
     if (!itemTypeId) {
-      alert('材種は必須です。')
+      alert('分類は必須です。')
       return null
     }
     if (!woodSpeciesId) {

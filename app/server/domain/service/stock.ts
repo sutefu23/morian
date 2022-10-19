@@ -124,7 +124,7 @@ export class ItemService {
     }
     const correctPrefix = itemTypes?.find(itm => itm.id === item.itemTypeId)?.prefix
     if(prefix !== correctPrefix){
-      return new Error('ロットNoと材種の接頭辞の組み合わせが正しくありません')
+      return new Error('ロットNoと分類の接頭辞の組み合わせが正しくありません')
     }
 
     const editUser = AuthService.user()

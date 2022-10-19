@@ -37,7 +37,7 @@ const useHistoryReport = (type: ReportType, fromDate?:Date, toDate?: Date) => {
       { header: '日付', key: 'date' },
       { header: 'ロットNo', key: 'lotNo' },
       { header: '樹種', key: 'woodSpeciesName' },
-      { header: '材種', key: 'itemTypeName' },
+      { header: '分類', key: 'itemTypeName' },
       { header: 'グレード', key: 'gradeName' },
       { header: '仕様', key: 'spec' },
       { header: '製造元', key: 'manufacturer' },

@@ -42,7 +42,7 @@ model IssueItem {
   id            Int       @id  @default(autoincrement())
   Issue         Issue     @relation(fields: [IssueId], references: [id], onDelete: Cascade)
   IssueId       Int  
-  itemType      ItemType  @relation(name: "issueItemItemType", fields: [itemTypeId], references: [id]) // 材種
+  itemType      ItemType  @relation(name: "issueItemItemType", fields: [itemTypeId], references: [id]) // 分類
   itemTypeId    Int
   itemTypeName   String
   woodSpecies   Species?   @relation(name:"issueItemWoodSpecies", fields: [woodSpeciesId], references: [id]) // 樹種
@@ -98,7 +98,7 @@ model Item {
   id            Int       @id  @default(autoincrement())
   issueItemId   Int?      //発注ItemID
   lotNo         String    @unique // ロット番号
-  itemType      ItemType  @relation(fields: [itemTypeId], references: [id]) // 材種
+  itemType      ItemType  @relation(fields: [itemTypeId], references: [id]) // 分類
   itemTypeId    Int
   itemTypeName  String   @default("")
   woodSpecies   Species?   @relation(fields: [woodSpeciesId], references: [id]) // 樹種

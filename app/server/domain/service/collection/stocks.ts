@@ -88,10 +88,10 @@ export class CollectionStockService{
   // ロット別在庫金額
 
   
-  // ロットNo / 樹種 / 材種 / 在庫金額
+  // ロットNo / 樹種 / 分類 / 在庫金額
   // async lotSumStockList()
 
-  // 材種別在庫金額
+  // 分類別在庫金額
   
   // 倉庫別在庫金額
 }
