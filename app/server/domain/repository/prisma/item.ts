@@ -63,7 +63,7 @@ export class ItemRepository implements IItemRepository {
       itemType: { connect: { id: entity.itemTypeId } },
       unit: { connect: { id: entity.unitId } },
       supplier: { connect: { id: entity.supplierId } },
-      costUnit: { connect: { id: entity.costUnitId } } ,
+      costUnit: entity.costUnitId ? { connect: { id: entity.costUnitId } } :undefined,
       woodSpecies: { connect: { id: entity.woodSpeciesId } },
       grade: { connect: { id: entity.gradeId } },
       warehouse: { connect: { id: entity.warehouseId } },
