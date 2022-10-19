@@ -46,13 +46,14 @@ export const dbModelToEntity = async (
     where: { id: model.gradeId ?? undefined }
   }) ?? undefined
 
-  const costUnit = await prisma.unit.findUnique({
-    where: { id: model.costUnitId }
-  })
+  const costUnit = await (async ()  => {
+    if(model.costUnitId){
+      return await prisma.unit.findUnique({
+        where: { id: model.costUnitId }
+      })  
+    }
+  })()
 
-  if (!costUnit) {
-    throw new FieldNotFoundError('costUnitが見つかりません。')
-  }
 
   const unit = await prisma.unit.findUnique({
     where: { id: model.unitId }
@@ -80,9 +81,7 @@ export const dbModelToEntity = async (
     throw length
   }
 
-  const cost = new Decimal(model.cost.toString())
-  const packageCount = new Decimal(model.packageCount.toString())
-  const costPackageCount = new Decimal(model.costPackageCount.toString())
+
   const count = new Decimal(model.count.toString())
   const tempCount = new Decimal(model.tempCount.toString())
 
@@ -97,9 +96,9 @@ export const dbModelToEntity = async (
   const newItem = {
     ...model,
     issueItemId,
-    cost,
-    packageCount,
-    costPackageCount,
+    cost: model.cost ? new Decimal(model.cost.toString()) :undefined,
+    packageCount: model.packageCount ? new Decimal(model.packageCount.toString()): undefined,
+    costPackageCount: model.costPackageCount ?  new Decimal(model.costPackageCount.toString()) : undefined,
     count,
     tempCount,
     itemType: itemType,
@@ -113,7 +112,7 @@ export const dbModelToEntity = async (
     thickness,
     grade,
     spec: model.spec ?? undefined,
-    costUnit,
+    costUnit: costUnit ?? undefined,
     unit,
     warehouse,
     manufacturer,

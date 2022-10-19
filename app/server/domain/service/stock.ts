@@ -22,7 +22,6 @@ import { StockReason } from '../init/master'
 import { PrismaClient } from '@prisma/client'
 import { AuthService } from './auth'
 import { ItemTypeRepository } from '../repository/prisma/master'
-import { ItemRepository } from '../repository/prisma/item'
 const prisma = new PrismaClient()
 
 export type UpdateItemData = {
@@ -35,20 +34,20 @@ export type UpdateItemData = {
   readonly gradeId?: number
   readonly gradeName?: string
   readonly spec?: string
-  readonly length: number | string
-  readonly thickness: number
-  readonly width: number
+  readonly length?: number | string
+  readonly thickness?: number
+  readonly width?: number
   readonly supplierId: number
   readonly supplierName?: string
-  readonly packageCount: Decimal
+  readonly packageCount?: Decimal
   readonly count: Decimal
   readonly tempCount: Decimal
   readonly unitId: UnitType['id']
   readonly unitName: UnitType['name']
-  readonly costPackageCount: Decimal
-  readonly cost: Decimal
-  readonly costUnitId: number
-  readonly costUnitName: string
+  readonly costPackageCount?: Decimal
+  readonly cost?: Decimal
+  readonly costUnitId?: number
+  readonly costUnitName?: string
   readonly warehouseId: number
   readonly warehouseName: string
   readonly manufacturer?: string

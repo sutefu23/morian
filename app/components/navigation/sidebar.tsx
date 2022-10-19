@@ -92,16 +92,16 @@ const Sidebar = () => {
       name: '在庫新規登録',
       path: '/item/register'
     },
-    {
-      key: 'issueItem',
-      name: '新規発注',
-      path: '/issue/issue'
-    },
-    {
-      key: 'issueItemList',
-      name: '過去発注情報検索',
-      path: '/issue/issueList'
-    },
+    // {
+    //   key: 'issueItem',
+    //   name: '新規発注',
+    //   path: '/issue/issue'
+    // },
+    // {
+    //   key: 'issueItemList',
+    //   name: '過去発注情報検索',
+    //   path: '/issue/issueList'
+    // },
     {
       key: 'handy',
       name: 'ハンディターミナル',

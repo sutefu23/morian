@@ -45,15 +45,7 @@ const Register = ({
   }
   const { data: itemTypes } = useAspidaQuery(apiClient.master.itemType)
 
-  const {
-    stockData,
-    setStockData,
-    updateField,
-    calcCostPackageCount,
-    costPerUnit,
-    totalPrice,
-    postStock
-  } = useStock()
+  const { stockData, setStockData, updateField, postStock } = useStock()
   return (
     <>
       <form>
@@ -182,15 +174,12 @@ const Register = ({
           <HStack>
             <Box>
               <InputGroup>
-                <InputLeftAddon aria-required>長さｘ厚みｘ幅</InputLeftAddon>
+                <InputLeftAddon>長さｘ厚みｘ幅</InputLeftAddon>
                 <Input
                   placeholder="長さ"
                   defaultValue={stockData.length}
                   onBlur={(e) => {
-                    updateField<'length'>(
-                      'length',
-                      e.target.value as number | '乱尺'
-                    )
+                    updateField<'length'>('length', e.target.value)
                   }}
                 />
                 <FormLabel style={{ fontSize: '1.2em', marginTop: '5px' }}>
@@ -222,7 +211,7 @@ const Register = ({
             </Box>
             <Box>
               <InputGroup>
-                <InputLeftAddon aria-required>入数</InputLeftAddon>
+                <InputLeftAddon>入数</InputLeftAddon>
                 <Input
                   required
                   type="number"
@@ -310,7 +299,7 @@ const Register = ({
           <HStack>
             <Box>
               <InputGroup>
-                <InputLeftAddon aria-required>原価</InputLeftAddon>
+                <InputLeftAddon>原価</InputLeftAddon>
                 <Input
                   required
                   type="number"
@@ -381,45 +370,6 @@ const Register = ({
                 />
               </InputGroup>
             </Box>
-            <Box>
-              <InputGroup>
-                <InputLeftAddon aria-required>原価単位数量</InputLeftAddon>
-                <Input
-                  required
-                  placeholder="原価算出基準となる数量"
-                  step="0.001"
-                  type="number"
-                  defaultValue={
-                    stockData.costPackageCount
-                      ? Number(stockData.costPackageCount)
-                      : undefined
-                  }
-                  onBlur={(e) => {
-                    updateField<'costPackageCount'>(
-                      'costPackageCount',
-                      e.target.value
-                        ? (new Decimal(
-                            e.target.value
-                          ) as unknown as ServerDecimal)
-                        : undefined
-                    )
-                  }}
-                />
-                <Button
-                  onClick={() => {
-                    const computedValue = calcCostPackageCount()
-                    if (computedValue) {
-                      updateField<'costPackageCount'>(
-                        'costPackageCount',
-                        computedValue as unknown as ServerDecimal
-                      )
-                    }
-                  }}
-                >
-                  計算
-                </Button>
-              </InputGroup>
-            </Box>
           </HStack>
           <Spacer />
           <HStack>
@@ -454,26 +404,6 @@ const Register = ({
 
         <Footer>
           <HStack>
-            <Box>
-              <InputGroup>
-                <InputLeftAddon>最小単位当たりの原価</InputLeftAddon>
-                <Input
-                  textAlign="right"
-                  readOnly
-                  value={costPerUnit().toYenFormatKanji()}
-                />
-              </InputGroup>
-            </Box>
-            <Box>
-              <InputGroup>
-                <InputLeftAddon aria-required>在庫金額</InputLeftAddon>
-                <Input
-                  textAlign="right"
-                  readOnly
-                  value={totalPrice().toYenFormatKanji()}
-                />
-              </InputGroup>
-            </Box>
             <Box>
               <Button
                 type="submit"

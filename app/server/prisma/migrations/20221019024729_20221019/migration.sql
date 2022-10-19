@@ -1,0 +1,17 @@
+-- DropForeignKey
+ALTER TABLE `Item` DROP FOREIGN KEY `Item_costUnitId_fkey`;
+
+-- AlterTable
+ALTER TABLE `Item` ADD COLUMN `userId` INTEGER NOT NULL DEFAULT 0,
+    ADD COLUMN `userName` VARCHAR(191) NOT NULL DEFAULT '',
+    MODIFY `packageCount` DECIMAL(65, 30) NULL,
+    MODIFY `costPackageCount` DECIMAL(65, 30) NULL,
+    MODIFY `cost` DECIMAL(65, 30) NULL,
+    MODIFY `costUnitId` INTEGER NULL,
+    MODIFY `costUnitName` VARCHAR(191) NULL DEFAULT '';
+
+-- AddForeignKey
+ALTER TABLE `Item` ADD CONSTRAINT `Item_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Item` ADD CONSTRAINT `Item_costUnitId_fkey` FOREIGN KEY (`costUnitId`) REFERENCES `Unit`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;

@@ -70,21 +70,12 @@ export class CountType extends ValueObject<number> {
   }
 }
 
-export class lengthType extends ValueObject<number | '乱尺'> {
-  private constructor(val: number | '乱尺') {
+export class lengthType extends ValueObject<number | string> {
+  private constructor(val: number | string) {
     super(val)
   }
   static getInstance(val: number | string): lengthType | ValidationError {
-    if (
-      !/^[-]?([1-9]\d*|0)(\.\d+)?$/g.test(String(val)) 
-    ) {
-      if(String(val) != '乱尺'){
-        return new ValidationError(
-          'lengthは数値あるいは「乱尺」という言葉だけが許可されています。'
-        )
-      }
-    }
-    return new this(val as number | '乱尺')
+    return new this(val as number | string)
   }
 }
 
@@ -101,11 +92,11 @@ export interface ItemProps {
   readonly width?: number
   readonly supplierId: Supplier['id']
   readonly arrivalDate?: Date
-  readonly packageCount: Decimal
-  readonly costPackageCount: Decimal
-  readonly cost: Decimal
+  readonly packageCount?: Decimal
+  readonly costPackageCount?: Decimal
+  readonly cost?: Decimal
   readonly warehouse: WarehouseType
-  readonly costUnit: UnitType
+  readonly costUnit?: UnitType
   readonly defectiveNote?: string
   readonly manufacturer?: string
   readonly count: Decimal
@@ -128,15 +119,15 @@ export class Item extends Entity<ItemProps> implements ItemProps {
   readonly width?: number
   readonly supplierId: Supplier['id']
   readonly supplierName: Supplier['name']
-  readonly packageCount: Decimal
+  readonly packageCount?: Decimal
   readonly count: Decimal
   readonly unit: UnitType
   readonly warehouse: WarehouseType
   readonly manufacturer?: string
   readonly defectiveNote?: string
-  readonly costPackageCount: Decimal
-  readonly cost: Decimal
-  readonly costUnit: UnitType
+  readonly costPackageCount?: Decimal
+  readonly cost?: Decimal
+  readonly costUnit?: UnitType
   readonly tempCount: Decimal
   readonly note?: string
   readonly enable: boolean

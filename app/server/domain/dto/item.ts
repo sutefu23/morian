@@ -20,18 +20,18 @@ export type ItemDTO = {
   readonly width?: number
   readonly supplierId?: number
   readonly supplierName?: string
-  readonly packageCount: Decimal
+  readonly packageCount?: Decimal
   readonly count: Decimal
   readonly tempCount: Decimal
   readonly unitId: number
   readonly unitName: string
   readonly unitOrder: number
   readonly defectiveNote?: string
-  readonly costPackageCount: Decimal
-  readonly cost: Decimal
-  readonly costUnitId: number
-  readonly costUnitName: string
-  readonly costUnitOrder: number
+  readonly costPackageCount?: Decimal
+  readonly cost?: Decimal
+  readonly costUnitId?: number
+  readonly costUnitName?: string
+  readonly costUnitOrder?: number
   readonly warehouseId: number
   readonly warehouseName: string
   readonly warehouseOrder: number
@@ -72,9 +72,9 @@ export const ItemToDTO = (item: Item): ItemDTO => {
     defectiveNote: item.defectiveNote,
     costPackageCount: item.costPackageCount,
     cost: item.cost,
-    costUnitId: item.costUnit.id,
-    costUnitName: item.costUnit.name,
-    costUnitOrder: item.costUnit.order,
+    costUnitId: item.costUnit?.id,
+    costUnitName: item.costUnit?.name,
+    costUnitOrder: item.costUnit?.order,
     arrivalDate: item.arrivalDate,
     manufacturer: item.manufacturer,
     note: item.note,
