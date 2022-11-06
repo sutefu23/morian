@@ -39,6 +39,7 @@ export type UpdateItemData = {
   readonly width?: number
   readonly supplierId: number
   readonly supplierName?: string
+  readonly supplierManagerName?: string
   readonly packageCount?: Decimal
   readonly count: Decimal
   readonly tempCount: Decimal

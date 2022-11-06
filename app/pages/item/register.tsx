@@ -94,6 +94,8 @@ const Register = ({
                 />
               </InputGroup>
             </Box>
+          </HStack>
+          <HStack>
             <Box>
               <InputGroup>
                 <InputLeftAddon aria-required>仕入先</InputLeftAddon>
@@ -106,6 +108,21 @@ const Register = ({
                     })
                   }}
                   defaultKey={stockData.supplierId}
+                />
+              </InputGroup>
+            </Box>
+            <Box>
+              <InputGroup>
+                <InputLeftAddon>仕入先担当者</InputLeftAddon>
+                <Input
+                  placeholder="担当者"
+                  defaultValue={stockData.supplierManagerName}
+                  onChange={(e) => {
+                    updateField<'supplierManagerName'>(
+                      'supplierManagerName',
+                      e.target.value
+                    )
+                  }}
                 />
               </InputGroup>
             </Box>
@@ -134,7 +151,7 @@ const Register = ({
                 <Input
                   placeholder="自由入力"
                   defaultValue={stockData.spec}
-                  onBlur={(e) => {
+                  onChange={(e) => {
                     updateField<'spec'>('spec', e.target.value)
                   }}
                 />
@@ -178,7 +195,7 @@ const Register = ({
                 <Input
                   placeholder="長さ"
                   defaultValue={stockData.length}
-                  onBlur={(e) => {
+                  onChange={(e) => {
                     updateField<'length'>('length', e.target.value)
                   }}
                 />
@@ -189,7 +206,7 @@ const Register = ({
                   placeholder="厚み"
                   type="number"
                   defaultValue={stockData.thickness}
-                  onBlur={(e) => {
+                  onChange={(e) => {
                     updateField<'thickness'>(
                       'thickness',
                       Number(e.target.value)
@@ -203,7 +220,7 @@ const Register = ({
                   placeholder="幅"
                   type="number"
                   defaultValue={stockData.width}
-                  onBlur={(e) => {
+                  onChange={(e) => {
                     updateField<'width'>('width', Number(e.target.value))
                   }}
                 />
@@ -221,7 +238,7 @@ const Register = ({
                       : undefined
                   }
                   placeholder="数字"
-                  onBlur={(e) => {
+                  onChange={(e) => {
                     updateField<'packageCount'>(
                       'packageCount',
                       e.target.value
@@ -242,7 +259,7 @@ const Register = ({
                 <Input
                   placeholder="自由入力"
                   defaultValue={stockData.manufacturer}
-                  onBlur={(e) => {
+                  onChange={(e) => {
                     updateField<'manufacturer'>('manufacturer', e.target.value)
                   }}
                 />
@@ -307,7 +324,7 @@ const Register = ({
                     stockData.cost ? Number(stockData.cost) : undefined
                   }
                   placeholder="数字"
-                  onBlur={(e) => {
+                  onChange={(e) => {
                     updateField<'cost'>(
                       'cost',
                       e.target.value
@@ -345,7 +362,7 @@ const Register = ({
                   }
                   type="number"
                   placeholder="数字"
-                  onBlur={(e) => {
+                  onChange={(e) => {
                     updateField<'count'>(
                       'count',
                       e.target.value
@@ -377,6 +394,7 @@ const Register = ({
               <InputGroup>
                 <InputLeftAddon>備考</InputLeftAddon>
                 <Input
+                  defaultValue={stockData.note}
                   onChange={(e) => {
                     updateField<'note'>('note', e.target.value)
                   }}
@@ -390,6 +408,7 @@ const Register = ({
                 <InputLeftAddon>不良品備考</InputLeftAddon>
                 <Input
                   placeholder="割れなど傷品としての備考"
+                  defaultValue={stockData.defectiveNote}
                   onChange={(e) => {
                     updateField<'defectiveNote'>(
                       'defectiveNote',

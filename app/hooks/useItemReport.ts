@@ -8,14 +8,15 @@ export type ReportType =
 
 const useItemReport = (type: ReportType) => {
 
-  const res = (() => {
+  const query = (() => {
     switch(type){
       case "不良在庫一覧":
-        return useAspidaQuery(apiClient.itemList,{query:{notZero:true,isDefective:true}})  
+        return {notZero:true,isDefective:true}  
       case "ロット別在庫金額":
-        return useAspidaQuery(apiClient.itemList,{query:{notZero:true}})  
+        return {notZero:true}
     }
   })()
+  const res = useAspidaQuery(apiClient.itemList,{query})  
 
   const print = async () => {
     if(!res) return
@@ -57,8 +58,8 @@ const useItemReport = (type: ReportType) => {
     })()
     // 行を定義
     items?.map(item => {
-      const cost = `${Number(item.cost).toYenFormat()}/${item.costUnitName}`
-      const totalAmount = Number(item.cost) * Number(item.costPackageCount) * Number(item.count)
+      const cost = `${Number(item.cost??0).toYenFormat()}/${item.costUnitName}`
+      const totalAmount = Number(item.cost??0) * Number(item.costPackageCount??0) * Number(item.count??0)
       worksheet.addRow({...item, totalAmount: totalAmount.toYenFormat(),cost})
     })
     

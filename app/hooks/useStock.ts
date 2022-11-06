@@ -3,7 +3,13 @@ import { UpdateItemData } from '~/server/domain/service/stock'
 import { Decimal } from 'decimal.js'
 import type { Decimal as ServerDecimal } from "server/node_modules/decimal.js"
 import { apiClient } from '~/utils/apiClient'
-import { atom , useRecoilState } from 'recoil'
+import { atom , useRecoilState, useResetRecoilState } from 'recoil'
+import { recoilPersist } from 'recoil-persist'
+
+const { persistAtom : persistAtomSaveData } = recoilPersist({
+	key: "recoil-persist-register-save-data",
+	storage: typeof window === "undefined" ? undefined : sessionStorage
+})
 
 export type EditUpdataItemData = Partial<UpdateItemData>
 
@@ -15,6 +21,7 @@ const defaultData:EditUpdataItemData = {
   itemTypeName: undefined,
   supplierId: undefined,
   supplierName: undefined,
+  supplierManagerName: undefined,
   gradeId: undefined,
   gradeName: undefined,
   length: undefined,
@@ -41,6 +48,7 @@ const demoData = {
   itemTypeName: "集成材",
   supplierId: 1,
   supplierName: "北材商事",
+  supplierManagerName: "吉田",
   gradeId: 1,
   gradeName: "A",
   length: 5000,
@@ -62,10 +70,12 @@ const demoData = {
 const stockDataAtom = atom({
   key: 'stockDataAtom',
   default: defaultData,
+  effects_UNSTABLE: [persistAtomSaveData] 
 });
 
 const useStock = () => {
   const [stockData, setStockData] = useRecoilState<EditUpdataItemData>(stockDataAtom)
+  const resetSaveStockData = useResetRecoilState(stockDataAtom);
 
   const updateField = useCallback(
     <K extends keyof EditUpdataItemData>(
@@ -166,21 +176,6 @@ const useStock = () => {
     setStockData({...demoData, packageCount: new Decimal(demoData.packageCount.toString()) as unknown as ServerDecimal})
   }
 
-  const fetchOrderSheet = useCallback(async () => {
-    const postStockData = checkValidStock(stockData)
-    if (!postStockData) {
-      console.error('postStockData is not valid')
-      return
-    }
-    await apiClient.stock.post({
-      body: {
-        data: postStockData,
-      }
-    })
-
-    alert('登録しました')
-  }, [stockData])
-
   const postStock = useCallback(
     async () => {
       const postStockData = checkValidStock(stockData)
@@ -193,7 +188,7 @@ const useStock = () => {
           data: postStockData,
         }
       })
-
+      resetSaveStockData()
       alert('登録しました')
       return
     },
@@ -204,7 +199,7 @@ const useStock = () => {
     stockData,
     setStockData,
     updateField,
-    fetchOrderSheet,
+    resetSaveStockData,
     postStock,
     useDemo
   }

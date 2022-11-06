@@ -100,10 +100,6 @@ const RegisterIssue = () => {
     }
   }, [user, issueData, setIssueData])
 
-  if (status === 'loading') {
-    ;<>Loading</>
-  }
-
   const {
     isOpen: isTemplateOpen,
     onClose: onTemplateClose,

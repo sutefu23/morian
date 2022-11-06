@@ -91,6 +91,7 @@ export interface ItemProps {
   readonly thickness?: number
   readonly width?: number
   readonly supplierId: Supplier['id']
+  readonly supplierManagerName: string
   readonly arrivalDate?: Date
   readonly packageCount?: Decimal
   readonly costPackageCount?: Decimal
@@ -119,6 +120,7 @@ export class Item extends Entity<ItemProps> implements ItemProps {
   readonly width?: number
   readonly supplierId: Supplier['id']
   readonly supplierName: Supplier['name']
+  readonly supplierManagerName: string
   readonly packageCount?: Decimal
   readonly count: Decimal
   readonly unit: UnitType

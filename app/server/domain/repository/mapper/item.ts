@@ -35,6 +35,7 @@ export const dbModelToEntity = async (
   if (!supplierName) {
     throw new FieldNotFoundError('supplierNameが見つかりません。')
   }
+
   const woodSpecies = WoodSpecies.find(
     (item) => item.id === model.woodSpeciesId
   )
