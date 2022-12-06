@@ -12,6 +12,7 @@ const { persistAtom : persistHeaderAtomSaveData } = recoilPersist({
 	key: "recoil-persist-register-header-save-data",
 	storage: typeof window === "undefined" ? undefined : sessionStorage
 })
+
 export type SupplierType = {  
   supplierId: number,
   supplierName: string,
@@ -19,7 +20,7 @@ export type SupplierType = {
 }
 
 export type EditItemData = Partial<UpdateItemServerData>
-export type EditDataObject = EditItemData[] 
+export type EditItemArrayData = EditItemData[] 
 export type EditHeaderData = Partial<SupplierType>
 
 const defaultHeaderData: EditHeaderData = {
@@ -28,7 +29,7 @@ const defaultHeaderData: EditHeaderData = {
   supplierManagerName: undefined,
 }
 
-const defaultData:EditDataObject = [{
+const defaultData:EditItemArrayData = [{
     lotNo: undefined,
     woodSpeciesId: undefined,
     woodSpeciesName: undefined,
@@ -55,7 +56,10 @@ const defaultData:EditDataObject = [{
     enable: true
   }]
 
-
+const stockItemAtom = atom({
+  key: 'stockItemAtom',
+  default: defaultData[0],
+});
 
 const stockItemsAtom = atom({
   key: 'stockItemsAtom',
@@ -70,7 +74,8 @@ const headerDataAtom = atom({
 });
 
 const useStock = () => {
-  const [stockItems, setStockData] = useRecoilState<EditDataObject>(stockItemsAtom)
+  const [stock, setStock] = useRecoilState<EditItemData>(stockItemAtom)
+  const [stockItems, setStockItems] = useRecoilState<EditItemArrayData>(stockItemsAtom)
   const [headerData, setHeaderData] = useRecoilState<EditHeaderData>(headerDataAtom)
 
   const resetData = useRecoilCallback(({reset}) => ()=>{
@@ -280,8 +285,9 @@ const useStock = () => {
 
   return {
     headerData,
+    setStock,
     stockItems,
-    setStockData,
+    setStockItems,
     updateItem,
     updateHeader,
     updateItemField,

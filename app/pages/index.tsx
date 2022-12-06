@@ -36,7 +36,7 @@ const Home = () => {
   })
   const { data: itemTypes } = useAspidaQuery(apiClient.master.itemType)
 
-  const { setStockData } = useStock()
+  const { setStock } = useStock()
   const {
     isOpen: isRightOpen,
     onOpen: onRightOpen,
@@ -134,7 +134,7 @@ const Home = () => {
                                 const lotPrefix = itemTypes?.find(
                                   (itm) => itm.id === item.itemTypeId
                                 )?.prefix
-                                setStockData({
+                                setStock({
                                   lotNo: `${lotPrefix}-`,
                                   woodSpeciesId:
                                     item.woodSpeciesId ?? undefined,
