@@ -3,5 +3,5 @@ export type DeepPartial<T> = {
     ? Array<DeepPartial<U>>
     : T[P] extends ReadonlyArray<infer UU>
     ? ReadonlyArray<DeepPartial<UU>>
-    : DeepPartial<T[P]>;
-};
+    : DeepPartial<T[P]>
+}

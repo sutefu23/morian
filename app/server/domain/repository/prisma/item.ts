@@ -17,7 +17,9 @@ export class ItemRepository implements IItemRepository {
   constructor() {
     this.prisma = new PrismaClient()
   }
-  async findMany(query: Query<ItemDTO> | Query<ItemDTO>[]): Promise<Error | Item[]> {
+  async findMany(
+    query: Query<ItemDTO> | Query<ItemDTO>[]
+  ): Promise<Error | Item[]> {
     const criteria = buildWhereStatement(query)
 
     const result = await this.prisma.$queryRaw<ItemModel[]>(
@@ -58,12 +60,14 @@ export class ItemRepository implements IItemRepository {
     const newEntity = {
       ...entity,
       lotNo: entity.lotNo,
-      length: entity.length?String(entity.length):undefined,
+      length: entity.length ? String(entity.length) : undefined,
       manufacturer: entity.manufacturer ?? '',
       itemType: { connect: { id: entity.itemTypeId } },
       unit: { connect: { id: entity.unitId } },
       supplier: { connect: { id: entity.supplierId } },
-      costUnit: entity.costUnitId ? { connect: { id: entity.costUnitId } } :undefined,
+      costUnit: entity.costUnitId
+        ? { connect: { id: entity.costUnitId } }
+        : undefined,
       woodSpecies: { connect: { id: entity.woodSpeciesId } },
       grade: { connect: { id: entity.gradeId } },
       warehouse: { connect: { id: entity.warehouseId } },
@@ -91,7 +95,7 @@ export class ItemRepository implements IItemRepository {
     const newEntity = {
       ...entity,
       lotNo: entity.lotNo,
-      length: entity.length?String(entity.length): undefined,
+      length: entity.length ? String(entity.length) : undefined,
       itemTypeId: entity.itemTypeId,
       unitId: entity.unitId,
       costUnitId: entity.costUnitId,
@@ -107,7 +111,7 @@ export class ItemRepository implements IItemRepository {
         ? entity.costPackageCount.toString()
         : undefined,
       count: entity.count ? entity.count.toString() : undefined,
-      tempCount: entity.tempCount ? entity.tempCount.toString() : undefined,
+      tempCount: entity.tempCount ? entity.tempCount.toString() : undefined
     }
 
     const result = await this.prisma.item.update({

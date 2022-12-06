@@ -1,4 +1,4 @@
-import {DeliveryPlaceType} from "@domain/entity/stock";
+import { DeliveryPlaceType } from '@domain/entity/stock'
 
 export type Methods = {
   get: {

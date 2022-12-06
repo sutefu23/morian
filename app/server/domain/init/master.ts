@@ -36,14 +36,14 @@ export const Units: UnitType[] = [
 
 ///分類
 export const ItemTypes: ItemTypeType[] = [
-  { id: 1, name: '集成材', prefix: "S",order: 1 },
-  { id: 2, name: 'フローリング', prefix: "F",order: 2 },
-  { id: 3, name: 'タイカライト', prefix: "T",order: 3 },
-  { id: 4, name: 'クラフトマンウォール', prefix: "C",order: 4 },
-  { id: 5, name: '不燃木材', prefix: "N",order: 5 },
-  { id: 6, name: '天板', prefix: "Q",order: 6 },
-  { id: 7, name: 'アメリカ古材', prefix: "A",order: 7 },
-  { id: 8, name: 'パネリング', prefix: "P",order: 8 }
+  { id: 1, name: '集成材', prefix: 'S', order: 1 },
+  { id: 2, name: 'フローリング', prefix: 'F', order: 2 },
+  { id: 3, name: 'タイカライト', prefix: 'T', order: 3 },
+  { id: 4, name: 'クラフトマンウォール', prefix: 'C', order: 4 },
+  { id: 5, name: '不燃木材', prefix: 'N', order: 5 },
+  { id: 6, name: '天板', prefix: 'Q', order: 6 },
+  { id: 7, name: 'アメリカ古材', prefix: 'A', order: 7 },
+  { id: 8, name: 'パネリング', prefix: 'P', order: 8 }
   // {id: 9, name: "ベニヤ", order:9}
 ]
 

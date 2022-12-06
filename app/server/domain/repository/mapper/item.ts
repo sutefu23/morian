@@ -1,6 +1,11 @@
 import { ValidationError, FieldNotFoundError } from '@domain/type/error'
 import { ItemTypes, WoodSpecies } from '@domain/init/master'
-import { Item as EntityItem, lotNoType, lengthType, Supplier } from '@domain/entity/stock'
+import {
+  Item as EntityItem,
+  lotNoType,
+  lengthType,
+  Supplier
+} from '@domain/entity/stock'
 import { Item as PrismaItem } from '$prisma/client'
 import { PrismaClient } from '@prisma/client'
 import { Decimal } from 'decimal.js'
@@ -24,11 +29,11 @@ export const dbModelToEntity = async (
     throw new FieldNotFoundError('supplierIdが見つかりません。')
   }
   const supplierName = (() => {
-    if(supplierId && !model.supplierName){
+    if (supplierId && !model.supplierName) {
       prisma.supplier.findUnique({
         where: { id: supplierId }
-      }) 
-    }else{
+      })
+    } else {
       return model.supplierName
     }
   })()
@@ -43,18 +48,18 @@ export const dbModelToEntity = async (
     throw new FieldNotFoundError('woodSpeciesIdが見つかりません。')
   }
 
-  const grade = await prisma.grade.findUnique({
-    where: { id: model.gradeId ?? undefined }
-  }) ?? undefined
+  const grade =
+    (await prisma.grade.findUnique({
+      where: { id: model.gradeId ?? undefined }
+    })) ?? undefined
 
-  const costUnit = await (async ()  => {
-    if(model.costUnitId){
+  const costUnit = await (async () => {
+    if (model.costUnitId) {
       return await prisma.unit.findUnique({
         where: { id: model.costUnitId }
-      })  
+      })
     }
   })()
-
 
   const unit = await prisma.unit.findUnique({
     where: { id: model.unitId }
@@ -82,7 +87,6 @@ export const dbModelToEntity = async (
     throw length
   }
 
-
   const count = new Decimal(model.count.toString())
   const tempCount = new Decimal(model.tempCount.toString())
 
@@ -97,9 +101,13 @@ export const dbModelToEntity = async (
   const newItem = {
     ...model,
     issueItemId,
-    cost: model.cost ? new Decimal(model.cost.toString()) :undefined,
-    packageCount: model.packageCount ? new Decimal(model.packageCount.toString()): undefined,
-    costPackageCount: model.costPackageCount ?  new Decimal(model.costPackageCount.toString()) : undefined,
+    cost: model.cost ? new Decimal(model.cost.toString()) : undefined,
+    packageCount: model.packageCount
+      ? new Decimal(model.packageCount.toString())
+      : undefined,
+    costPackageCount: model.costPackageCount
+      ? new Decimal(model.costPackageCount.toString())
+      : undefined,
     count,
     tempCount,
     itemType: itemType,
@@ -118,7 +126,7 @@ export const dbModelToEntity = async (
     warehouse,
     manufacturer,
     note,
-    defectiveNote,
+    defectiveNote
   }
   return newItem
 }

@@ -1,10 +1,10 @@
-import { User } from "$/domain/entity/user";
+import { User } from '$/domain/entity/user'
 
 export type Methods = {
   get: {
     query?: {
-      enable?:boolean
-    },
+      enable?: boolean
+    }
     resBody: User[]
   }
 }

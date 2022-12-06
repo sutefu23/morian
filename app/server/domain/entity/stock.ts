@@ -11,7 +11,9 @@ export class lotNoType extends ValueObject<string> {
 
   static getInstance(val: string): lotNoType | ValidationError {
     if (!/^[A-Z]+-([0-9]|-)+$/gu.test(val)) {
-      return new ValidationError('lotNoの形式が正しくありません。英語-数字'+ val)
+      return new ValidationError(
+        'lotNoの形式が正しくありません。英語-数字' + val
+      )
     }
     return new this(val)
   }
@@ -23,12 +25,12 @@ export interface Master {
   readonly order: number
 }
 
-export type ItemTypeType = Master & { prefix : string }
+export type ItemTypeType = Master & { prefix: string }
 export type UnitType = Master
 export type WoodSpeciesType = Master
 export type WarehouseType = Master
 export type GradeType = Master
-export type DeliveryPlaceType = Master & { address : string }
+export type DeliveryPlaceType = Master & { address: string }
 
 export type specType = string
 
@@ -39,7 +41,9 @@ export class furiganaType extends ValueObject<string> {
 
   static getInstance(val: string): furiganaType | ValidationError {
     if (!/^[ぁ-ヴー]+$/gu.test(val)) {
-      return new ValidationError('フリガナの形式が正しくありません。(全角ひらがなのみ)')
+      return new ValidationError(
+        'フリガナの形式が正しくありません。(全角ひらがなのみ)'
+      )
     }
     return new this(val)
   }
@@ -206,7 +210,7 @@ export class PrefectureType extends ValueObject<string> {
     super(val)
   }
   static getInstance(val: string): PrefectureType | ValidationError {
-    if (Prefectures.findIndex((p) => p === val) ===-1) {
+    if (Prefectures.findIndex((p) => p === val) === -1) {
       return new ValidationError('都道府県が存在しません。')
     }
     return new this(val)
@@ -306,6 +310,6 @@ export class History extends Entity<HistoryProps> implements HistoryProps {
   public static getInstance(
     props: HistoryProps
   ): History | InvalidArgumentError {
-        return new this({ ...props })
+    return new this({ ...props })
   }
 }

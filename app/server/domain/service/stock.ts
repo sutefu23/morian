@@ -75,8 +75,8 @@ export type UpdateHistoryData = {
 }
 
 export type GetParam = {
-  woodSpeciesId? : number,
-  itemTypeId? : number
+  woodSpeciesId?: number
+  itemTypeId?: number
 }
 
 export class ItemService {
@@ -113,17 +113,19 @@ export class ItemService {
     if (hasLotNo) {
       return new Error('ロットNoが既に存在します。' + item.lotNo)
     }
-   
+
     const prefix = item.lotNo.charAt(0)
     const itemTypes = await this.itemTypeRepository?.findAll()
     if (itemTypes instanceof Error) {
       return itemTypes as Error
     }
-    if(!itemTypes){
+    if (!itemTypes) {
       return new Error('ItemTypeデータが見つかりません')
     }
-    const correctPrefix = itemTypes?.find(itm => itm.id === item.itemTypeId)?.prefix
-    if(prefix !== correctPrefix){
+    const correctPrefix = itemTypes?.find(
+      (itm) => itm.id === item.itemTypeId
+    )?.prefix
+    if (prefix !== correctPrefix) {
       return new Error('ロットNoと分類の接頭辞の組み合わせが正しくありません')
     }
 
@@ -132,20 +134,26 @@ export class ItemService {
       return new Error('認証されたユーザーが見つかりません。')
     }
     if (!/^[A-Z]+-([0-9]|-)+$/gu.test(item.lotNo)) {
-      return new ValidationError('lotNoの形式が正しくありません。英語-数字'+ item.lotNo)
+      return new ValidationError(
+        'lotNoの形式が正しくありません。英語-数字' + item.lotNo
+      )
     }
 
-    const data = await this.itemRepository.create({...item, count : new Decimal(0),tempCount: new Decimal(0)})
+    const data = await this.itemRepository.create({
+      ...item,
+      count: new Decimal(0),
+      tempCount: new Decimal(0)
+    })
     if (data instanceof Error) {
       return data as Error
     }
-    if(item.issueItemId){
+    if (item.issueItemId) {
       await prisma.issueItem.update({
         where: {
-          id:item.issueItemId
+          id: item.issueItemId
         },
-        data:{isStored:true}
-      })  
+        data: { isStored: true }
+      })
     }
 
     const 仕入詳細 = {
@@ -169,7 +177,7 @@ export class ItemService {
     const itemDto = ItemToDTO(data)
     return itemDto
   }
-  
+
   async findItemById(id: number) {
     const data = await this.itemRepository.findById(id)
     if (data instanceof Error) {
@@ -183,12 +191,17 @@ export class ItemService {
   }
 
   async findManyItem(param: GetParam) {
-    const margedQuery:(Query<ItemDTO>|undefined)[] = 
-    [
-      param.woodSpeciesId ? {field:"woodSpeciesId", operator:"=", value: param?.woodSpeciesId }: undefined,
-      param.itemTypeId ? {field:"itemTypeId", operator:"=", value: param?.itemTypeId }: undefined
+    const margedQuery: (Query<ItemDTO> | undefined)[] = [
+      param.woodSpeciesId
+        ? { field: 'woodSpeciesId', operator: '=', value: param?.woodSpeciesId }
+        : undefined,
+      param.itemTypeId
+        ? { field: 'itemTypeId', operator: '=', value: param?.itemTypeId }
+        : undefined
     ]
-    const query = margedQuery.filter((item): item is NonNullable<typeof item> => item != null)
+    const query = margedQuery.filter(
+      (item): item is NonNullable<typeof item> => item != null
+    )
     const data = await this.itemRepository.findMany(query)
     if (data instanceof Error) {
       return data as Error
@@ -202,7 +215,6 @@ export class ItemService {
     })()
     return item.map((i) => ItemToDTO(i))
   }
-
 }
 
 export class HistoryService {
@@ -211,35 +223,18 @@ export class HistoryService {
     this.historyRepository = historyRepo
   }
   async createHistory(history: UpdateHistoryData) {
-    if (!history.reasonId) return new InvalidArgumentError('在庫理由は必須です。')
-    const reason = StockReason.find(r => r.id === history.reasonId)
-    if(!reason) return new InvalidArgumentError('在庫理由は必須です。')
+    if (!history.reasonId)
+      return new InvalidArgumentError('在庫理由は必須です。')
+    const reason = StockReason.find((r) => r.id === history.reasonId)
+    if (!reason) return new InvalidArgumentError('在庫理由は必須です。')
 
     if (reason.name == 出庫理由.不良品 && !history.note) {
       return new ValidationError('不良品の時は理由を備考に入れてください。')
     }
 
-    const {isTemp, itemField} = this._whichItemField(reason.name)
-    const data = await this.historyRepository.create({...history, isTemp}, itemField)
-    if (data instanceof Error) {
-      return data as Error
-    }
-    return HistoryToDTO(data)
-  }
-
-  async updateHistory(id: number, history: Partial<UpdateHistoryData>) {
-    if (!history.reasonId) return new InvalidArgumentError('在庫理由は必須です。')
-    const reason = StockReason.find(r => r.id === history.reasonId)
-    if(!reason) return new InvalidArgumentError('在庫理由は必須です。')
-
-    if (reason?.name == 出庫理由.不良品 && !history.note) {
-      return new ValidationError('不良品の時は理由を備考に入れてください。')
-    }
-
-    const {isTemp, itemField} = this._whichItemField(reason.name) 
-    const data = await this.historyRepository.update(
-      id,
-      {...history, isTemp},
+    const { isTemp, itemField } = this._whichItemField(reason.name)
+    const data = await this.historyRepository.create(
+      { ...history, isTemp },
       itemField
     )
     if (data instanceof Error) {
@@ -247,7 +242,29 @@ export class HistoryService {
     }
     return HistoryToDTO(data)
   }
-  
+
+  async updateHistory(id: number, history: Partial<UpdateHistoryData>) {
+    if (!history.reasonId)
+      return new InvalidArgumentError('在庫理由は必須です。')
+    const reason = StockReason.find((r) => r.id === history.reasonId)
+    if (!reason) return new InvalidArgumentError('在庫理由は必須です。')
+
+    if (reason?.name == 出庫理由.不良品 && !history.note) {
+      return new ValidationError('不良品の時は理由を備考に入れてください。')
+    }
+
+    const { isTemp, itemField } = this._whichItemField(reason.name)
+    const data = await this.historyRepository.update(
+      id,
+      { ...history, isTemp },
+      itemField
+    )
+    if (data instanceof Error) {
+      return data as Error
+    }
+    return HistoryToDTO(data)
+  }
+
   async getHistoryList(itemId: number) {
     const data = await this.historyRepository.findMany({
       field: 'itemId',
@@ -299,7 +316,7 @@ export class HistoryService {
     if (!target || target instanceof Error)
       return new InvalidArgumentError('在庫が存在しません。')
 
-    const {itemField} = this._whichItemField(target.reason.name)
+    const { itemField } = this._whichItemField(target.reason.name)
     const data = await this.historyRepository.delete(
       historyId,
       target,
@@ -312,22 +329,25 @@ export class HistoryService {
     return [HistoryToDTO(history), ItemToDTO(item)]
   }
   //どのITEMフィールドを同時に引落すべきか
-  private _whichItemField(reason: Reason): {isTemp: boolean, itemField :ITEM_FIELD} {
+  private _whichItemField(reason: Reason): {
+    isTemp: boolean
+    itemField: ITEM_FIELD
+  } {
     switch (reason) {
       case 出庫理由.見積:
-        return {isTemp: true, itemField: ITEM_FIELD.NONE} //引落なし
+        return { isTemp: true, itemField: ITEM_FIELD.NONE } //引落なし
       case 出庫理由.受注予約:
       case 入庫理由.発注:
-        return {isTemp: true, itemField: ITEM_FIELD.TEMP_COUNT} //仮在庫
+        return { isTemp: true, itemField: ITEM_FIELD.TEMP_COUNT } //仮在庫
       case 入庫理由.仕入:
       case 出庫理由.受注出庫:
       case 出庫理由.不良品:
       case 出庫理由.棚卸調整:
       case 入庫理由.棚卸調整:
       case 入庫理由.返品:
-        return {isTemp: false, itemField: ITEM_FIELD.BOTH} //両方
+        return { isTemp: false, itemField: ITEM_FIELD.BOTH } //両方
       default:
-        throw new Error("理由とフィールドの対応が判別できません。")
+        throw new Error('理由とフィールドの対応が判別できません。')
     }
   }
 }

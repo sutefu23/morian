@@ -115,7 +115,7 @@ export type IWarehouseRepository = Omit<
 > &
   Required<Pick<IMasterRepository<WarehouseType>, 'findAll'>>
 
- export type IDeliveryPlaceRepository = Omit<
+export type IDeliveryPlaceRepository = Omit<
   IMasterRepository<DeliveryPlaceType>,
   'findAll'
 > &

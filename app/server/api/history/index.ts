@@ -3,17 +3,17 @@ import { HistoryProps } from '@domain/entity/stock'
 import { UpdateHistoryData } from '@domain/service/stock'
 
 export type Methods = {
-  patch:{
-    reqBody: { id: HistoryProps["id"], data: UpdateHistoryData}
+  patch: {
+    reqBody: { id: HistoryProps['id']; data: UpdateHistoryData }
     resBody: HistoryDTO
     status: 204
   }
   post: {
-    reqBody: { data: UpdateHistoryData}
+    reqBody: { data: UpdateHistoryData }
     resBody: HistoryDTO
     status: 204
   }
-  delete:{
-    reqBody: { id: HistoryProps["id"]}
+  delete: {
+    reqBody: { id: HistoryProps['id'] }
   }
 }

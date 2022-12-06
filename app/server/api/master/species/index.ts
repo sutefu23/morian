@@ -1,4 +1,4 @@
-import {WoodSpeciesType} from "@domain/entity/stock";
+import { WoodSpeciesType } from '@domain/entity/stock'
 
 export type Methods = {
   get: {

@@ -1,11 +1,11 @@
-import { SupplierDTO } from "$/domain/dto/supplier";
+import { SupplierDTO } from '$/domain/dto/supplier'
 
 export type Methods = {
   get: {
     query?: {
-      enable?:boolean,
-      name?:string
-    },
+      enable?: boolean
+      name?: string
+    }
     resBody: SupplierDTO[]
   }
 }

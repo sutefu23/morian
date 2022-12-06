@@ -1,9 +1,9 @@
 import { PrismaClient } from '@prisma/client'
 
-export class PrismaRepository{
-  readonly prisma :PrismaClient
+export class PrismaRepository {
+  readonly prisma: PrismaClient
 
-  constructor(){
+  constructor() {
     this.prisma = new PrismaClient()
   }
 }

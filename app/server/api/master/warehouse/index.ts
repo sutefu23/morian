@@ -1,4 +1,4 @@
-import {WarehouseType} from "@domain/entity/stock";
+import { WarehouseType } from '@domain/entity/stock'
 
 export type Methods = {
   get: {

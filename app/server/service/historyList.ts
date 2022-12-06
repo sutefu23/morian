@@ -1,58 +1,61 @@
-import { PrismaClient } from "@prisma/client"
+import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 export type getQuery = {
-  lotNo?: string,
-  reasonId?: number,
-  fromDate?: Date,
-  toDate?: Date,
+  lotNo?: string
+  reasonId?: number
+  fromDate?: Date
+  toDate?: Date
   editUserId?: number
 }
 
-export const getHistoryList = async ({ lotNo, reasonId, fromDate, toDate, editUserId}:getQuery) =>{
+export const getHistoryList = async ({
+  lotNo,
+  reasonId,
+  fromDate,
+  toDate,
+  editUserId
+}: getQuery) => {
   const data = await prisma.item.findMany({
     where: {
       lotNo,
-      history:{
-        some:{
+      history: {
+        some: {
           reasonId,
-          date:{
+          date: {
             gte: fromDate,
             lte: toDate
           }
         }
       }
     },
-    include:{
-      history:{
-        where:{
+    include: {
+      history: {
+        where: {
           reasonId,
-          date:{
+          date: {
             gte: fromDate,
             lte: toDate
           },
           editUserId
         },
-        orderBy:[
-          {isTemp:'asc'},
-          {date:'asc'},
-        ]
+        orderBy: [{ isTemp: 'asc' }, { date: 'asc' }]
       }
-    },
+    }
   })
   return data[0]
 }
 
-export const getUserEditedHistoryList = async (editUserId:number) =>{
+export const getUserEditedHistoryList = async (editUserId: number) => {
   const toDate = new Date()
-  const fromDate = new Date
-  fromDate.setDate(toDate.getDate() - 7);
+  const fromDate = new Date()
+  fromDate.setDate(toDate.getDate() - 7)
 
   const data = await prisma.item.findMany({
     where: {
-      history:{
-        some:{
-          date:{
+      history: {
+        some: {
+          date: {
             gte: fromDate,
             lte: toDate
           },
@@ -60,21 +63,18 @@ export const getUserEditedHistoryList = async (editUserId:number) =>{
         }
       }
     },
-    include:{
-      history:{
-        where:{
-          date:{
+    include: {
+      history: {
+        where: {
+          date: {
             gte: fromDate,
             lte: toDate
           },
           editUserId
         },
-        orderBy:
-          {date:'desc'},
+        orderBy: { date: 'desc' }
       }
-    },
+    }
   })
   return data
 }
-
-

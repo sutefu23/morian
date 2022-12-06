@@ -1,11 +1,11 @@
 export type Methods = {
-   post: {
-     reqBody: {
-       id: number,
-       pass: string
-     }
-     resBody: {
-       token: string
+  post: {
+    reqBody: {
+      id: number
+      pass: string
+    }
+    resBody: {
+      token: string
     }
   }
 }

@@ -1,4 +1,4 @@
-import {UnitType} from "@domain/entity/stock";
+import { UnitType } from '@domain/entity/stock'
 
 export type Methods = {
   get: {
