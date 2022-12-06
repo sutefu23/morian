@@ -52,7 +52,7 @@ export type UpdateItemData = {
   readonly warehouseId: number
   readonly warehouseName: string
   readonly manufacturer?: string
-  readonly arrivalDate?: Date
+  readonly arrivalDate: Date
   readonly enable: boolean
   readonly note?: string
   readonly defectiveNote?: string
@@ -102,6 +102,7 @@ export class ItemService {
     const itemDto = ItemToDTO(data)
     return itemDto
   }
+
   async registerItem(item: UpdateItemData) {
     //仕入
     const hasLotNo = await this.findLotNo(item.lotNo)
@@ -110,9 +111,8 @@ export class ItemService {
     }
 
     if (hasLotNo) {
-      return new Error('ロットNoが既に存在します。')
+      return new Error('ロットNoが既に存在します。' + item.lotNo)
     }
-
    
     const prefix = item.lotNo.charAt(0)
     const itemTypes = await this.itemTypeRepository?.findAll()
@@ -169,6 +169,7 @@ export class ItemService {
     const itemDto = ItemToDTO(data)
     return itemDto
   }
+  
   async findItemById(id: number) {
     const data = await this.itemRepository.findById(id)
     if (data instanceof Error) {

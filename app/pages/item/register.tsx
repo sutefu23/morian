@@ -7,6 +7,7 @@ import {
   Input,
   Spacer,
   Button,
+  Divider,
   FormLabel
 } from '@chakra-ui/react'
 import {
@@ -45,381 +46,432 @@ const Register = ({
   }
   const { data: itemTypes } = useAspidaQuery(apiClient.master.itemType)
 
-  const { stockData, setStockData, updateField, postStock } = useStock()
+  const {
+    headerData,
+    stockItems,
+    updateItem,
+    updateHeader,
+    updateItemField,
+    addItemLine,
+    deleteItemLine,
+    copyItemLine,
+    postStock,
+    resetData
+  } = useStock()
   return (
     <>
       <form>
-        <VStack align="left" pl="10">
+        <VStack align="left" pl="10" mb="3">
           <HStack>
             <Box>
               <InputGroup>
-                <InputLeftAddon aria-required>樹種</InputLeftAddon>
-                <WoodSpeciesSelect
-                  required
-                  onSelect={(e) => {
-                    const { options, selectedIndex } = e.target
-                    setStockData({
-                      ...stockData,
-                      woodSpeciesId: Number(e.target.value),
-                      woodSpeciesName: options[selectedIndex].innerHTML
-                    })
-                  }}
-                  value={stockData?.woodSpeciesId}
-                />
-              </InputGroup>
-            </Box>
-            <Box>
-              <InputGroup>
-                <InputLeftAddon aria-required>分類</InputLeftAddon>
-                <ItemTypeSelect
-                  required
-                  value={stockData?.itemTypeId}
-                  onSelect={(select) => {
-                    if (select?.prefix) {
-                      setStockData({
-                        ...stockData,
-                        itemTypeId: select?.id,
-                        itemTypeName: select?.name,
-                        lotNo: `${select?.prefix}-`
-                      })
-                    } else {
-                      setStockData({
-                        ...stockData,
-                        itemTypeId: undefined,
-                        itemTypeName: undefined,
-                        lotNo: undefined
-                      })
-                    }
-                  }}
-                />
-              </InputGroup>
-            </Box>
-          </HStack>
-          <HStack>
-            <Box>
-              <InputGroup>
-                <InputLeftAddon aria-required>仕入先</InputLeftAddon>
+                <InputLeftAddon aria-required bgColor="blue.100">
+                  仕入先
+                </InputLeftAddon>
                 <SupplierSelect
                   onSelect={(selected) => {
-                    setStockData({
-                      ...stockData,
+                    updateHeader({
                       supplierId: selected.id,
                       supplierName: selected.name
                     })
                   }}
-                  defaultKey={stockData.supplierId}
+                  defaultKey={headerData.supplierId}
                 />
               </InputGroup>
             </Box>
             <Box>
               <InputGroup>
-                <InputLeftAddon>仕入先担当者</InputLeftAddon>
+                <InputLeftAddon bgColor="blue.100">仕入先担当者</InputLeftAddon>
                 <Input
                   placeholder="担当者"
-                  defaultValue={stockData.supplierManagerName}
-                  onChange={(e) => {
-                    updateField<'supplierManagerName'>(
-                      'supplierManagerName',
-                      e.target.value
-                    )
-                  }}
-                />
-              </InputGroup>
-            </Box>
-          </HStack>
-
-          <HStack>
-            <Box>
-              <InputGroup>
-                <InputLeftAddon aria-required>グレード</InputLeftAddon>
-                <GradeSelect
-                  value={stockData.gradeId}
-                  onSelect={(e) => {
-                    const { options, selectedIndex } = e.target
-                    setStockData({
-                      ...stockData,
-                      gradeId: Number(e.target.value),
-                      gradeName: options[selectedIndex].innerHTML
+                  defaultValue={headerData.supplierManagerName}
+                  onBlur={(e) => {
+                    updateHeader({
+                      supplierManagerName: e.target.value
                     })
-                  }}
-                />
-              </InputGroup>
-            </Box>
-            <Box>
-              <InputGroup>
-                <InputLeftAddon>仕様</InputLeftAddon>
-                <Input
-                  placeholder="自由入力"
-                  defaultValue={stockData.spec}
-                  onChange={(e) => {
-                    updateField<'spec'>('spec', e.target.value)
-                  }}
-                />
-              </InputGroup>
-            </Box>
-          </HStack>
-          <HStack>
-            <Box>
-              <InputGroup>
-                <InputLeftAddon
-                  aria-required
-                  bgColor={isFromIssue ? 'red.100' : undefined}
-                >
-                  ロットNo
-                </InputLeftAddon>
-                <Input
-                  required
-                  placeholder="半角英数字のみ可"
-                  onChange={(e) => {
-                    const lotNo = e.target.value.toNarrowCase()
-                    const prefix = lotNo.charAt(0)
-                    const itemType = itemTypes?.find(
-                      (itm) => itm.prefix === prefix
-                    )
-                    setStockData({
-                      ...stockData,
-                      lotNo,
-                      itemTypeId: itemType?.id,
-                      itemTypeName: itemType?.name
-                    })
-                  }}
-                  value={stockData?.lotNo}
-                />
-              </InputGroup>
-            </Box>
-          </HStack>
-          <HStack>
-            <Box>
-              <InputGroup>
-                <InputLeftAddon>長さｘ厚みｘ幅</InputLeftAddon>
-                <Input
-                  placeholder="長さ"
-                  defaultValue={stockData.length}
-                  onChange={(e) => {
-                    updateField<'length'>('length', e.target.value)
-                  }}
-                />
-                <FormLabel style={{ fontSize: '1.2em', marginTop: '5px' }}>
-                  ｘ
-                </FormLabel>
-                <Input
-                  placeholder="厚み"
-                  type="number"
-                  defaultValue={stockData.thickness}
-                  onChange={(e) => {
-                    updateField<'thickness'>(
-                      'thickness',
-                      Number(e.target.value)
-                    )
-                  }}
-                />
-                <FormLabel style={{ fontSize: '1.2em', marginTop: '5px' }}>
-                  ｘ
-                </FormLabel>
-                <Input
-                  placeholder="幅"
-                  type="number"
-                  defaultValue={stockData.width}
-                  onChange={(e) => {
-                    updateField<'width'>('width', Number(e.target.value))
-                  }}
-                />
-              </InputGroup>
-            </Box>
-            <Box>
-              <InputGroup>
-                <InputLeftAddon>入数</InputLeftAddon>
-                <Input
-                  required
-                  type="number"
-                  defaultValue={
-                    stockData.packageCount
-                      ? Number(stockData.packageCount)
-                      : undefined
-                  }
-                  placeholder="数字"
-                  onChange={(e) => {
-                    updateField<'packageCount'>(
-                      'packageCount',
-                      e.target.value
-                        ? (new Decimal(
-                            e.target.value
-                          ) as unknown as ServerDecimal)
-                        : undefined
-                    )
-                  }}
-                />
-              </InputGroup>
-            </Box>
-          </HStack>
-          <HStack>
-            <Box>
-              <InputGroup>
-                <InputLeftAddon>製造元</InputLeftAddon>
-                <Input
-                  placeholder="自由入力"
-                  defaultValue={stockData.manufacturer}
-                  onChange={(e) => {
-                    updateField<'manufacturer'>('manufacturer', e.target.value)
-                  }}
-                />
-              </InputGroup>
-            </Box>
-            <Box>
-              <InputGroup>
-                <InputLeftAddon
-                  aria-required
-                  bgColor={isFromIssue ? 'red.100' : undefined}
-                >
-                  倉庫
-                </InputLeftAddon>
-                <WarehouseSelect
-                  required
-                  value={stockData?.warehouseId}
-                  onSelect={(e) => {
-                    const { options, selectedIndex } = e.target
-                    setStockData({
-                      ...stockData,
-                      warehouseId: Number(e.target.value),
-                      warehouseName: options[selectedIndex].innerHTML
-                    })
-                  }}
-                />
-              </InputGroup>
-            </Box>
-            <Box>
-              <InputGroup>
-                <InputLeftAddon
-                  aria-required
-                  bgColor={isFromIssue ? 'red.100' : undefined}
-                >
-                  入荷日
-                </InputLeftAddon>
-                <Input
-                  type="date"
-                  required
-                  value={
-                    stockData.arrivalDate
-                      ? dayjs(stockData.arrivalDate).format('YYYY-MM-DD')
-                      : undefined
-                  }
-                  onChange={(e) => {
-                    updateField<'arrivalDate'>(
-                      'arrivalDate',
-                      e.target.valueAsDate ?? undefined
-                    )
-                  }}
-                />
-              </InputGroup>
-            </Box>
-          </HStack>
-          <HStack>
-            <Box>
-              <InputGroup>
-                <InputLeftAddon>原価</InputLeftAddon>
-                <Input
-                  required
-                  type="number"
-                  defaultValue={
-                    stockData.cost ? Number(stockData.cost) : undefined
-                  }
-                  placeholder="数字"
-                  onChange={(e) => {
-                    updateField<'cost'>(
-                      'cost',
-                      e.target.value
-                        ? (new Decimal(
-                            e.target.value
-                          ) as unknown as ServerDecimal)
-                        : undefined
-                    )
-                  }}
-                />
-                <FormLabel fontSize="1.2em" mt="5px">
-                  /
-                </FormLabel>
-                <UnitSelect
-                  required
-                  value={stockData.costUnitId}
-                  onSelect={(e) => {
-                    const { options, selectedIndex } = e.target
-                    setStockData({
-                      ...stockData,
-                      costUnitId: Number(e.target.value),
-                      costUnitName: options[selectedIndex].innerHTML
-                    })
-                  }}
-                />
-              </InputGroup>
-            </Box>
-            <Box>
-              <InputGroup>
-                <InputLeftAddon aria-required>数量</InputLeftAddon>
-                <Input
-                  required
-                  defaultValue={
-                    stockData.count ? Number(stockData.count) : undefined
-                  }
-                  type="number"
-                  placeholder="数字"
-                  onChange={(e) => {
-                    updateField<'count'>(
-                      'count',
-                      e.target.value
-                        ? (new Decimal(
-                            e.target.value
-                          ) as unknown as ServerDecimal)
-                        : undefined
-                    )
-                  }}
-                />
-                <UnitSelect
-                  required
-                  value={stockData.unitId}
-                  onSelect={(e) => {
-                    const { options, selectedIndex } = e.target
-                    setStockData({
-                      ...stockData,
-                      unitId: Number(e.target.value),
-                      unitName: options[selectedIndex].innerHTML
-                    })
-                  }}
-                />
-              </InputGroup>
-            </Box>
-          </HStack>
-          <Spacer />
-          <HStack>
-            <Box width="75vw">
-              <InputGroup>
-                <InputLeftAddon>備考</InputLeftAddon>
-                <Input
-                  defaultValue={stockData.note}
-                  onChange={(e) => {
-                    updateField<'note'>('note', e.target.value)
-                  }}
-                />
-              </InputGroup>
-            </Box>
-          </HStack>
-          <HStack>
-            <Box width="75vw">
-              <InputGroup>
-                <InputLeftAddon>不良品備考</InputLeftAddon>
-                <Input
-                  placeholder="割れなど傷品としての備考"
-                  defaultValue={stockData.defectiveNote}
-                  onChange={(e) => {
-                    updateField<'defectiveNote'>(
-                      'defectiveNote',
-                      e.target.value
-                    )
                   }}
                 />
               </InputGroup>
             </Box>
           </HStack>
         </VStack>
+        <Divider mb="4" />
+        {stockItems &&
+          stockItems?.map((item, index) => (
+            <>
+              <VStack key={index} align="left" pl="10">
+                <HStack>
+                  <Box>
+                    <InputGroup>
+                      <InputLeftAddon aria-required>樹種</InputLeftAddon>
+                      <WoodSpeciesSelect
+                        required
+                        onSelect={(e) => {
+                          const { options, selectedIndex } = e.target
+                          updateItem(index, {
+                            woodSpeciesId: Number(e.target.value),
+                            woodSpeciesName: options[selectedIndex].innerHTML
+                          })
+                        }}
+                        value={item?.woodSpeciesId}
+                      />
+                    </InputGroup>
+                  </Box>
+                  <Box>
+                    <InputGroup>
+                      <InputLeftAddon aria-required>分類</InputLeftAddon>
+                      <ItemTypeSelect
+                        required
+                        value={item?.itemTypeId}
+                        onSelect={(select) => {
+                          if (select?.prefix) {
+                            updateItem(index, {
+                              itemTypeId: select?.id,
+                              lotNo: `${select?.prefix}-`
+                            })
+                          } else {
+                            updateItem(index, {
+                              itemTypeId: undefined,
+                              lotNo: undefined
+                            })
+                          }
+                        }}
+                      />
+                    </InputGroup>
+                  </Box>
+                  <Box>
+                    <Button
+                      bgColor="red.100"
+                      ml="10"
+                      onClick={() => {
+                        if (confirm('こちらの明細を削除しますか？')) {
+                          deleteItemLine(index)
+                        }
+                      }}
+                    >
+                      行削除
+                    </Button>
+                  </Box>
+                  <Box>
+                    <Button
+                      bgColor="yellow.100"
+                      ml="5"
+                      onClick={() => {
+                        copyItemLine(index)
+                      }}
+                    >
+                      行コピー
+                    </Button>
+                  </Box>
+                </HStack>
+
+                <HStack>
+                  <Box>
+                    <InputGroup>
+                      <InputLeftAddon aria-required>グレード</InputLeftAddon>
+                      <GradeSelect
+                        value={item.gradeId}
+                        onSelect={(e) => {
+                          const { options, selectedIndex } = e.target
+                          updateItem(index, {
+                            gradeId: Number(e.target.value),
+                            gradeName: options[selectedIndex].innerHTML
+                          })
+                        }}
+                      />
+                    </InputGroup>
+                  </Box>
+                  <Box>
+                    <InputGroup>
+                      <InputLeftAddon>仕様</InputLeftAddon>
+                      <Input
+                        placeholder="自由入力"
+                        value={item.spec}
+                        onBlur={(e) => {
+                          updateItemField<'spec'>(index, 'spec', e.target.value)
+                        }}
+                      />
+                    </InputGroup>
+                  </Box>
+                  <Box>
+                    <InputGroup>
+                      <InputLeftAddon
+                        aria-required
+                        bgColor={isFromIssue ? 'red.100' : undefined}
+                      >
+                        ロットNo
+                      </InputLeftAddon>
+                      <Input
+                        required
+                        type="tel"
+                        placeholder="半角英数字のみ可"
+                        onChange={(e) => {
+                          const lotNo = e.target.value.toNarrowCase()
+                          const prefix = lotNo.charAt(0)
+                          const itemType = itemTypes?.find(
+                            (itm) => itm.prefix === prefix
+                          )
+                          updateItem(index, {
+                            itemTypeId: itemType?.id,
+                            itemTypeName: itemType?.name,
+                            lotNo: lotNo
+                          })
+                        }}
+                        value={item?.lotNo}
+                      />
+                    </InputGroup>
+                  </Box>
+                </HStack>
+                <HStack>
+                  <Box>
+                    <InputGroup>
+                      <InputLeftAddon>長さｘ厚みｘ幅</InputLeftAddon>
+                      <Input
+                        placeholder="長さ"
+                        value={item.length}
+                        type="tel"
+                        onChange={(e) => {
+                          updateItemField<'length'>(
+                            index,
+                            'length',
+                            e.target.value
+                          )
+                        }}
+                      />
+                      <FormLabel
+                        style={{ fontSize: '1.2em', marginTop: '5px' }}
+                      >
+                        ｘ
+                      </FormLabel>
+                      <Input
+                        placeholder="厚み"
+                        type="number"
+                        value={item.thickness}
+                        onChange={(e) => {
+                          updateItemField<'thickness'>(
+                            index,
+                            'thickness',
+                            Number(e.target.value)
+                          )
+                        }}
+                      />
+                      <FormLabel
+                        style={{ fontSize: '1.2em', marginTop: '5px' }}
+                      >
+                        ｘ
+                      </FormLabel>
+                      <Input
+                        placeholder="幅"
+                        type="number"
+                        value={item.width}
+                        onChange={(e) => {
+                          updateItemField<'width'>(
+                            index,
+                            'width',
+                            Number(e.target.value)
+                          )
+                        }}
+                      />
+                    </InputGroup>
+                  </Box>
+                  <Box>
+                    <InputGroup>
+                      <InputLeftAddon>入数</InputLeftAddon>
+                      <Input
+                        required
+                        type="number"
+                        value={
+                          item.packageCount
+                            ? Number(item.packageCount)
+                            : undefined
+                        }
+                        placeholder="数字"
+                        onChange={(e) => {
+                          updateItemField<'packageCount'>(
+                            index,
+                            'packageCount',
+                            e.target.value
+                              ? (new Decimal(
+                                  e.target.value
+                                ) as unknown as ServerDecimal)
+                              : undefined
+                          )
+                        }}
+                      />
+                    </InputGroup>
+                  </Box>
+                </HStack>
+                <HStack>
+                  <Box>
+                    <InputGroup>
+                      <InputLeftAddon>製造元</InputLeftAddon>
+                      <Input
+                        placeholder="自由入力"
+                        value={item.manufacturer}
+                        onBlur={(e) => {
+                          updateItemField<'manufacturer'>(
+                            index,
+                            'manufacturer',
+                            e.target.value
+                          )
+                        }}
+                      />
+                    </InputGroup>
+                  </Box>
+                  <Box>
+                    <InputGroup>
+                      <InputLeftAddon
+                        aria-required
+                        bgColor={isFromIssue ? 'red.100' : undefined}
+                      >
+                        倉庫
+                      </InputLeftAddon>
+                      <WarehouseSelect
+                        required
+                        value={item?.warehouseId}
+                        onSelect={(e) => {
+                          const { options, selectedIndex } = e.target
+                          updateItem(index, {
+                            warehouseId: Number(e.target.value),
+                            warehouseName: options[selectedIndex].innerHTML
+                          })
+                        }}
+                      />
+                    </InputGroup>
+                  </Box>
+                  <Box>
+                    <InputGroup>
+                      <InputLeftAddon
+                        aria-required
+                        bgColor={isFromIssue ? 'red.100' : undefined}
+                      >
+                        入荷日
+                      </InputLeftAddon>
+                      <Input
+                        type="date"
+                        value={
+                          item.arrivalDate
+                            ? dayjs(item.arrivalDate).format('YYYY-MM-DD')
+                            : undefined
+                        }
+                        onChange={(e) => {
+                          updateItemField<'arrivalDate'>(
+                            index,
+                            'arrivalDate',
+                            e.target.valueAsDate ?? undefined
+                          )
+                        }}
+                      />
+                    </InputGroup>
+                  </Box>
+                </HStack>
+                <HStack>
+                  <Box>
+                    <InputGroup>
+                      <InputLeftAddon>原価</InputLeftAddon>
+                      <Input
+                        required
+                        type="number"
+                        value={item.cost ? Number(item.cost) : undefined}
+                        placeholder="数字"
+                        onChange={(e) => {
+                          updateItemField<'cost'>(
+                            index,
+                            'cost',
+                            e.target.value
+                              ? (new Decimal(
+                                  e.target.value
+                                ) as unknown as ServerDecimal)
+                              : undefined
+                          )
+                        }}
+                      />
+                      <FormLabel fontSize="1.2em" mt="5px">
+                        /
+                      </FormLabel>
+                      <UnitSelect
+                        required
+                        value={item.costUnitId}
+                        onSelect={(e) => {
+                          const { options, selectedIndex } = e.target
+                          updateItem(index, {
+                            costUnitId: Number(e.target.value),
+                            costUnitName: options[selectedIndex].innerHTML
+                          })
+                        }}
+                      />
+                    </InputGroup>
+                  </Box>
+                  <Box>
+                    <InputGroup>
+                      <InputLeftAddon aria-required>数量</InputLeftAddon>
+                      <Input
+                        required
+                        value={item.count ? Number(item.count) : undefined}
+                        type="number"
+                        placeholder="数字"
+                        onChange={(e) => {
+                          updateItemField<'count'>(
+                            index,
+                            'count',
+                            e.target.value
+                              ? (new Decimal(
+                                  e.target.value
+                                ) as unknown as ServerDecimal)
+                              : undefined
+                          )
+                        }}
+                      />
+                      <UnitSelect
+                        required
+                        value={item.unitId}
+                        onSelect={(e) => {
+                          const { options, selectedIndex } = e.target
+                          updateItem(index, {
+                            unitId: Number(e.target.value),
+                            unitName: options[selectedIndex].innerHTML
+                          })
+                        }}
+                      />
+                    </InputGroup>
+                  </Box>
+                </HStack>
+                <Spacer />
+                <HStack>
+                  <Box width="75vw">
+                    <InputGroup>
+                      <InputLeftAddon>備考</InputLeftAddon>
+                      <Input
+                        value={item.note}
+                        onBlur={(e) => {
+                          updateItemField<'note'>(index, 'note', e.target.value)
+                        }}
+                      />
+                    </InputGroup>
+                  </Box>
+                </HStack>
+                <HStack>
+                  <Box width="75vw">
+                    <InputGroup>
+                      <InputLeftAddon>不良品備考</InputLeftAddon>
+                      <Input
+                        placeholder="割れなど傷品としての備考"
+                        value={item.defectiveNote}
+                        onBlur={(e) => {
+                          updateItemField<'defectiveNote'>(
+                            index,
+                            'defectiveNote',
+                            e.target.value
+                          )
+                        }}
+                      />
+                    </InputGroup>
+                  </Box>
+                </HStack>
+              </VStack>
+              <Divider mt="4" mb="4" />
+            </>
+          ))}
 
         <Footer>
           <HStack>
@@ -434,9 +486,7 @@ const Register = ({
                   try {
                     await postStock()
                     onSuccess()
-                    if (!isFromIssue) {
-                      window.location.reload()
-                    }
+                    
                   } catch (e) {
                     console.error(e)
                   }
@@ -445,11 +495,31 @@ const Register = ({
                 登録
               </Button>
             </Box>
-            {/* <Box>
-          <Button ml={50} w={100} bgColor="red.200"
-            onClick={useDemo}
-          >デモ</Button>
-        </Box> */}
+            <Box textAlign="left">
+              <Button
+                ml="50"
+                w={80}
+                bgColor="green.100"
+                onClick={() => addItemLine()}
+              >
+                行追加
+              </Button>
+              <Button
+                type="submit"
+                ml={50}
+                w={100}
+                bgColor="pink.200"
+                onClick={(e) => {
+                  e.preventDefault()
+                  const res = confirm('データをリセットします。')
+                  if (res) {
+                    resetData()
+                  }
+                }}
+              >
+                リセット
+              </Button>
+            </Box>
           </HStack>
         </Footer>
       </form>

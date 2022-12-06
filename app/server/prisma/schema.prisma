@@ -127,7 +127,7 @@ model Item {
   supplierName        String?
   supplierManagerName String    @default("")
   history             History[]
-  arrivalDate         DateTime? // 入荷日
+  arrivalDate         DateTime // 入荷日
   warehouse           Warehouse @relation(fields: [warehouseId], references: [id]) // 倉庫
   warehouseId         Int // 倉庫
   warehouseName       String    @default("")
