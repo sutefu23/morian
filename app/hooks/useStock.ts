@@ -3,6 +3,8 @@ import { apiClient } from '~/utils/apiClient'
 import { atom, useRecoilState, useRecoilCallback } from 'recoil'
 import { recoilPersist } from 'recoil-persist'
 import produce from 'immer'
+import { Item } from 'react-stately'
+import { list } from '@chakra-ui/react'
 
 const { persistAtom: persistAtomSaveData } = recoilPersist({
   key: 'recoil-persist-register-save-data',
@@ -190,10 +192,7 @@ const useStock = () => {
       woodSpeciesName,
       arrivalDate
     } = data
-    if (!lotNo) {
-      alert(`${index + 1}行目：ロットNoは必須です。`)
-      return null
-    }
+
     if (!itemTypeId || !itemTypeName) {
       alert(`${index + 1}行目：分類は必須です。`)
       return null
@@ -247,7 +246,6 @@ const useStock = () => {
     }
     return {
       ...data,
-      lotNo,
       arrivalDate,
       itemTypeId,
       itemTypeName,
@@ -290,7 +288,9 @@ const useStock = () => {
       }
 
       const hasDuplicateKey = postItems.some((item) => {
-        return postItems.filter((i) => i.lotNo === item.lotNo).length > 1
+        if(item.lotNo){
+          return postItems.filter((i) => i.lotNo === item.lotNo).length > 1
+        }
       })
 
       if (hasDuplicateKey) {
@@ -298,9 +298,16 @@ const useStock = () => {
         throw new Error()
       }
 
-      await apiClient.itemList.post({ body: postItems })
-      alert('登録しました')
-      resetData()
+      const res = await apiClient.itemList.post({ body: postItems })
+
+      if(res instanceof Error) throw res
+
+      if(res.status===201){
+        if(res.body instanceof Error) throw res
+        const message = res.body.map((item) => `ロットNo: ${item.lotNo}  ${item.woodSpeciesName}${item.itemTypeName}`)
+        alert('登録しました\n' + message.join("\n"))
+        resetData()  
+      }
     },
     [deleteItemLine, headerData, resetData, stockItems]
   )

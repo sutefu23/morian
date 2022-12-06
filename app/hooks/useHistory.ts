@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import { UpdateHistoryData } from '~/server/domain/service/stock'
 import { apiClient } from '~/utils/apiClient'
-import { atom, useRecoilState } from 'recoil'
+import { atom, useRecoilCallback, useRecoilState } from 'recoil'
 import { 出庫理由 } from '~/server/domain/entity/stock'
 import { StockReason } from '~/server/domain/init/master'
 
@@ -32,12 +32,12 @@ const useHistory = () => {
   const [historyData, setHistoryData] =
     useRecoilState<EditUpdataHistoryData>(historyDataAtom)
 
-  const updateField = useCallback(
+  const updateField = useRecoilCallback(({set}) =>
     <K extends keyof EditUpdataHistoryData>(
       key: K,
       val: EditUpdataHistoryData[K]
     ): void => {
-      setHistoryData({ ...historyData, [key]: val })
+      set(historyDataAtom, { ...historyData, [key]: val })
     },
     [historyData]
   )
@@ -92,14 +92,7 @@ const useHistory = () => {
       alert('editUserは必須です')
       return null
     }
-    if (bookDate && !bookUserId) {
-      alert('予約者を入れた場合は予約期限は必須です')
-      return null
-    }
-    if (bookDate && !bookUserId) {
-      alert('予約期限を入れた場合は予約者は必須です')
-      return null
-    }
+
     const reason = StockReason.find((r) => r.id === reasonId)?.name
     if (reason == 出庫理由.受注予約 || reason == 出庫理由.見積) {
       if (!bookUserId || !bookDate || !bookUserName) {
@@ -124,7 +117,7 @@ const useHistory = () => {
     }
   }
 
-  const postHistory = useCallback(async () => {
+  const postHistory = useRecoilCallback(() => async () => {
     const postHistoryData = checkValidHistory(historyData)
     if (!postHistoryData) {
       console.error('postHistoryData is not valid')
@@ -138,7 +131,7 @@ const useHistory = () => {
     return true
   }, [historyData])
 
-  const updateHistory = useCallback(
+  const updateHistory = useRecoilCallback(() => 
     async (id: number) => {
       const updateHistoryData = checkValidHistory(historyData)
       if (!updateHistoryData) {

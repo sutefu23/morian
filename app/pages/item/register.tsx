@@ -124,17 +124,10 @@ const Register = ({
                         required
                         value={item?.itemTypeId}
                         onSelect={(select) => {
-                          if (select?.prefix) {
-                            updateItem(index, {
-                              itemTypeId: select?.id,
-                              lotNo: `${select?.prefix}-`
-                            })
-                          } else {
-                            updateItem(index, {
-                              itemTypeId: undefined,
-                              lotNo: undefined
-                            })
-                          }
+                          updateItem(index, {
+                            itemTypeId: select?.id,
+                            itemTypeName: select?.name
+                          })
                         }}
                       />
                     </InputGroup>
@@ -203,17 +196,12 @@ const Register = ({
                       </InputLeftAddon>
                       <Input
                         required
+                        readOnly={true}
                         type="tel"
-                        placeholder="半角英数字のみ可"
+                        placeholder="自動取得"
                         onChange={(e) => {
                           const lotNo = e.target.value.toNarrowCase()
-                          const prefix = lotNo.charAt(0)
-                          const itemType = itemTypes?.find(
-                            (itm) => itm.prefix === prefix
-                          )
                           updateItem(index, {
-                            itemTypeId: itemType?.id,
-                            itemTypeName: itemType?.name,
                             lotNo: lotNo
                           })
                         }}
@@ -486,7 +474,6 @@ const Register = ({
                   try {
                     await postStock()
                     onSuccess()
-                    
                   } catch (e) {
                     console.error(e)
                   }

@@ -10,12 +10,25 @@ import { dbModelToEntity } from '../mapper/item'
 import { ItemDTO } from '@domain/dto/item'
 import { UpdateItemData } from '$/domain/service/stock'
 import { buildWhereStatement } from './common'
+import { generateLotNo } from '$/service/itemList'
 
 export class ItemRepository implements IItemRepository {
   readonly prisma: PrismaClient
 
   constructor() {
     this.prisma = new PrismaClient()
+  }
+  create(entity: UpdateItemData): Promise<Item | Error> {
+    throw new Error('Method not implemented.')
+  }
+  findOne?(query: Query<ItemDTO> | Query<ItemDTO>[]): Promise<Item | Error> {
+    throw new Error('Method not implemented.')
+  }
+  findAll?(enable?: boolean | undefined): Promise<Error | Item[]> {
+    throw new Error('Method not implemented.')
+  }
+  filterName?(name: string): Promise<Error | Item[]> {
+    throw new Error('Method not implemented.')
   }
   async findMany(
     query: Query<ItemDTO> | Query<ItemDTO>[]
@@ -54,40 +67,7 @@ export class ItemRepository implements IItemRepository {
     const deleteItem = await dbModelToEntity(result)
     return deleteItem
   }
-  async create(
-    entity: UpdateItemData
-  ): Promise<Item | ValidationError | FieldNotFoundError> {
-    const newEntity = {
-      ...entity,
-      lotNo: entity.lotNo,
-      length: entity.length ? String(entity.length) : undefined,
-      manufacturer: entity.manufacturer ?? '',
-      itemType: { connect: { id: entity.itemTypeId } },
-      unit: { connect: { id: entity.unitId } },
-      supplier: { connect: { id: entity.supplierId } },
-      costUnit: entity.costUnitId
-        ? { connect: { id: entity.costUnitId } }
-        : undefined,
-      woodSpecies: { connect: { id: entity.woodSpeciesId } },
-      grade: { connect: { id: entity.gradeId } },
-      warehouse: { connect: { id: entity.warehouseId } },
-      cost: entity.cost?.toString(),
-      packageCount: entity.packageCount?.toString(),
-      costPackageCount: entity.costPackageCount?.toString(),
-      count: entity.count.toString(),
-      tempCount: entity.tempCount.toString(),
-      supplierId: undefined,
-      itemTypeId: undefined,
-      woodSpeciesId: undefined,
-      gradeId: undefined,
-      unitId: undefined,
-      costUnitId: undefined,
-      warehouseId: undefined
-    }
-    const result = await this.prisma.item.create({ data: newEntity })
-    const newItem = await dbModelToEntity(result)
-    return newItem
-  }
+  
   async update(
     id: number,
     entity: Partial<UpdateItemData>

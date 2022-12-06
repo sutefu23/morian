@@ -4,6 +4,8 @@ import { AuthService } from '$/domain/service/auth'
 import { ValidationError } from '$/domain/type/error'
 import { Decimal } from 'decimal.js'
 import { Status } from '@domain/entity/stock'
+import { queryPrefix } from './itemType'
+import dayjs from 'dayjs'
 const prisma = new PrismaClient()
 
 export type getQuery = {
@@ -74,6 +76,7 @@ export const getItemList = async ({
 }
 
 export const bulkInsert = async (items: UpdateItemData[]) => {
+
   const checks = await Promise.all(
     items.map(async (item) => {
       return await checkValidItem(item)
@@ -95,13 +98,16 @@ export const bulkInsert = async (items: UpdateItemData[]) => {
   const [newItems] = await prisma.$transaction(async (prisma) => {
     const newItems = await Promise.all(
       items.map(
-        async (item) =>
-          await prisma.item.create({
+        async (item, index) =>{
+          const lotNo = await generateLotNo(item.itemTypeId, index + 1)
+          return await prisma.item.create({
             data: {
               ...item,
+              lotNo,
               length: String(item.length)
             }
           })
+        }
       )
     )
 
@@ -132,31 +138,60 @@ export const bulkInsert = async (items: UpdateItemData[]) => {
 }
 
 const checkValidItem = async (item: UpdateItemData) => {
-  //仕入
-  const hasLotNo = await prisma.item.findUnique({
-    where: { lotNo: item.lotNo }
-  })
-  if (hasLotNo) {
-    return new Error('ロットNoが既に存在します。' + item.lotNo)
+  
+  if(item.lotNo){
+    const hasLotNo = await prisma.item.findUnique({
+      where: { lotNo: item.lotNo }
+    })
+    if (hasLotNo) {
+      return new Error('ロットNoが既に存在します。' + item.lotNo)
+    }  
+    const prefix = item.lotNo.charAt(0)
+  
+    const correctPrefix = await queryPrefix(item.itemTypeId)
+  
+    if (prefix !== correctPrefix) {
+      return new Error('ロットNoと分類の接頭辞の組み合わせが正しくありません')
+    }
+  
+    if (!/^[A-Z]+-([0-9]|-)+$/gu.test(item.lotNo)) {
+      return new ValidationError(
+        'lotNoの形式が正しくありません。英語-数字' + item.lotNo
+      )
+    }  
   }
 
-  const prefix = item.lotNo.charAt(0)
-  const itemTypes = await prisma.itemType.findMany()
-
-  if (itemTypes.length === 0) {
-    return new Error('ItemTypeデータが見つかりません')
-  }
-  const correctPrefix = itemTypes?.find(
-    (itm) => itm.id === item.itemTypeId
-  )?.prefix
-  if (prefix !== correctPrefix) {
-    return new Error('ロットNoと分類の接頭辞の組み合わせが正しくありません')
-  }
-
-  if (!/^[A-Z]+-([0-9]|-)+$/gu.test(item.lotNo)) {
-    return new ValidationError(
-      'lotNoの形式が正しくありません。英語-数字' + item.lotNo
-    )
-  }
   return true
+}
+
+/**
+ * ロットナンバーの自動生成
+ * @param {number} itemTypeId
+ * @param {number} [offset=1] 
+ * @return {string} 新しいロットNo 
+ */
+export const generateLotNo = async (itemTypeId : number, offset = 1) => {
+  const itemPrefix = await queryPrefix(itemTypeId)
+  const startsLotNo = `${itemPrefix}-${dayjs().format('YYMMDD')}-`
+
+  const lastItem = await prisma.item.findFirst({
+    where:{
+      lotNo:{
+        startsWith :startsLotNo
+      }
+    },
+    orderBy:{
+      lotNo:"desc"
+    }
+  })
+  const currentSerialNo = (() => {
+    if(!lastItem){
+      return 0
+    }else{
+      return Number(lastItem.lotNo.slice(-1)[0] ?? 0)
+    }
+  })()
+
+  const serialNextNo = currentSerialNo + offset
+  return `${startsLotNo}-${( '00' + serialNextNo ).slice( -2 ).toString()}` 
 }

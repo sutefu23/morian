@@ -22,10 +22,11 @@ import { StockReason } from '../init/master'
 import { PrismaClient } from '@prisma/client'
 import { AuthService } from './auth'
 import { ItemTypeRepository } from '../repository/prisma/master'
+import { generateLotNo } from '$/service/itemList'
 const prisma = new PrismaClient()
 
 export type UpdateItemData = {
-  readonly lotNo: string
+  readonly lotNo?: string
   readonly itemTypeId: number
   readonly itemTypeName: string
   readonly issueItemId?: number
@@ -105,40 +106,43 @@ export class ItemService {
 
   async registerItem(item: UpdateItemData) {
     //仕入
-    const hasLotNo = await this.findLotNo(item.lotNo)
-    if (hasLotNo instanceof Error) {
-      return hasLotNo as Error
-    }
+    if(item.lotNo){
+      const hasLotNo = await this.findLotNo(item.lotNo)
+      if (hasLotNo instanceof Error) {
+        return hasLotNo as Error
+      }
+  
+      if (hasLotNo) {
+        return new Error('ロットNoが既に存在します。' + item.lotNo)
+      }
+  
+      const prefix = item.lotNo.charAt(0)
+      const itemTypes = await this.itemTypeRepository?.findAll()
+      if (itemTypes instanceof Error) {
+        return itemTypes as Error
+      }
+      if (!itemTypes) {
+        return new Error('ItemTypeデータが見つかりません')
+      }
+      const correctPrefix = itemTypes?.find(
+        (itm) => itm.id === item.itemTypeId
+      )?.prefix
+      if (prefix !== correctPrefix) {
+        return new Error('ロットNoと分類の接頭辞の組み合わせが正しくありません')
+      }
+  
+      if (!/^[A-Z]+-([0-9]|-)+$/gu.test(item.lotNo)) {
+        return new ValidationError(
+          'lotNoの形式が正しくありません。英語-数字' + item.lotNo
+        )
+      }
 
-    if (hasLotNo) {
-      return new Error('ロットNoが既に存在します。' + item.lotNo)
-    }
-
-    const prefix = item.lotNo.charAt(0)
-    const itemTypes = await this.itemTypeRepository?.findAll()
-    if (itemTypes instanceof Error) {
-      return itemTypes as Error
-    }
-    if (!itemTypes) {
-      return new Error('ItemTypeデータが見つかりません')
-    }
-    const correctPrefix = itemTypes?.find(
-      (itm) => itm.id === item.itemTypeId
-    )?.prefix
-    if (prefix !== correctPrefix) {
-      return new Error('ロットNoと分類の接頭辞の組み合わせが正しくありません')
     }
 
     const editUser = AuthService.user()
     if (!editUser) {
       return new Error('認証されたユーザーが見つかりません。')
     }
-    if (!/^[A-Z]+-([0-9]|-)+$/gu.test(item.lotNo)) {
-      return new ValidationError(
-        'lotNoの形式が正しくありません。英語-数字' + item.lotNo
-      )
-    }
-
     const data = await this.itemRepository.create({
       ...item,
       count: new Decimal(0),
