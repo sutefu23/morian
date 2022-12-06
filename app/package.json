@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "prepare": "cd .. && husky install app/.husky",
     "dev": "npm run migrate:dev && run-p dev:*",
     "dev:client": "next dev -p 8000 --hostname 0.0.0.0",
     "dev:server": "npm run dev --prefix server",
@@ -78,6 +79,7 @@
     "fastify-cors": "^5.2.0",
     "fastify-static": "^4.7.0",
     "frourio": "0.25.0",
+    "husky": "^8.0.2",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^26.6.3",
     "npm-run-all": "^4.1.5",
