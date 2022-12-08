@@ -1,9 +1,6 @@
-import { useCallback } from 'react'
 import { UpdateHistoryData } from '~/server/domain/service/stock'
 import { apiClient } from '~/utils/apiClient'
-import { atom, useRecoilCallback, useRecoilState } from 'recoil'
-import { 出庫理由 } from '~/server/domain/entity/stock'
-import { StockReason } from '~/server/domain/init/master'
+import { atom, useRecoilCallback, useRecoilState, useResetRecoilState } from 'recoil'
 
 export type EditUpdataHistoryData = Partial<UpdateHistoryData>
 
@@ -32,6 +29,7 @@ const useHistory = () => {
   const [historyData, setHistoryData] =
     useRecoilState<EditUpdataHistoryData>(historyDataAtom)
 
+  
   const updateField = useRecoilCallback(({set}) =>
     <K extends keyof EditUpdataHistoryData>(
       key: K,
@@ -93,13 +91,6 @@ const useHistory = () => {
       return null
     }
 
-    const reason = StockReason.find((r) => r.id === reasonId)?.name
-    if (reason == 出庫理由.受注予約 || reason == 出庫理由.見積) {
-      if (!bookUserId || !bookDate || !bookUserName) {
-        alert('出庫理由が予約か見積の場合は予約者と予約期限は必須です')
-        return null
-      }
-    }
     return {
       ...data,
       itemId,
@@ -155,6 +146,7 @@ const useHistory = () => {
         id
       }
     })
+    return true
   }
 
   return {

@@ -1,5 +1,5 @@
 import { UpdateItemData } from '$/domain/service/stock'
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, Item } from '@prisma/client'
 import { AuthService } from '$/domain/service/auth'
 import { ValidationError } from '$/domain/type/error'
 import { Decimal } from 'decimal.js'
@@ -12,7 +12,9 @@ export type getQuery = {
   woodSpeciesId?: number
   itemTypeId?: number
   isDefective?: boolean
-  notZero?: boolean
+  notZero?: boolean,
+  orderBy?: "asc"|"desc",
+  limit?: number,
 }
 
 export const getExsitItemGroupList = async () => {
@@ -25,8 +27,11 @@ export const getItemList = async ({
   woodSpeciesId,
   itemTypeId,
   notZero,
-  isDefective
+  isDefective,
+  limit,
+  orderBy = "asc"
 }: getQuery) => {
+
   const query = {
     where: {
       woodSpeciesId,
@@ -66,11 +71,14 @@ export const getItemList = async ({
       }
     }
   })()
-
   const data = await prisma.item.findMany({
     ...query,
     ...notZeroQuery,
-    ...isDefectiveQuery
+    ...isDefectiveQuery,
+    orderBy:{
+      id:orderBy
+    },
+    take: limit
   })
   return data
 }
@@ -104,7 +112,7 @@ export const bulkInsert = async (items: UpdateItemData[]) => {
             data: {
               ...item,
               lotNo,
-              length: String(item.length)
+              length: item.length ? String(item.length): undefined
             }
           })
         }
@@ -172,7 +180,7 @@ const checkValidItem = async (item: UpdateItemData) => {
  */
 export const generateLotNo = async (itemTypeId : number, offset = 1) => {
   const itemPrefix = await queryPrefix(itemTypeId)
-  const startsLotNo = `${itemPrefix}-${dayjs().format('YYMMDD')}-`
+  const startsLotNo = `${itemPrefix}-${dayjs().format('YYMMDD')}`
 
   const lastItem = await prisma.item.findFirst({
     where:{

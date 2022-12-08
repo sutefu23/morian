@@ -1,8 +1,8 @@
 import { defineController } from './$relay'
 import { bulkInsert, getItemList } from 'service/itemList'
 export default defineController(() => ({
-  get: async ({ query }) => {
-    const data = await getItemList(query)
+  get: async (body) => {
+    const data = await getItemList(body.query)
     if (data instanceof Error) {
       return { status: 400, body: data.message }
     }

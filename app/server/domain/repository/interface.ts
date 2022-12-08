@@ -9,14 +9,11 @@ import {
   WarehouseType,
   DeliveryPlaceType,
   ReasonType,
-  ITEM_FIELD,
   ItemTypeType
 } from '../entity/stock'
 import { User, UserProps } from '../entity/user'
 import { User as UserModel, Supplier as SupplierModel } from '@prisma/client'
-import type { UpdateItemData, UpdateHistoryData } from '@domain/service/stock'
-import type { ItemDTO } from '@domain/dto/item'
-import type { HistoryDTO } from '@domain/dto/history'
+
 interface Operator {
   value: unknown
   operator: string
@@ -58,36 +55,7 @@ export type IRepository<Props, Model, Entity> = IRepositoryCommand<
 > &
   IRepositoryQuery<Model, Entity>
 
-export type IItemRepository = Required<
-  IRepositoryCommand<UpdateItemData, Item>
-> &
-  Omit<IRepositoryQuery<ItemDTO, Item>, 'findMany'> &
-  Required<Pick<IRepositoryQuery<ItemDTO, Item>, 'findMany'>> & {
-    findByLotNo(lotNo: string): Promise<Item | null | Error>
-  }
-export type IHistoryRepository = Omit<
-  IRepositoryCommand<HistoryDTO, History>,
-  'create' | 'delete' | 'update'
-> &
-  Required<
-    Pick<IRepositoryQuery<HistoryDTO, History>, 'findMany' | 'findById'>
-  > & {
-    create(
-      entity: UpdateHistoryData,
-      itemField: ITEM_FIELD
-    ): Promise<History | Error>
-    delete(
-      id: number,
-      entity: Required<Pick<UpdateHistoryData, 'itemId'>> &
-        Partial<Pick<UpdateHistoryData, 'reduceCount' | 'addCount'>>,
-      itemField: ITEM_FIELD
-    ): Promise<[History, Item] | Error>
-    update(
-      id: number,
-      entity: Partial<UpdateHistoryData>,
-      itemField: ITEM_FIELD
-    ): Promise<History | Error>
-  }
+
 export type IUserRepository = IRepositoryCommand<UserProps, User> &
   IRepositoryQuery<UserModel, User> &
   Required<Pick<IRepositoryQuery<UserModel, User>, 'findAll'>>

@@ -1,4 +1,3 @@
-import { Supplier } from '@domain/entity/stock'
 import { ISupplierRepository } from '@domain/repository/interface'
 import { SupplierDTO, SupplierToDTO, DTOtoSupplier } from '../dto/supplier'
 
