@@ -1,9 +1,11 @@
 import React from 'react';
 import { PDFDownloadLink, PDFViewer, Page, Font, Text, View, Image, Document, StyleSheet } from '@react-pdf/renderer';
+import { Button } from '@chakra-ui/react';
 import JsBarcode from 'jsbarcode'
 import { useAspidaQuery } from '@aspida/react-query';
 import { apiClient } from '~/utils/apiClient';
 
+const MAX_PAGE_BARCODE_NUM = 30
 export const BarCodePdf = () => {
   const {data: items} = useAspidaQuery(apiClient.itemList,{query:{notZero:true}})
   if(!items) return <>データ取得中</>
@@ -19,9 +21,10 @@ export const BarCodePdf = () => {
     JsBarcode(canvas, item.lotNo, {format:"code39"});
     const barcode = canvas.toDataURL();
 
+    const size = (item.length ?? '') + (item.thickness ? `*${item.thickness}` : '') + (item.width ? `*${item.width}`:'')
     return {
       name: `${item.woodSpeciesName} ${item.itemTypeName}`,
-      size: `${item.length}x${item.thickness}x${item.width}`,
+      size: size ?? '',
       url:barcode
     }
   })
@@ -48,13 +51,13 @@ export const BarCodePdf = () => {
   const MyPDF = () => {
     return (
       <Document>
-        <Page size="A4" style={styles.body}>
+        <Page size="A4" style={styles.body} wrap={false}>
             <Text style={styles.title}>倉庫名など</Text>
             <Text style={styles.subtitle}>樹種名など</Text>
             <View style={styles.display}>
             {
-              dataArray.map((data) => (
-                <View style={styles.barcode} key={data.name}>
+              dataArray.map((data, index) => (
+                <View style={styles.barcode} key={data.name} break={index > 0 && index % MAX_PAGE_BARCODE_NUM===0}>
                 <Image src={data.url} style={{height:50}}/>
                 <Text style={styles.text}>{data.name}</Text>
                 <Text style={styles.text}>{data.size}</Text>
@@ -70,7 +73,9 @@ export const BarCodePdf = () => {
   return (
     <>
       <PDFDownloadLink document={<MyPDF />} fileName="barcode.pdf">
-      {({loading}) => (loading ? 'Loading document...' : 'クリックでPDFダウンロード')}
+        <Button color="blue.300">
+        クリックでPDFダウンロード
+        </Button>
       </PDFDownloadLink>
       <PDFViewer width="80%">
         <MyPDF />

@@ -43,7 +43,6 @@ const Sidebar = () => {
   const { data: existItemGroup, error: existItemGroupErr } = useAspidaQuery(
     apiClient.itemList.existGroups
   )
-
   const { isOpen, setIsOpen } = useSidebar()
   if (itemTypeErr)
     return <StatusBar status="error" message="商品の取得に失敗しました。" />
@@ -102,11 +101,11 @@ const Sidebar = () => {
     //   name: '過去発注情報検索',
     //   path: '/issue/issueList'
     // },
-    {
-      key: 'handy',
-      name: 'ハンディターミナル',
-      path: '/handy'
-    },
+    // {
+    //   key: 'handy',
+    //   name: 'ハンディターミナル',
+    //   path: '/handy'
+    // },
     {
       key: 'barcode',
       name: 'バーコード印刷',

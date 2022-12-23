@@ -97,10 +97,11 @@ const useStock = () => {
   const updateHeader = useRecoilCallback(
     ({ set }) =>
       (updateHeaderData: EditHeaderData): void => {
-        set(headerDataAtom, { ...headerData, ...updateHeaderData })
+        const newHeaderData = { ...headerData, ...updateHeaderData }
+        set(headerDataAtom, newHeaderData)
         const items = stockItems.map((item) => ({
           ...item,
-          ...headerData
+          ...newHeaderData
         }))
         set(stockItemsAtom, items)
       },
