@@ -3,8 +3,6 @@ import { apiClient } from '~/utils/apiClient'
 import { atom, useRecoilState, useRecoilCallback } from 'recoil'
 import { recoilPersist } from 'recoil-persist'
 import produce from 'immer'
-import { Item } from 'react-stately'
-import { list } from '@chakra-ui/react'
 
 const { persistAtom: persistAtomSaveData } = recoilPersist({
   key: 'recoil-persist-register-save-data',
@@ -78,10 +76,10 @@ const headerDataAtom = atom({
 })
 
 const useStock = () => {
-  const [stock, setStock] = useRecoilState<EditItemData>(stockItemAtom)
+  const [, setStock] = useRecoilState<EditItemData>(stockItemAtom)
   const [stockItems, setStockItems] =
     useRecoilState<EditItemArrayData>(stockItemsAtom)
-  const [headerData, setHeaderData] =
+  const [headerData, ] =
     useRecoilState<EditHeaderData>(headerDataAtom)
 
   const resetData = useRecoilCallback(
@@ -142,7 +140,7 @@ const useStock = () => {
     ({ set }) =>
       () => {
         const newItems = produce(stockItems, (draft) => {
-          draft?.push(defaultData[0])
+          draft?.push({...defaultData[0], ...headerData})
         })
         set(stockItemsAtom, newItems)
       },
@@ -186,7 +184,6 @@ const useStock = () => {
     }
 
     const {
-      lotNo,
       itemTypeId,
       itemTypeName,
       woodSpeciesId,

@@ -26,8 +26,6 @@ import usePageTitle from '~/hooks/usePageTitle'
 import '~/utils/string'
 import '~/utils/number'
 import dayjs from 'dayjs'
-import { useAspidaQuery } from '@aspida/react-query'
-import { apiClient } from '~/utils/apiClient'
 
 type Props = {
   isFromIssue?: boolean //発注情報を入庫化する時
@@ -44,7 +42,6 @@ const Register = ({
   if (!isFromIssue) {
     setTitle('新規在庫登録')
   }
-  const { data: itemTypes } = useAspidaQuery(apiClient.master.itemType)
 
   const {
     headerData,
