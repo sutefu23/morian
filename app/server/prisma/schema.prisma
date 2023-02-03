@@ -213,7 +213,7 @@ model History {
   date         DateTime
   reasonId     Int
   reason       Reason    @relation(fields: [reasonId], references: [id]) //理由
-  item         Item      @relation(fields: [itemId], references: [id])
+  item         Item      @relation(fields: [itemId], references: [id], onDelete: Cascade)
   itemId       Int
   status       Int
   isTemp       Boolean

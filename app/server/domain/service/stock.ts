@@ -38,6 +38,23 @@ export type UpdateItemData = {
 }
 // 直接一部のデータだけを変更する用
 export type PartialUpdateItemData = {
+  readonly spec?: string
+  readonly length?: number | string
+  readonly thickness?: number
+  readonly width?: number
+  readonly packageCount?: Decimal
+  readonly gradeId?: number
+  readonly gradeName?: string
+  readonly unitId?: UnitType['id']
+  readonly unitName?: UnitType['name']
+  readonly costPackageCount?: Decimal
+  readonly cost?: Decimal
+  readonly costUnitId?: number
+  readonly costUnitName?: string
+  readonly warehouseId?: number
+  readonly warehouseName?: string
+  readonly manufacturer?: string
+  readonly arrivalDate?: Date
   readonly note?: string,
   readonly defectiveNote?:string
 }

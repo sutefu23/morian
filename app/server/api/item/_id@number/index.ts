@@ -9,5 +9,7 @@ export type Methods = {
     reqBody: { id: number; data: PartialUpdateItemData }
     resBody: Item
     status: 204
+  },
+  delete: {
   }
 }

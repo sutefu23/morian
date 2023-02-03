@@ -322,7 +322,7 @@ const useStock = () => {
     deleteItemLine,
     copyItemLine,
     resetData,
-    postStock
+    postStock,
   }
 }
 

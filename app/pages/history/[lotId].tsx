@@ -18,7 +18,8 @@ import {
   Td,
   useDisclosure,
   chakra,
-  Text
+  Text,
+  FormLabel
 } from '@chakra-ui/react'
 import { useAspidaQuery } from '@aspida/react-query'
 import dayjs from 'dayjs'
@@ -30,6 +31,15 @@ import EditHistoryModal from '../../components/form/editHistory'
 import useHistory from '~/hooks/useHistory'
 import HistoryDetail from './historyDetail'
 import useUser from '~/hooks/useUser'
+import useRegisteredItem from '~/hooks/useRegisteredItem'
+import {
+  PartialUpdateItemData,
+  UpdateItemData
+} from '~/server/domain/service/stock'
+import GradeSelect from '~/components/select/gradeSelect'
+import WarehouseSelect from '~/components/select/warehouseSelect'
+import { Decimal } from 'server/node_modules/decimal.js'
+
 const DeleteIcon = chakra(RiDeleteBinLine)
 
 const HistoryListPage = () => {
@@ -46,9 +56,15 @@ const HistoryListPage = () => {
   const { deleteHistory } = useHistory()
   const { user } = useUser()
   const [hoverIndex, setHoverIndex] = useState<number>(0)
-  const [_, setEditHistoryId] = useState<number | undefined>(undefined)
+  const [, setEditHistoryId] = useState<number | undefined>(undefined)
 
   const [detailId, setDetailId] = useState<number | undefined>(undefined)
+
+  const { editRegisteredItem, deleteRegisterdItem } = useRegisteredItem()
+  const isItemEditable = useCallback(() => {
+    return (item?.history?.length ?? 0) <= 1
+  }, [item?.history])
+
   const {
     isOpen: isRightOpen,
     onOpen: onRightOpen,
@@ -70,6 +86,36 @@ const HistoryListPage = () => {
   const [mode, setEditMode] = useState<'新規作成' | '編集'>('新規作成')
 
   const ref = createRef<HTMLTableRowElement>()
+
+  const editItem = useCallback(
+    async (editData: PartialUpdateItemData) => {
+      if (item?.id) {
+        await editRegisteredItem(item.id, editData)
+        refetch()
+      }
+    },
+    [editRegisteredItem, item?.id, refetch]
+  )
+
+  const deleteItem = useCallback(async () => {
+    if (item?.id) {
+      try {
+        await deleteRegisterdItem(item.id)
+        alert('削除しました')
+        router.push(`/item/${item?.itemTypeId}/species/${item?.woodSpeciesId}`)
+      } catch (e) {
+        alert('削除に失敗しました')
+        console.error((e as Error).message)
+      }
+    }
+  }, [
+    deleteRegisterdItem,
+    item?.id,
+    item?.itemTypeId,
+    item?.woodSpeciesId,
+    router
+  ])
+
   const scrollToBottomOfList = useCallback(() => {
     ref?.current?.scrollIntoView({
       behavior: 'smooth',
@@ -89,17 +135,52 @@ const HistoryListPage = () => {
         ]}
       ></Breadcrumbs>
       <VStack align="left" pl="10">
+        {isItemEditable() ? (
+          <HStack>
+            <Text color="red.500">
+              ※商品情報は明細を追加する前まで変更／削除可能です。
+            </Text>
+          </HStack>
+        ) : (
+          <></>
+        )}
         <HStack>
           <Box>
             <InputGroup size="sm">
               <InputLeftAddon>グレード</InputLeftAddon>
-              <Input readOnly value={item?.gradeName ?? undefined} />
+              {isItemEditable() ? (
+                <GradeSelect
+                  size="sm"
+                  value={item?.gradeId ?? undefined}
+                  onSelect={(e) => {
+                    const { options, selectedIndex } = e.target
+                    editItem({
+                      gradeId: Number(e.target.value),
+                      gradeName: options[selectedIndex].innerHTML
+                    })
+                  }}
+                />
+              ) : (
+                <Input readOnly value={item?.gradeName ?? undefined} />
+              )}
             </InputGroup>
           </Box>
           <Box>
             <InputGroup size="sm">
               <InputLeftAddon>仕様</InputLeftAddon>
-              <Input readOnly value={item?.spec ?? undefined} />
+              {isItemEditable() ? (
+                <Input
+                  placeholder="自由入力"
+                  defaultValue={item?.spec ?? undefined}
+                  onBlur={(e) => {
+                    editItem({
+                      spec: e.target.value
+                    })
+                  }}
+                />
+              ) : (
+                <Input readOnly value={item?.spec ?? undefined} />
+              )}
             </InputGroup>
           </Box>
           <Box>
@@ -111,13 +192,40 @@ const HistoryListPage = () => {
           <Box>
             <InputGroup size="sm">
               <InputLeftAddon>製造元</InputLeftAddon>
-              <Input readOnly value={item?.manufacturer ?? undefined} />
+              {isItemEditable() ? (
+                <Input
+                  placeholder="自由入力"
+                  defaultValue={item?.manufacturer ?? undefined}
+                  onBlur={(e) => {
+                    editItem({
+                      manufacturer: e.target.value
+                    })
+                  }}
+                />
+              ) : (
+                <Input readOnly value={item?.manufacturer ?? undefined} />
+              )}
             </InputGroup>
           </Box>
           <Box>
             <InputGroup size="sm">
               <InputLeftAddon>倉庫</InputLeftAddon>
-              <Input readOnly value={item?.warehouseName} />
+              {isItemEditable() ? (
+                <WarehouseSelect
+                  required
+                  size="sm"
+                  value={item?.warehouseId}
+                  onSelect={(e) => {
+                    const { options, selectedIndex } = e.target
+                    editItem({
+                      warehouseId: Number(e.target.value),
+                      warehouseName: options[selectedIndex].innerHTML
+                    })
+                  }}
+                />
+              ) : (
+                <Input readOnly value={item?.warehouseName} />
+              )}
             </InputGroup>
           </Box>
         </HStack>
@@ -125,35 +233,115 @@ const HistoryListPage = () => {
           <Box>
             <InputGroup size="sm">
               <InputLeftAddon>寸法</InputLeftAddon>
-              <Input
-                readOnly
-                value={`${item?.length ?? ''}${
-                  item?.thickness ? '*' + item.thickness : ''
-                }${item?.width ? '*' + item.width : ''}`}
-              />
+              {isItemEditable() ? (
+                <>
+                  <Input
+                    placeholder="長さ"
+                    size="sm"
+                    defaultValue={item?.length ?? undefined}
+                    type="tel"
+                    onBlur={(e) => {
+                      editItem({
+                        length: e.target.value
+                      })
+                    }}
+                  />
+                  <FormLabel style={{ fontSize: '1.2em', marginTop: '5px' }}>
+                    ｘ
+                  </FormLabel>
+                  <Input
+                    size="sm"
+                    placeholder="厚み"
+                    type="number"
+                    defaultValue={item?.thickness ?? undefined}
+                    onBlur={(e) => {
+                      editItem({
+                        thickness: Number(e.target.value)
+                      })
+                    }}
+                  />
+                  <FormLabel style={{ fontSize: '1.2em', marginTop: '5px' }}>
+                    ｘ
+                  </FormLabel>
+                  <Input
+                    size="sm"
+                    placeholder="幅"
+                    type="number"
+                    defaultValue={item?.width ?? undefined}
+                    onBlur={(e) => {
+                      editItem({
+                        width: Number(e.target.value)
+                      })
+                    }}
+                  />
+                </>
+              ) : (
+                <Input
+                  readOnly
+                  value={`${item?.length ?? ''}${
+                    item?.thickness ? '*' + item.thickness : ''
+                  }${item?.width ? '*' + item.width : ''}`}
+                />
+              )}
             </InputGroup>
           </Box>
           <Box>
             <InputGroup size="sm">
               <InputLeftAddon>入数</InputLeftAddon>
-              <Input
-                readOnly
-                w="6em"
-                value={
-                  item?.packageCount ? Number(item.costPackageCount) : undefined
-                }
-              />
+              {isItemEditable() ? (
+                <Input
+                  required
+                  type="number"
+                  defaultValue={
+                    item?.packageCount ? Number(item.packageCount) : undefined
+                  }
+                  placeholder="数字"
+                  onBlur={(e) => {
+                    editItem({
+                      packageCount: e.target.value
+                        ? (new Decimal(e.target.value) as unknown as Decimal)
+                        : undefined
+                    })
+                  }}
+                />
+              ) : (
+                <Input
+                  readOnly
+                  w="6em"
+                  value={
+                    item?.packageCount
+                      ? Number(item.costPackageCount)
+                      : undefined
+                  }
+                />
+              )}
             </InputGroup>
           </Box>
           <Box>
             <InputGroup size="sm">
               <InputLeftAddon>原価</InputLeftAddon>
-              <Input
-                readOnly
-                w="10em"
-                textAlign="right"
-                value={`${Number(item?.cost).toLocaleString() ?? ''}`}
-              />
+              {isItemEditable() ? (
+                <Input
+                  required
+                  type="number"
+                  defaultValue={item?.cost ? Number(item.cost) : undefined}
+                  placeholder="数字"
+                  onBlur={(e) => {
+                    editItem({
+                      cost: e.target.value
+                        ? (new Decimal(e.target.value) as unknown as Decimal)
+                        : undefined
+                    })
+                  }}
+                />
+              ) : (
+                <Input
+                  readOnly
+                  w="10em"
+                  textAlign="right"
+                  value={`${Number(item?.cost).toLocaleString() ?? ''}`}
+                />
+              )}
               <InputLeftAddon>/ {item?.costUnitName}</InputLeftAddon>
             </InputGroup>
           </Box>
@@ -190,12 +378,7 @@ const HistoryListPage = () => {
               <Input
                 onBlur={async (e) => {
                   if (item?.id && e.currentTarget.value.length > 0) {
-                    await apiClient.item._id(item?.id).patch({
-                      body: {
-                        id: item.id,
-                        data: { note: e.currentTarget.value }
-                      }
-                    })
+                    await editItem({ note: e.currentTarget.value })
                   }
                 }}
                 defaultValue={item?.note ?? undefined}
@@ -211,12 +394,7 @@ const HistoryListPage = () => {
                 placeholder="割れなど傷品としての備考"
                 onBlur={async (e) => {
                   if (item?.id && e.currentTarget.value.length > 0) {
-                    await apiClient.item._id(item?.id).patch({
-                      body: {
-                        id: item.id,
-                        data: { defectiveNote: e.currentTarget.value }
-                      }
-                    })
+                    await editItem({ defectiveNote: e.currentTarget.value })
                   }
                 }}
                 defaultValue={item?.defectiveNote ?? undefined}
@@ -224,6 +402,23 @@ const HistoryListPage = () => {
             </InputGroup>
           </Box>
           <Box>
+            {isItemEditable() && (
+              <>
+                <Button
+                  type="submit"
+                  bgColor="red.200"
+                  ml="10px"
+                  onClick={async (e) => {
+                    e.preventDefault()
+                    if (confirm('全体を削除しますか？')) {
+                      await deleteItem()
+                    }
+                  }}
+                >
+                  全体削除
+                </Button>
+              </>
+            )}
             {(item?.history?.length ?? 0) > 10 && (
               <Button
                 type="submit"
