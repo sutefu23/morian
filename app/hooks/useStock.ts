@@ -45,6 +45,8 @@ const defaultData: EditItemArrayData = [
     thickness: undefined,
     width: undefined,
     packageCount: undefined,
+    packageCountUnitId: undefined,
+    packageCountUnitName: undefined,
     warehouseId: undefined,
     warehouseName: undefined,
     cost: undefined,
@@ -216,6 +218,8 @@ const useStock = () => {
     }
     const {
       packageCount,
+      packageCountUnitId,
+      packageCountUnitName,
       count,
       unitId,
       unitName,
@@ -224,7 +228,14 @@ const useStock = () => {
       costPackageCount,
       costUnitName
     } = data
-
+    if (!packageCountUnitId) {
+      alert(`${index + 1}行目：入数単位は必須です。`)
+      return null
+    }
+    if (!packageCountUnitName) {
+      alert(`${index + 1}行目：入数単位は必須です。`)
+      return null
+    }
     if (!count) {
       alert(`${index + 1}行目：数量は必須です。`)
       return null
@@ -252,6 +263,8 @@ const useStock = () => {
       supplierId,
       supplierName,
       packageCount,
+      packageCountUnitId,
+      packageCountUnitName,
       count,
       unitId,
       unitName,

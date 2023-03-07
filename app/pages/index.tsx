@@ -70,7 +70,10 @@ const Home = () => {
                         {item?.thickness ? `*${item?.thickness}` : ''}
                         {item?.width ? `*${item?.width}` : ''}
                       </Td>
-                      <Td>{item?.packageCount}</Td>
+                      <Td>
+                        {item?.packageCount}
+                        {item?.packageCountUnitName}
+                      </Td>
                       <Td>
                         {item?.count}
                         {item.unitName}

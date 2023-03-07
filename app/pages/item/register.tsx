@@ -194,7 +194,7 @@ const Register = ({
                       <Input
                         required
                         readOnly={true}
-                        type="tel"
+                        type="text"
                         placeholder="自動取得"
                         onChange={(e) => {
                           const lotNo = e.target.value.toNarrowCase()
@@ -214,8 +214,8 @@ const Register = ({
                       <Input
                         placeholder="長さ"
                         value={item.length}
-                        type="tel"
-                        onChange={(e) => {
+                        type="text"
+                        onBlur={(e) => {
                           updateItemField<'length'>(
                             index,
                             'length',
@@ -283,6 +283,18 @@ const Register = ({
                           )
                         }}
                       />
+                      <UnitSelect
+                        required
+                        value={item.packageCountUnitId}
+                        onSelect={(e) => {
+                          const { options, selectedIndex } = e.target
+                          updateItem(index, {
+                            packageCountUnitId: Number(e.target.value),
+                            packageCountUnitName:
+                              options[selectedIndex].innerHTML
+                          })
+                        }}
+                      />
                     </InputGroup>
                   </Box>
                 </HStack>
@@ -292,7 +304,7 @@ const Register = ({
                       <InputLeftAddon>製造元</InputLeftAddon>
                       <Input
                         placeholder="自由入力"
-                        value={item.manufacturer}
+                        defaultValue={item.manufacturer}
                         onBlur={(e) => {
                           updateItemField<'manufacturer'>(
                             index,

@@ -1,5 +1,5 @@
 import { UpdateItemData } from '$/domain/service/stock'
-import { PrismaClient, Item } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 import { AuthService } from '$/domain/service/auth'
 import { ValidationError } from '$/domain/type/error'
 import { Decimal } from 'decimal.js'

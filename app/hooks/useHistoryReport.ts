@@ -60,6 +60,8 @@ const useHistoryReport = (type: ReportType, fromDate?: Date, toDate?: Date) => {
       { header: '長', key: 'length' },
       { header: '厚', key: 'thickness' },
       { header: '幅', key: 'width' },
+      { header: '入数', key: 'packageCount' },
+      { header: '入数単位', key: 'packageCountUnitName' },
       { header: '数量', key: 'reduceCount' },
       { header: '単位', key: 'unitName' },
       { header: '倉庫', key: 'warehouseName' },

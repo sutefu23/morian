@@ -39,6 +39,7 @@ const useItemReport = (type: ReportType) => {
       { header: '倉庫', key: 'warehouseName' },
       { header: '原価', key: 'cost' },
       { header: '入数', key: 'packageCount' },
+      { header: '入数単位', key: 'packageCountUnitName' },
       { header: '原価単位数量', key: 'costPackageCount' },
       { header: '数量', key: 'count' },
       { header: '単位', key: 'unitName' },

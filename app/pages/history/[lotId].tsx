@@ -8,7 +8,6 @@ import {
   InputGroup,
   InputLeftAddon,
   Input,
-  Spacer,
   Button,
   Table,
   Thead,
@@ -32,14 +31,11 @@ import useHistory from '~/hooks/useHistory'
 import HistoryDetail from './historyDetail'
 import useUser from '~/hooks/useUser'
 import useRegisteredItem from '~/hooks/useRegisteredItem'
-import {
-  PartialUpdateItemData,
-  UpdateItemData
-} from '~/server/domain/service/stock'
+import { PartialUpdateItemData } from '~/server/domain/service/stock'
 import GradeSelect from '~/components/select/gradeSelect'
 import WarehouseSelect from '~/components/select/warehouseSelect'
+import UnitSelect from '~/components/select/unitSelect'
 import { Decimal } from 'server/node_modules/decimal.js'
-
 const DeleteIcon = chakra(RiDeleteBinLine)
 
 const HistoryListPage = () => {
@@ -134,7 +130,7 @@ const HistoryListPage = () => {
           { name: `${lotId} ${item?.woodSpeciesName} ${item?.itemTypeName}` }
         ]}
       ></Breadcrumbs>
-      <VStack align="left" pl="10">
+      <VStack align="left">
         {isItemEditable() ? (
           <HStack>
             <Text color="red.500">
@@ -239,7 +235,7 @@ const HistoryListPage = () => {
                     placeholder="長さ"
                     size="sm"
                     defaultValue={item?.length ?? undefined}
-                    type="tel"
+                    type="text"
                     onBlur={(e) => {
                       editItem({
                         length: e.target.value
@@ -289,21 +285,36 @@ const HistoryListPage = () => {
             <InputGroup size="sm">
               <InputLeftAddon>入数</InputLeftAddon>
               {isItemEditable() ? (
-                <Input
-                  required
-                  type="number"
-                  defaultValue={
-                    item?.packageCount ? Number(item.packageCount) : undefined
-                  }
-                  placeholder="数字"
-                  onBlur={(e) => {
-                    editItem({
-                      packageCount: e.target.value
-                        ? (new Decimal(e.target.value) as unknown as Decimal)
-                        : undefined
-                    })
-                  }}
-                />
+                <>
+                  <Input
+                    required
+                    size="sm"
+                    type="number"
+                    defaultValue={
+                      item?.packageCount ? Number(item.packageCount) : undefined
+                    }
+                    placeholder="数字"
+                    onBlur={(e) => {
+                      editItem({
+                        packageCount: e.target.value
+                          ? (new Decimal(e.target.value) as unknown as Decimal)
+                          : undefined
+                      })
+                    }}
+                  />
+                  <UnitSelect
+                    required
+                    value={item?.packageCountUnitId ?? undefined}
+                    size="sm"
+                    onSelect={(e) => {
+                      const { options, selectedIndex } = e.target
+                      editItem({
+                        packageCountUnitId: Number(e.target.value),
+                        packageCountUnitName: options[selectedIndex].innerHTML
+                      })
+                    }}
+                  />
+                </>
               ) : (
                 <Input
                   readOnly
@@ -370,7 +381,6 @@ const HistoryListPage = () => {
             </InputGroup>
           </Box>
         </HStack>
-        <Spacer />
         <HStack>
           <Box width="75vw">
             <InputGroup>

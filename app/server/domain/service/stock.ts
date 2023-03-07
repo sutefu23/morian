@@ -20,6 +20,8 @@ export type UpdateItemData = {
   readonly supplierName?: string
   readonly supplierManagerName?: string
   readonly packageCount?: Decimal
+  readonly packageCountUnitId: UnitType['id']
+  readonly packageCountUnitName: UnitType['name']
   readonly count: Decimal
   readonly tempCount: Decimal
   readonly unitId: UnitType['id']
@@ -43,6 +45,8 @@ export type PartialUpdateItemData = {
   readonly thickness?: number
   readonly width?: number
   readonly packageCount?: Decimal
+  readonly packageCountUnitId?: number
+  readonly packageCountUnitName?: string
   readonly gradeId?: number
   readonly gradeName?: string
   readonly unitId?: UnitType['id']

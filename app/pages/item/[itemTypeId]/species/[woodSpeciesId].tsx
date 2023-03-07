@@ -67,7 +67,10 @@ const WoodSpeciesPage = () => {
                 <Td>{grades?.find((g) => g.id === stock.gradeId)?.name}</Td>
                 <Td>{stock.spec}</Td>
                 <Td>{stock.supplierName}</Td>
-                <Td>{stock.packageCount}</Td>
+                <Td>
+                  {stock.packageCount}
+                  {stock.packageCountUnitName}
+                </Td>
                 <Td>
                   {stock.length}
                   {stock.thickness ? `*${stock.thickness}` : ''}
