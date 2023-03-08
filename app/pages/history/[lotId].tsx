@@ -316,15 +316,23 @@ const HistoryListPage = () => {
                   />
                 </>
               ) : (
-                <Input
-                  readOnly
-                  w="6em"
-                  value={
-                    item?.packageCount
-                      ? Number(item.costPackageCount)
-                      : undefined
-                  }
-                />
+                <>
+                  <Input
+                    readOnly
+                    w="6em"
+                    size="sm"
+                    value={
+                      item?.packageCount ? Number(item.packageCount) : undefined
+                    }
+                  />
+                  {item?.packageCountUnitName ? (
+                    <InputLeftAddon>
+                      {item?.packageCountUnitName}
+                    </InputLeftAddon>
+                  ) : (
+                    <></>
+                  )}
+                </>
               )}
             </InputGroup>
           </Box>
