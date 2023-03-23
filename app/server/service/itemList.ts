@@ -23,6 +23,12 @@ export const getExsitItemGroupList = async () => {
   })
 }
 
+export const getGroupByWarehouseWoodspecies = async () => {
+  return await prisma.item.groupBy({
+    by: ['warehouseId','woodSpeciesId']
+  })
+}
+
 export const getItemList = async ({
   woodSpeciesId,
   itemTypeId,
@@ -82,6 +88,9 @@ export const getItemList = async ({
   })
   return data
 }
+
+
+
 
 export const bulkInsert = async (items: UpdateItemData[]) => {
 

@@ -166,7 +166,7 @@ const HistoryListPage = () => {
               <InputLeftAddon>仕様</InputLeftAddon>
               {isItemEditable() ? (
                 <Input
-                  placeholder="自由入力"
+                  placeholder="塗装/無塗装等"
                   defaultValue={item?.spec ?? undefined}
                   onBlur={(e) => {
                     editItem({

@@ -1,4 +1,3 @@
-import React from 'react';
 import { PDFDownloadLink, PDFViewer, Page, Font, Text, View, Image, Document, StyleSheet } from '@react-pdf/renderer';
 import { Button } from '@chakra-ui/react';
 import JsBarcode from 'jsbarcode'
@@ -7,7 +6,7 @@ import { apiClient } from '~/utils/apiClient';
 
 const MAX_PAGE_BARCODE_NUM = 30
 export const BarCodePdf = () => {
-  const {data: items} = useAspidaQuery(apiClient.itemList,{query:{notZero:true}})
+  const {data: items} = useAspidaQuery(apiClient.itemList)
   if(!items) return <>データ取得中</>
 
   // ttfファイルのフォント定義
@@ -25,10 +24,14 @@ export const BarCodePdf = () => {
     return {
       name: `${item.woodSpeciesName} ${item.itemTypeName}`,
       size: size ?? '',
+      warehouse: item.warehouseId,
+      woodSpecies: item.woodSpeciesId,
       url:barcode
     }
   })
 
+  // 倉庫と樹種で並べ替え
+  dataArray.sort((prev, next) => prev.woodSpecies - next.woodSpecies).sort((prev, next) => prev.warehouse - next.warehouse)
 
   Font.register({
     family: 'Nasu-Bold',

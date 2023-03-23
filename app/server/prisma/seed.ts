@@ -31,7 +31,7 @@ async function seed() {
 
   await prisma.user.createMany({
     data: [
-      { id: 0, name: '管理者', enable: true },
+      { id: 99, name: '管理者', enable: true },
       { id: 1, name: '森庵充久', enable: true },
       { id: 2, name: '中野歩美', enable: true },
       { id: 3, name: '本社倉庫', enable: true },

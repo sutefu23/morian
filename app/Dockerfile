@@ -5,10 +5,9 @@ WORKDIR /app
 
 ADD . /app
 
-RUN yarn install --frozen-lockfile --production=false
-RUN yarn --cwd ./server install --frozen-lockfile --production=false
+RUN yarn install --frozen-lockfile
+RUN yarn --cwd ./server install --frozen-lockfile
 RUN export PATH=$PATH:./node_modules/.bin
-RUN export PATH=$PATH:./server/node_modules/.bin
 
 ARG PORT
 ARG API_BASE_PATH
@@ -23,6 +22,5 @@ ARG HOST
 ARG NODE_ENV
 
 RUN yarn build
-EXPOSE ${API_SERVER_PORT}
-EXPOSE ${PORT}
-CMD ["yarn", "start"]
+RUN yarn --cwd ./server build
+ENTRYPOINT ["ash"]

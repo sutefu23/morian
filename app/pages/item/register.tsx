@@ -175,7 +175,7 @@ const Register = ({
                     <InputGroup>
                       <InputLeftAddon>仕様</InputLeftAddon>
                       <Input
-                        placeholder="自由入力"
+                        placeholder="塗装/無塗装等"
                         value={item.spec}
                         onBlur={(e) => {
                           updateItemField<'spec'>(index, 'spec', e.target.value)

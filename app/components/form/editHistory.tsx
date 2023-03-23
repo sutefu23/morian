@@ -75,7 +75,6 @@ const EditHistory = ({
   const handleRegister = useCallback(async () => {
     switch (mode) {
       case '新規作成':
-        console.log(historyData)
         if (await postHistory()) {
           setDefault()
           onDone()
