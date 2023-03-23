@@ -1,4 +1,3 @@
-import { useAspidaQuery } from '@aspida/react-query'
 import {
   Table,
   Thead,
@@ -17,6 +16,8 @@ import usePageTitle from '~/hooks/usePageTitle'
 import { Master } from '~/server/domain/entity/stock'
 import { apiClient } from '~/utils/apiClient'
 import { useRouter } from 'next/router'
+import { useAspidaQuery } from '@aspida/react-query'
+
 export type MasterName = '単位' | '樹種' | '倉庫' | '配送場所' | 'グレード'
 export type MasterKey = 'unit' | 'species' | 'warehouse' | 'grade'
 export type MasterTypes = readonly { key: MasterKey; name: MasterName }[]
@@ -28,30 +29,35 @@ export const masterTypes: MasterTypes = [
   { key: 'unit', name: '単位' }
 ] as const
 
-type Params = { masters: Master[] }
-const MasterManage = ({ masters }: Params) => {
+const MasterManage = () => {
   const { setTitle } = usePageTitle()
+  const [masters, setMasters] = useState<Master[]>([])
   const [newMaster, setNewMaster] = useState<Master>()
   const router = useRouter()
   const { masterType } = router.query
 
-  const maxId = masters.reduce(
-    (prevId, curr) => (prevId < curr.id ? curr.id : prevId),
-    0
-  )
+  useAspidaQuery(apiClient.master[masterType as unknown as MasterKey], {
+    onSuccess: (masters) => {
+      const maxId = masters.reduce(
+        (prevId, curr) => (prevId < curr.id ? curr.id : prevId),
+        0
+      )
 
-  const maxOrder = masters.reduce(
-    (prevOrder, curr) => (prevOrder < curr.order ? curr.order : prevOrder),
-    0
-  )
+      const maxOrder = masters.reduce(
+        (prevOrder, curr) => (prevOrder < curr.order ? curr.order : prevOrder),
+        0
+      )
 
-  setNewMaster({
-    id: maxId + 1,
-    name: newMaster?.name || '',
-    order: maxOrder + 1
+      setNewMaster({
+        id: maxId + 1,
+        name: newMaster?.name || '',
+        order: maxOrder + 1
+      })
+      setMasters(masters)
+      const title = masterTypes.find((m) => m.key === masterType)?.name
+      setTitle(`${title} マスタ設定`)
+    }
   })
-  const title = masterTypes.find((m) => m.key === masterType)?.name
-  setTitle(`${title} マスタ設定`)
 
   const handleSubmit = useCallback(async () => {
     if (!newMaster) return
@@ -172,25 +178,18 @@ const MasterManage = ({ masters }: Params) => {
 }
 export default MasterManage
 
-// export function getStaticPaths() {
-//   const masters = masterTypes.map((m) => m.key)
+export function getStaticPaths() {
+  const masters = masterTypes.map((m) => m.key)
 
-//   const paths = masters.map((master) => ({
-//     params: { masterType: master }
-//   }))
+  const paths = masters.map((master) => ({
+    params: { masterType: master }
+  }))
 
-//   return { paths, fallback: false }
-// }
-// export async function getStaticProps({
-//   params
-// }: {
-//   params: { masterType: MasterKey }
-// }) {
-//   const data = await apiClient.master[params.masterType].get()
-//   console.log(data.body)
-//   return {
-//     props: {
-//       masters: data.body
-//     }
-//   }
-// }
+  return { paths, fallback: 'blocking' }
+}
+export function getStaticProps() {
+  return {
+    props: {}
+    // revalidate: 10
+  }
+}
