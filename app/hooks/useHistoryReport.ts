@@ -1,5 +1,3 @@
-import { useEffect } from 'react'
-import { useAspidaQuery } from '@aspida/react-query'
 import ExcelJS from 'exceljs'
 import { apiClient } from '~/utils/apiClient'
 import { StockReason } from '~/server/domain/init/master'
@@ -8,41 +6,30 @@ import dayjs from 'dayjs'
 export type ReportType = '受注予約一覧' | '受注出庫一覧' | '見積一覧'
 
 const useHistoryReport = (type: ReportType, fromDate?: Date, toDate?: Date) => {
-  const res = (() => {
-    switch (type) {
-      case '受注予約一覧':
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        return useAspidaQuery(apiClient.historyList, {
-          query: {
-            reasonId: StockReason.find((r) => r.name === 出庫理由.受注予約)?.id
-          }
-        })
-      case '受注出庫一覧':
-        if (!fromDate || !toDate) {
-          return
-        }
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        return useAspidaQuery(apiClient.historyList, {
-          query: {
-            fromDate,
-            toDate,
-            reasonId: StockReason.find((r) => r.name === 出庫理由.受注出庫)?.id
-          }
-        })
-      case '見積一覧':
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        return useAspidaQuery(apiClient.historyList, {
-          query: {
-            reasonId: StockReason.find((r) => r.name === 出庫理由.見積)?.id
-          }
-        })
-    }
-  })()
-
   const print = async () => {
-    if (!res) return
-    const { data: item } = res
-
+    const query = (() => {
+      switch (type) {
+        case '受注予約一覧':
+          return {
+              reasonId: StockReason.find((r) => r.name === 出庫理由.受注予約)?.id
+            }
+        case '受注出庫一覧':
+          if (!fromDate || !toDate) {
+            return
+          }
+          return {
+              fromDate,
+              toDate,
+              reasonId: StockReason.find((r) => r.name === 出庫理由.受注出庫)?.id
+            }
+        case '見積一覧':
+          return {
+              reasonId: StockReason.find((r) => r.name === 出庫理由.見積)?.id
+            }
+      }
+    })();
+    if(!query) return
+    const items = await apiClient.historyList.$get({query})
     const workbook = new ExcelJS.Workbook()
     workbook.addWorksheet(`${type}`)
     const worksheet = workbook.getWorksheet(`${type}`)
@@ -92,10 +79,12 @@ const useHistoryReport = (type: ReportType, fromDate?: Date, toDate?: Date) => {
     })()
 
     // 行を定義
-    item?.history?.map((history) => {
-      const date = dayjs(history.date).format('YYYY-MM-DD')
-      const bookDate = dayjs(history.bookDate).format('YYYY-MM-DD')
-      worksheet.addRow({ ...item, ...history, date, bookDate })
+    items.forEach((item) => {
+      item.history.map((h) => {
+        const date = dayjs(h.date).format('YYYY-MM-DD')
+        const bookDate = dayjs(h.bookDate).format('YYYY-MM-DD')
+        worksheet.addRow({ ...item, ...h, date, bookDate })  
+      })
     })
 
     const uint8Array = await workbook.xlsx.writeBuffer()

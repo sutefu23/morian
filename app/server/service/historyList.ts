@@ -43,7 +43,7 @@ export const getHistoryList = async ({
       }
     }
   })
-  return data[0]
+  return data
 }
 
 export const getUserEditedHistoryList = async (editUserId: number) => {

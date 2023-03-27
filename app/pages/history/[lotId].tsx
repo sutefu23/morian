@@ -43,12 +43,16 @@ const HistoryListPage = () => {
   const { lotId } = router.query
   const { setTitle } = usePageTitle()
 
-  const { data: item, refetch } = useAspidaQuery(apiClient.historyList, {
+  const {
+    data: items,
+    refetch,
+    isLoading
+  } = useAspidaQuery(apiClient.historyList, {
     query: {
       lotNo: String(lotId)
     }
   })
-
+  const item = items ? items[0] : undefined
   const { deleteHistory } = useHistory()
   const { user } = useUser()
   const [hoverIndex, setHoverIndex] = useState<number>(0)
@@ -118,6 +122,7 @@ const HistoryListPage = () => {
       block: 'end'
     })
   }, [ref])
+  if (isLoading) return <>Loading...</>
 
   return (
     <>
