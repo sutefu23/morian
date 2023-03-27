@@ -78,3 +78,8 @@ export const getUserEditedHistoryList = async (editUserId: number) => {
   })
   return data
 }
+export const getAllLotId = () => {
+  return prisma.item.findMany({
+    select:{lotNo:true}
+  })
+}
