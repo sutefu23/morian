@@ -439,7 +439,7 @@ const Register = ({
                     <InputGroup>
                       <InputLeftAddon>備考</InputLeftAddon>
                       <Input
-                        value={item.note}
+                        defaultValue={item.note}
                         onBlur={(e) => {
                           updateItemField<'note'>(index, 'note', e.target.value)
                         }}
@@ -453,7 +453,7 @@ const Register = ({
                       <InputLeftAddon>不良品備考</InputLeftAddon>
                       <Input
                         placeholder="割れなど傷品としての備考"
-                        value={item.defectiveNote}
+                        defaultValue={item.defectiveNote}
                         onBlur={(e) => {
                           updateItemField<'defectiveNote'>(
                             index,
