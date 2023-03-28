@@ -121,7 +121,9 @@ export const bulkInsert = async (items: UpdateItemData[]) => {
             data: {
               ...item,
               lotNo,
-              length: item.length ? String(item.length): undefined
+              length: item.length ? String(item.length): undefined,
+              userId: editUser.id,
+              userName: editUser.name,
             }
           })
         }
