@@ -12,7 +12,7 @@ export const BarCodePdf = () => {
   // ttfファイルのフォント定義
   Font.register({
     family: 'Nasu-Regular',
-    src: './fonts/Nasu-Regular.ttf'
+    src: '/fonts/Nasu-Regular.ttf'
   });
 
   const dataArray = items.map((item) => {
@@ -23,6 +23,7 @@ export const BarCodePdf = () => {
     const size = (item.length ?? '') + (item.thickness ? `*${item.thickness}` : '') + (item.width ? `*${item.width}`:'')
     return {
       name: `${item.woodSpeciesName} ${item.itemTypeName}`,
+      lotNo: item.lotNo,
       size: size ?? '',
       warehouse: item.warehouseId,
       woodSpecies: item.woodSpeciesId,
@@ -35,7 +36,7 @@ export const BarCodePdf = () => {
 
   Font.register({
     family: 'Nasu-Bold',
-    src: "./fonts/Nasu-Bold.ttf"
+    src: "/fonts/Nasu-Bold.ttf"
   });
 
   const styles = StyleSheet.create({
@@ -60,7 +61,7 @@ export const BarCodePdf = () => {
             <View style={styles.display}>
             {
               dataArray.map((data, index) => (
-                <View style={styles.barcode} key={data.name} break={index > 0 && index % MAX_PAGE_BARCODE_NUM===0}>
+                <View style={styles.barcode} key={data.lotNo} break={index > 0 && index % MAX_PAGE_BARCODE_NUM===0}>
                 <Image src={data.url} style={{height:50}}/>
                 <Text style={styles.text}>{data.name}</Text>
                 <Text style={styles.text}>{data.size}</Text>
