@@ -175,7 +175,7 @@ const Register = ({
                     <InputLeftAddon>仕様</InputLeftAddon>
                     <Input
                       placeholder="塗装/無塗装等"
-                      value={item.spec}
+                      defaultValue={item.spec}
                       onBlur={(e) => {
                         updateItemField<'spec'>(index, 'spec', e.target.value)
                       }}
@@ -212,7 +212,7 @@ const Register = ({
                     <InputLeftAddon>長さｘ厚みｘ幅</InputLeftAddon>
                     <Input
                       placeholder="長さ"
-                      value={item.length}
+                      defaultValue={item.length}
                       type="text"
                       onBlur={(e) => {
                         updateItemField<'length'>(
