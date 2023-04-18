@@ -57,7 +57,7 @@ export const BarCodePdf = () => {
   const styles = StyleSheet.create({
     body: {
       fontSize: '14px',
-      padding: '30px',
+      padding: '50px',
       fontFamily: 'Nasu-Regular'
     },
     title: {
@@ -76,10 +76,11 @@ export const BarCodePdf = () => {
     display: {
       display: 'flex',
       flexDirection: 'row',
+      gap: '10px',
       justifyContent: 'space-between',
       flexWrap: 'wrap'
     },
-    barcode: { width: '30%', height: 'auto', textAlign: 'center' }
+    barcode: { width: '30%', height: 'auto', textAlign: 'center', marginBottom: '20px' }
   })
   const MyPDF = () => {
     return (
