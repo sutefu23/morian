@@ -49,7 +49,7 @@ async function seed() {
 
   await prisma.userPass.createMany({
     data: [
-      { userId: 0, pass: bcrypt.hashSync(DEFAULT_USER_PASS, API_SALT) },
+      { userId: 99, pass: bcrypt.hashSync(DEFAULT_USER_PASS, API_SALT) },
       { userId: 1, pass: bcrypt.hashSync(DEFAULT_USER_PASS, API_SALT) },
       { userId: 2, pass: bcrypt.hashSync(DEFAULT_USER_PASS, API_SALT) },
       { userId: 3, pass: bcrypt.hashSync(DEFAULT_USER_PASS, API_SALT) },
