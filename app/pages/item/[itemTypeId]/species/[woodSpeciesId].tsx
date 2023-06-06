@@ -54,6 +54,7 @@ const WoodSpeciesPage = () => {
             <Th>寸法</Th>
             <Th>入荷日</Th>
             <Th>倉庫</Th>
+            <Th>備考</Th>
             <Th>原価</Th>
             <Th>仮在庫数</Th>
             <Th></Th>
@@ -84,6 +85,7 @@ const WoodSpeciesPage = () => {
                 <Td>
                   {warehouses?.find((w) => w.id === stock.warehouseId)?.name}
                 </Td>
+                <Td>{stock.note}</Td>
                 <Td>
                   {stock.cost}/
                   {units?.find((u) => u.id === stock.costUnitId)?.name}
