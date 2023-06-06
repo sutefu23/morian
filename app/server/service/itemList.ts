@@ -12,9 +12,9 @@ export type getQuery = {
   woodSpeciesId?: number
   itemTypeId?: number
   isDefective?: boolean
-  notZero?: boolean,
-  orderBy?: "asc"|"desc",
-  limit?: number,
+  notZero?: boolean
+  orderBy?: 'asc' | 'desc'
+  limit?: number
 }
 
 export const getExsitItemGroupList = async () => {
@@ -25,19 +25,11 @@ export const getExsitItemGroupList = async () => {
 
 export const getGroupByWarehouseWoodspecies = async () => {
   return await prisma.item.groupBy({
-    by: ['warehouseId','woodSpeciesId']
+    by: ['warehouseId', 'woodSpeciesId']
   })
 }
 
-export const getItemList = async ({
-  woodSpeciesId,
-  itemTypeId,
-  notZero,
-  isDefective,
-  limit,
-  orderBy = "asc"
-}: getQuery) => {
-
+export const getItemList = async ({ woodSpeciesId, itemTypeId, notZero, isDefective, limit, orderBy = 'asc' }: getQuery) => {
   const query = {
     where: {
       woodSpeciesId,
@@ -81,28 +73,22 @@ export const getItemList = async ({
     ...query,
     ...notZeroQuery,
     ...isDefectiveQuery,
-    orderBy:{
-      id:orderBy
+    orderBy: {
+      id: orderBy
     },
     take: limit
   })
   return data
 }
 
-
-
-
 export const bulkInsert = async (items: UpdateItemData[]) => {
-
   const checks = await Promise.all(
     items.map(async (item) => {
       return await checkValidItem(item)
     })
   )
 
-  const errors: Error[] = checks.filter(
-    (res): res is Error => res instanceof Error
-  )
+  const errors: Error[] = checks.filter((res): res is Error => res instanceof Error)
 
   if (errors.length > 0) {
     return errors[0]
@@ -112,22 +98,39 @@ export const bulkInsert = async (items: UpdateItemData[]) => {
   if (!editUser) {
     return new Error('認証されたユーザーが見つかりません。')
   }
+  const indexes: { [key: number]: number } = {}
+
+  // itemIdごとにグループ化されたアイテムの配列を生成
+  const groupedItems = items.map((item) => {
+    // itemIdが存在しなければ初期化
+    if (indexes[item.itemTypeId] === undefined) {
+      indexes[item.itemTypeId] = 0
+    } else {
+      indexes[item.itemTypeId]++
+    }
+
+    // 新しいアイテムを作成し、元のアイテムのプロパティとindexを含める
+    return {
+      ...item,
+      index: indexes[item.itemTypeId]
+    }
+  })
+
   const [newItems] = await prisma.$transaction(async (prisma) => {
     const newItems = await Promise.all(
-      items.map(
-        async (item, index) =>{
-          const lotNo = await generateLotNo(item.itemTypeId, index + 1)
-          return await prisma.item.create({
-            data: {
-              ...item,
-              lotNo,
-              length: item.length ? String(item.length): undefined,
-              userId: editUser.id,
-              userName: editUser.name,
-            }
-          })
-        }
-      )
+      groupedItems.map(async (item) => {
+        const lotNo = await generateLotNo(item.itemTypeId, item.index + 1)
+        const { index, ...createItem } = item
+        return await prisma.item.create({
+          data: {
+            ...createItem,
+            lotNo,
+            length: item.length ? String(item.length) : undefined,
+            userId: editUser.id,
+            userName: editUser.name
+          }
+        })
+      })
     )
 
     const newHistories = await Promise.all(
@@ -157,27 +160,24 @@ export const bulkInsert = async (items: UpdateItemData[]) => {
 }
 
 const checkValidItem = async (item: UpdateItemData) => {
-  
-  if(item.lotNo){
+  if (item.lotNo) {
     const hasLotNo = await prisma.item.findUnique({
       where: { lotNo: item.lotNo }
     })
     if (hasLotNo) {
       return new Error('ロットNoが既に存在します。' + item.lotNo)
-    }  
+    }
     const prefix = item.lotNo.charAt(0)
-  
+
     const correctPrefix = await queryPrefix(item.itemTypeId)
-  
+
     if (prefix !== correctPrefix) {
       return new Error('ロットNoと分類の接頭辞の組み合わせが正しくありません')
     }
-  
+
     if (!/^[A-Z]+-([0-9]|-)+$/gu.test(item.lotNo)) {
-      return new ValidationError(
-        'lotNoの形式が正しくありません。英語-数字' + item.lotNo
-      )
-    }  
+      return new ValidationError('lotNoの形式が正しくありません。英語-数字' + item.lotNo)
+    }
   }
 
   return true
@@ -186,31 +186,32 @@ const checkValidItem = async (item: UpdateItemData) => {
 /**
  * ロットナンバーの自動生成
  * @param {number} itemTypeId
- * @param {number} [offset=1] 
- * @return {string} 新しいロットNo 
+ * @param {number} [offset=1]
+ * @return {string} 新しいロットNo
  */
-export const generateLotNo = async (itemTypeId : number, offset = 1) => {
+export const generateLotNo = async (itemTypeId: number, offset = 1) => {
   const itemPrefix = await queryPrefix(itemTypeId)
   const startsLotNo = `${itemPrefix}-${dayjs().format('YYMMDD')}`
 
   const lastItem = await prisma.item.findFirst({
-    where:{
-      lotNo:{
-        startsWith :startsLotNo
+    where: {
+      lotNo: {
+        startsWith: startsLotNo
       }
     },
-    orderBy:{
-      lotNo:"desc"
+    orderBy: {
+      lotNo: 'desc'
     }
   })
   const currentSerialNo = (() => {
-    if(!lastItem){
+    if (!lastItem) {
       return 0
-    }else{
-      return Number(lastItem.lotNo.slice(-1)[0] ?? 0)
+    } else {
+      return Number(lastItem.lotNo.split('-')[2] ?? 0)
     }
   })()
 
   const serialNextNo = currentSerialNo + offset
-  return `${startsLotNo}-${( '00' + serialNextNo ).slice( -2 ).toString()}` 
+  //console.log('offset:', offset, ' startsLotNo:', startsLotNo, ' currentSerialNo:', currentSerialNo, ' lastItem:', lastItem?.lotNo ?? '', ' serialNextNo:', serialNextNo, ' newLotNo:', `${startsLotNo}-${('00' + serialNextNo).slice(-2).toString()}`)
+  return `${startsLotNo}-${('00' + serialNextNo).slice(-2).toString()}`
 }
