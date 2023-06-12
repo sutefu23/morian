@@ -14,7 +14,9 @@ export type getQuery = {
   isDefective?: boolean
   notZero?: boolean
   orderBy?: 'asc' | 'desc'
-  limit?: number
+  limit?: number,
+  registerFrom?: Date,
+  registerTo?: Date
 }
 
 export const getExsitItemGroupList = async () => {
@@ -29,11 +31,15 @@ export const getGroupByWarehouseWoodspecies = async () => {
   })
 }
 
-export const getItemList = async ({ woodSpeciesId, itemTypeId, notZero, isDefective, limit, orderBy = 'asc' }: getQuery) => {
+export const getItemList = async ({ woodSpeciesId, itemTypeId, notZero, isDefective, limit, registerFrom, registerTo ,orderBy = 'asc' }: getQuery) => {
   const query = {
     where: {
       woodSpeciesId,
-      itemTypeId
+      itemTypeId,
+      createdAt: {
+        gte: registerFrom,
+        lte: registerTo,
+      }
     }
   }
 
@@ -69,6 +75,7 @@ export const getItemList = async ({ woodSpeciesId, itemTypeId, notZero, isDefect
       }
     }
   })()
+  
   const data = await prisma.item.findMany({
     ...query,
     ...notZeroQuery,
