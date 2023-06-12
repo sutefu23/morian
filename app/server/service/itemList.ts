@@ -42,11 +42,11 @@ export const getItemList = async ({ woodSpeciesId, itemTypeId, notZero, isDefect
       }
     }
   }
-
   const notZeroQuery = (() => {
     if (notZero) {
       return {
         where: {
+          ...query.where,
           count: {
             not: 0
           }
@@ -219,6 +219,5 @@ export const generateLotNo = async (itemTypeId: number, offset = 1) => {
   })()
 
   const serialNextNo = currentSerialNo + offset
-  //console.log('offset:', offset, ' startsLotNo:', startsLotNo, ' currentSerialNo:', currentSerialNo, ' lastItem:', lastItem?.lotNo ?? '', ' serialNextNo:', serialNextNo, ' newLotNo:', `${startsLotNo}-${('00' + serialNextNo).slice(-2).toString()}`)
   return `${startsLotNo}-${('00' + serialNextNo).slice(-2).toString()}`
 }

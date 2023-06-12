@@ -76,7 +76,7 @@ const Register = ({
                       onSelect={(e) => {
                         const { options, selectedIndex } = e.target
                         updateItem(index, {
-                          woodSpeciesId: Number(e.target.value),
+                          woodSpeciesId: e.target.value ? Number(e.target.value) : undefined,
                           woodSpeciesName: options[selectedIndex].innerHTML
                         })
                       }}
@@ -134,7 +134,7 @@ const Register = ({
                       onSelect={(e) => {
                         const { options, selectedIndex } = e.target
                         updateItem(index, {
-                          gradeId: Number(e.target.value),
+                          gradeId: e.target.value ? Number(e.target.value) : undefined,
                           gradeName: options[selectedIndex].innerHTML
                         })
                       }}
@@ -193,7 +193,8 @@ const Register = ({
                       step={0.1}
                       value={item.thickness}
                       onChange={(e) => {
-                        updateItemField<'thickness'>(index, 'thickness', Number(e.target.value))
+                        const data = e.target.value ? Number(e.target.value) : undefined
+                        updateItemField<'thickness'>(index, 'thickness', data)
                       }}
                     />
                     <FormLabel style={{ fontSize: '1.2em', marginTop: '5px' }}>ｘ</FormLabel>
@@ -202,7 +203,8 @@ const Register = ({
                       type="number"
                       value={item.width}
                       onChange={(e) => {
-                        updateItemField<'width'>(index, 'width', Number(e.target.value))
+                        const data = e.target.value ? Number(e.target.value) : undefined
+                        updateItemField<'width'>(index, 'width', data)
                       }}
                     />
                   </InputGroup>
@@ -225,7 +227,7 @@ const Register = ({
                       onSelect={(e) => {
                         const { options, selectedIndex } = e.target
                         updateItem(index, {
-                          packageCountUnitId: Number(e.target.value),
+                          packageCountUnitId: e.target.value ? Number(e.target.value) : undefined,
                           packageCountUnitName: options[selectedIndex].innerHTML
                         })
                       }}
@@ -257,7 +259,7 @@ const Register = ({
                       onSelect={(e) => {
                         const { options, selectedIndex } = e.target
                         updateItem(index, {
-                          warehouseId: Number(e.target.value),
+                          warehouseId: e.target.value ? Number(e.target.value) : undefined,
                           warehouseName: options[selectedIndex].innerHTML
                         })
                       }}
@@ -301,7 +303,7 @@ const Register = ({
                       onSelect={(e) => {
                         const { options, selectedIndex } = e.target
                         updateItem(index, {
-                          costUnitId: Number(e.target.value),
+                          costUnitId: e.target.value ? Number(e.target.value) : undefined,
                           costUnitName: options[selectedIndex].innerHTML
                         })
                       }}
@@ -326,7 +328,7 @@ const Register = ({
                       onSelect={(e) => {
                         const { options, selectedIndex } = e.target
                         updateItem(index, {
-                          unitId: Number(e.target.value),
+                          unitId: e.target.value ? Number(e.target.value) : undefined,
                           unitName: options[selectedIndex].innerHTML
                         })
                       }}

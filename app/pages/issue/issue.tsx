@@ -1,25 +1,5 @@
-import {
-  HStack,
-  Box,
-  VStack,
-  InputGroup,
-  InputLeftAddon,
-  Divider,
-  InputRightAddon,
-  Input,
-  Button,
-  FormLabel,
-  useDisclosure
-} from '@chakra-ui/react'
-import {
-  WoodSpeciesSelect,
-  ItemTypeSelect,
-  SupplierSelect,
-  GradeSelect,
-  UnitSelect,
-  DeliveryPlaceSelect,
-  UserSelect
-} from '~/components/select/'
+import { HStack, Box, VStack, InputGroup, InputLeftAddon, Divider, InputRightAddon, Input, Button, FormLabel, useDisclosure } from '@chakra-ui/react'
+import { WoodSpeciesSelect, ItemTypeSelect, SupplierSelect, GradeSelect, UnitSelect, DeliveryPlaceSelect, UserSelect } from '~/components/select/'
 import Footer from '~/components/Footer'
 import TemplateModal from './templateModal'
 import useIssue from '~/hooks/useIssue'
@@ -35,27 +15,7 @@ import { apiClient } from '~/utils/apiClient'
 import useUser from '~/hooks/useUser'
 
 const RegisterIssue = () => {
-  const {
-    issueData,
-    setIssueData,
-    issueSaveData,
-    editMode,
-    setEditMode,
-    pushTemplate,
-    updateField,
-    addItemData,
-    deleteItemData,
-    copyItemLine,
-    updateItemField,
-    calcCostPackageCount,
-    costPerUnit,
-    totalPrice,
-    postIssue,
-    downloadOrderSheet,
-    templates,
-    removeTemplates,
-    updateIssue
-  } = useIssue()
+  const { issueData, setIssueData, issueSaveData, editMode, setEditMode, pushTemplate, updateField, addItemData, deleteItemData, copyItemLine, updateItemField, calcCostPackageCount, costPerUnit, totalPrice, postIssue, downloadOrderSheet, templates, removeTemplates, updateIssue } = useIssue()
 
   const router = useRouter()
   const { data: editIssues, status } = useAspidaQuery(apiClient.issue, {
@@ -68,12 +28,7 @@ const RegisterIssue = () => {
   //初回レンダリング時データリストア
   useEffect(() => {
     // 編集モード
-    if (
-      Boolean(router.query['issueId']) &&
-      status === 'success' &&
-      editIssues &&
-      editIssues.length > 0
-    ) {
+    if (Boolean(router.query['issueId']) && status === 'success' && editIssues && editIssues.length > 0) {
       setEditMode('update')
       setIssueData(editIssues[0])
     } else {
@@ -100,11 +55,7 @@ const RegisterIssue = () => {
     }
   }, [user, issueData, setIssueData])
 
-  const {
-    isOpen: isTemplateOpen,
-    onClose: onTemplateClose,
-    onOpen: onTemplateOpen
-  } = useDisclosure()
+  const { isOpen: isTemplateOpen, onClose: onTemplateClose, onOpen: onTemplateOpen } = useDisclosure()
 
   const handlePushTemplate = useCallback(() => {
     const key = prompt('テンプレート保存名を入力してください')
@@ -130,10 +81,7 @@ const RegisterIssue = () => {
                   type="text"
                   placeholder="自動採番"
                   onChange={(e) => {
-                    updateField<'managedId'>(
-                      'managedId',
-                      e.target.value.toNarrowCase()
-                    )
+                    updateField<'managedId'>('managedId', e.target.value.toNarrowCase())
                   }}
                   value={issueData.managedId}
                 />
@@ -152,11 +100,7 @@ const RegisterIssue = () => {
                   onChange={(e) => {
                     updateField<'date'>('date', new Date(e.target.value))
                   }}
-                  value={
-                    issueData.date
-                      ? dayjs(issueData.date as Date).format('YYYY-MM-DD')
-                      : ''
-                  }
+                  value={issueData.date ? dayjs(issueData.date as Date).format('YYYY-MM-DD') : ''}
                 />
               </InputGroup>
             </Box>
@@ -169,10 +113,7 @@ const RegisterIssue = () => {
                   required
                   value={issueData.userId ?? undefined}
                   onSelect={(e) => {
-                    updateField<'userId'>(
-                      'userId',
-                      Number(e.currentTarget.value)
-                    )
+                    updateField<'userId'>('userId', Number(e.currentTarget.value))
                   }}
                 />
               </InputGroup>
@@ -203,10 +144,7 @@ const RegisterIssue = () => {
                 <Input
                   placeholder="自由入力"
                   onBlur={(e) => {
-                    updateField<'supplierManagerName'>(
-                      'supplierManagerName',
-                      e.target.value
-                    )
+                    updateField<'supplierManagerName'>('supplierManagerName', e.target.value)
                   }}
                   defaultValue={issueData.supplierManagerName}
                 />
@@ -218,10 +156,7 @@ const RegisterIssue = () => {
                 <InputLeftAddon bgColor="blue.100">希望納期</InputLeftAddon>
                 <Input
                   onBlur={(e) => {
-                    updateField<'expectDeliveryDate'>(
-                      'expectDeliveryDate',
-                      e.target.value
-                    )
+                    updateField<'expectDeliveryDate'>('expectDeliveryDate', e.target.value)
                   }}
                   defaultValue={issueData.expectDeliveryDate}
                 />
@@ -255,10 +190,7 @@ const RegisterIssue = () => {
                 <InputLeftAddon bgColor="blue.100">納入住所</InputLeftAddon>
                 <Input
                   onBlur={(e) => {
-                    updateField<'deliveryAddress'>(
-                      'deliveryAddress',
-                      e.target.value
-                    )
+                    updateField<'deliveryAddress'>('deliveryAddress', e.target.value)
                   }}
                   defaultValue={issueData.deliveryAddress}
                 />
@@ -269,10 +201,7 @@ const RegisterIssue = () => {
                 <InputLeftAddon bgColor="blue.100">受取担当</InputLeftAddon>
                 <Input
                   onBlur={(e) => {
-                    updateField<'receiveingStaff'>(
-                      'receiveingStaff',
-                      e.target.value
-                    )
+                    updateField<'receiveingStaff'>('receiveingStaff', e.target.value)
                   }}
                   defaultValue={issueData.receiveingStaff}
                 />
@@ -323,15 +252,11 @@ const RegisterIssue = () => {
                           const newItem = {
                             ...issueData.issueItems[index],
                             ...{
-                              woodSpeciesId: Number(e.target.value),
+                              woodSpeciesId: e.target.value ? Number(e.target.value) : undefined,
                               woodSpeciesName: options[selectedIndex].innerHTML
                             }
                           }
-                          const newItems = Object.assign(
-                            [],
-                            issueData.issueItems,
-                            { [index]: newItem }
-                          )
+                          const newItems = Object.assign([], issueData.issueItems, { [index]: newItem })
                           setIssueData({
                             ...issueData,
                             ...{ issueItems: newItems }
@@ -358,11 +283,7 @@ const RegisterIssue = () => {
                               itemTypeName: select?.name
                             }
                           }
-                          const newItems = Object.assign(
-                            [],
-                            issueData.issueItems,
-                            { [index]: newItem }
-                          )
+                          const newItems = Object.assign([], issueData.issueItems, { [index]: newItem })
                           setIssueData({
                             ...issueData,
                             ...{ issueItems: newItems }
@@ -411,15 +332,11 @@ const RegisterIssue = () => {
                           const newItem = {
                             ...issueData.issueItems[index],
                             ...{
-                              gradeId: Number(e.target.value),
+                              gradeId: e.target.value ? Number(e.target.value) : undefined,
                               gradeName: options[selectedIndex].innerHTML
                             }
                           }
-                          const newItems = Object.assign(
-                            [],
-                            issueData.issueItems,
-                            { [index]: newItem }
-                          )
+                          const newItems = Object.assign([], issueData.issueItems, { [index]: newItem })
                           setIssueData({
                             ...issueData,
                             ...{ issueItems: newItems }
@@ -448,11 +365,7 @@ const RegisterIssue = () => {
                       placeholder="自由入力"
                       defaultValue={item.manufacturer ?? ''}
                       onBlur={(e) => {
-                        updateItemField<'manufacturer'>(
-                          index,
-                          'manufacturer',
-                          e.target.value
-                        )
+                        updateItemField<'manufacturer'>(index, 'manufacturer', e.target.value)
                       }}
                     />
                   </InputGroup>
@@ -461,48 +374,30 @@ const RegisterIssue = () => {
               <HStack>
                 <Box>
                   <InputGroup>
-                    <InputLeftAddon aria-required>
-                      長さｘ厚みｘ幅
-                    </InputLeftAddon>
+                    <InputLeftAddon aria-required>長さｘ厚みｘ幅</InputLeftAddon>
                     <Input
                       placeholder="長さ"
                       defaultValue={item.length ?? undefined}
                       onBlur={(e) => {
-                        updateItemField<'length'>(
-                          index,
-                          'length',
-                          e.target.value
-                        )
+                        updateItemField<'length'>(index, 'length', e.target.value)
                       }}
                     />
-                    <FormLabel style={{ fontSize: '1.2em', marginTop: '5px' }}>
-                      ｘ
-                    </FormLabel>
+                    <FormLabel style={{ fontSize: '1.2em', marginTop: '5px' }}>ｘ</FormLabel>
                     <Input
                       placeholder="厚み"
                       type="number"
                       defaultValue={item.thickness ?? undefined}
                       onBlur={(e) => {
-                        updateItemField<'thickness'>(
-                          index,
-                          'thickness',
-                          e.target.value ? Number(e.target.value) : undefined
-                        )
+                        updateItemField<'thickness'>(index, 'thickness', e.target.value ? Number(e.target.value) : undefined)
                       }}
                     />
-                    <FormLabel style={{ fontSize: '1.2em', marginTop: '5px' }}>
-                      ｘ
-                    </FormLabel>
+                    <FormLabel style={{ fontSize: '1.2em', marginTop: '5px' }}>ｘ</FormLabel>
                     <Input
                       placeholder="幅"
                       type="number"
                       defaultValue={item.width ?? undefined}
                       onBlur={(e) => {
-                        updateItemField<'width'>(
-                          index,
-                          'width',
-                          e.target.value ? Number(e.target.value) : undefined
-                        )
+                        updateItemField<'width'>(index, 'width', e.target.value ? Number(e.target.value) : undefined)
                       }}
                     />
                   </InputGroup>
@@ -513,18 +408,10 @@ const RegisterIssue = () => {
                     <Input
                       required
                       type="number"
-                      defaultValue={
-                        item.cost ? Number(item.packageCount) : undefined
-                      }
+                      defaultValue={item.cost ? Number(item.packageCount) : undefined}
                       placeholder="数字"
                       onBlur={(e) => {
-                        updateItemField<'packageCount'>(
-                          index,
-                          'packageCount',
-                          e.target.value
-                            ? new Decimal(e.target.value)
-                            : undefined
-                        )
+                        updateItemField<'packageCount'>(index, 'packageCount', e.target.value ? new Decimal(e.target.value) : undefined)
                       }}
                     />
                   </InputGroup>
@@ -540,13 +427,7 @@ const RegisterIssue = () => {
                       defaultValue={item.cost ? Number(item.cost) : undefined}
                       placeholder="数字"
                       onBlur={(e) => {
-                        updateItemField<'cost'>(
-                          index,
-                          'cost',
-                          e.target.value
-                            ? new Decimal(e.target.value)
-                            : undefined
-                        )
+                        updateItemField<'cost'>(index, 'cost', e.target.value ? new Decimal(e.target.value) : undefined)
                       }}
                     />
                     <FormLabel fontSize="1.2em" mt="5px">
@@ -561,15 +442,11 @@ const RegisterIssue = () => {
                           const newItem = {
                             ...issueData.issueItems[index],
                             ...{
-                              costUnitId: Number(e.target.value),
+                              costUnitId: e.target.value ? Number(e.target.value) : undefined,
                               costUnitName: options[selectedIndex].innerHTML
                             }
                           }
-                          const newItems = Object.assign(
-                            [],
-                            issueData.issueItems,
-                            { [index]: newItem }
-                          )
+                          const newItems = Object.assign([], issueData.issueItems, { [index]: newItem })
                           setIssueData({
                             ...issueData,
                             ...{ issueItems: newItems }
@@ -588,13 +465,7 @@ const RegisterIssue = () => {
                       type="number"
                       placeholder="数字"
                       onBlur={(e) => {
-                        updateItemField<'count'>(
-                          index,
-                          'count',
-                          e.target.value
-                            ? new Decimal(e.target.value)
-                            : undefined
-                        )
+                        updateItemField<'count'>(index, 'count', e.target.value ? new Decimal(e.target.value) : undefined)
                       }}
                     />
                     <UnitSelect
@@ -606,15 +477,11 @@ const RegisterIssue = () => {
                           const newItem = {
                             ...issueData.issueItems[index],
                             ...{
-                              unitId: Number(e.target.value),
+                              unitId: e.target.value ? Number(e.target.value) : undefined,
                               unitName: options[selectedIndex].innerHTML
                             }
                           }
-                          const newItems = Object.assign(
-                            [],
-                            issueData.issueItems,
-                            { [index]: newItem }
-                          )
+                          const newItems = Object.assign([], issueData.issueItems, { [index]: newItem })
                           setIssueData({
                             ...issueData,
                             ...{ issueItems: newItems }
@@ -632,28 +499,16 @@ const RegisterIssue = () => {
                       placeholder="原価算出基準となる数量"
                       step="0.001"
                       type="number"
-                      defaultValue={String(
-                        item.costPackageCount ? item.costPackageCount : ''
-                      )}
+                      defaultValue={String(item.costPackageCount ? item.costPackageCount : '')}
                       onBlur={(e) => {
-                        updateItemField<'costPackageCount'>(
-                          index,
-                          'costPackageCount',
-                          e.target.value
-                            ? new Decimal(e.target.value)
-                            : undefined
-                        )
+                        updateItemField<'costPackageCount'>(index, 'costPackageCount', e.target.value ? new Decimal(e.target.value) : undefined)
                       }}
                     />
                     <Button
                       onClick={() => {
                         const computedValue = calcCostPackageCount(item)
                         if (computedValue) {
-                          updateItemField<'costPackageCount'>(
-                            index,
-                            'costPackageCount',
-                            computedValue
-                          )
+                          updateItemField<'costPackageCount'>(index, 'costPackageCount', computedValue)
                         }
                       }}
                     >
@@ -666,34 +521,20 @@ const RegisterIssue = () => {
                 <Box>
                   <InputGroup>
                     <InputLeftAddon>最小単位当たりの原価</InputLeftAddon>
-                    <Input
-                      textAlign="right"
-                      readOnly
-                      value={costPerUnit(item).toYenFormatKanji()}
-                    />
+                    <Input textAlign="right" readOnly value={costPerUnit(item).toYenFormatKanji()} />
                   </InputGroup>
                 </Box>
                 <Box>
                   <InputGroup>
                     <InputLeftAddon aria-required>在庫金額</InputLeftAddon>
-                    <Input
-                      textAlign="right"
-                      readOnly
-                      value={totalPrice(item).toYenFormatKanji()}
-                    />
+                    <Input textAlign="right" readOnly value={totalPrice(item).toYenFormatKanji()} />
                   </InputGroup>
                 </Box>
               </HStack>
             </VStack>
           ))}
         <Box textAlign="left">
-          <Button
-            ml="50"
-            w={80}
-            bgColor="green.100"
-            visibility={editMode !== 'update' ? 'visible' : 'hidden'}
-            onClick={() => addItemData()}
-          >
+          <Button ml="50" w={80} bgColor="green.100" visibility={editMode !== 'update' ? 'visible' : 'hidden'} onClick={() => addItemData()}>
             行追加
           </Button>
         </Box>

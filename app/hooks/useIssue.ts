@@ -542,7 +542,6 @@ const useIssue = () => {
       console.error('postIssueData is not valid')
       return
     }
-    console.log(postIssueData)
     const { body } = await apiClient.issue.post({
       body: postIssueData as IssueProps
     })

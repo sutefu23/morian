@@ -1,25 +1,7 @@
 import { useRouter } from 'next/router'
 import usePageTitle from '~/hooks/usePageTitle'
 import { apiClient } from '~/utils/apiClient'
-import {
-  HStack,
-  Box,
-  VStack,
-  InputGroup,
-  InputLeftAddon,
-  Input,
-  Button,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  useDisclosure,
-  chakra,
-  Text,
-  FormLabel
-} from '@chakra-ui/react'
+import { HStack, Box, VStack, InputGroup, InputLeftAddon, Input, Button, Table, Thead, Tbody, Tr, Th, Td, useDisclosure, chakra, Text, FormLabel } from '@chakra-ui/react'
 import { useAspidaQuery } from '@aspida/react-query'
 import dayjs from 'dayjs'
 import RightDrawer from '~/components/drawer/rightDrawer'
@@ -65,24 +47,12 @@ const HistoryListPage = () => {
     return (item?.history?.length ?? 0) <= 1
   }, [item?.history])
 
-  const {
-    isOpen: isRightOpen,
-    onOpen: onRightOpen,
-    onClose: onRightClose
-  } = useDisclosure()
-  const {
-    isOpen: isModalOpen,
-    onOpen: onModalOpen,
-    onClose: onModalClose
-  } = useDisclosure()
+  const { isOpen: isRightOpen, onOpen: onRightOpen, onClose: onRightClose } = useDisclosure()
+  const { isOpen: isModalOpen, onOpen: onModalOpen, onClose: onModalClose } = useDisclosure()
 
   const { data: reasons } = useAspidaQuery(apiClient.master.reason)
-  const arraivalDate = item?.arrivalDate
-    ? '入荷日:' + dayjs(item.arrivalDate).format('YY/MM/DD')
-    : ''
-  setTitle(
-    `${lotId} ${item?.woodSpeciesName} ${item?.itemTypeName} 在庫一覧   ${arraivalDate}`
-  )
+  const arraivalDate = item?.arrivalDate ? '入荷日:' + dayjs(item.arrivalDate).format('YY/MM/DD') : ''
+  setTitle(`${lotId} ${item?.woodSpeciesName} ${item?.itemTypeName} 在庫一覧   ${arraivalDate}`)
   const [mode, setEditMode] = useState<'新規作成' | '編集'>('新規作成')
 
   const ref = createRef<HTMLTableRowElement>()
@@ -108,13 +78,7 @@ const HistoryListPage = () => {
         console.error((e as Error).message)
       }
     }
-  }, [
-    deleteRegisterdItem,
-    item?.id,
-    item?.itemTypeId,
-    item?.woodSpeciesId,
-    router
-  ])
+  }, [deleteRegisterdItem, item?.id, item?.itemTypeId, item?.woodSpeciesId, router])
 
   const scrollToBottomOfList = useCallback(() => {
     ref?.current?.scrollIntoView({
@@ -138,9 +102,7 @@ const HistoryListPage = () => {
       <VStack align="left">
         {isItemEditable() ? (
           <HStack>
-            <Text color="red.500">
-              ※商品情報は明細を追加する前まで変更／削除可能です。
-            </Text>
+            <Text color="red.500">※商品情報は明細を追加する前まで変更／削除可能です。</Text>
           </HStack>
         ) : (
           <></>
@@ -156,7 +118,7 @@ const HistoryListPage = () => {
                   onSelect={(e) => {
                     const { options, selectedIndex } = e.target
                     editItem({
-                      gradeId: Number(e.target.value),
+                      gradeId: e.target.value ? (e.target.value ? Number(e.target.value) : undefined) : undefined,
                       gradeName: options[selectedIndex].innerHTML
                     })
                   }}
@@ -219,7 +181,7 @@ const HistoryListPage = () => {
                   onSelect={(e) => {
                     const { options, selectedIndex } = e.target
                     editItem({
-                      warehouseId: Number(e.target.value),
+                      warehouseId: e.target.value ? (e.target.value ? Number(e.target.value) : undefined) : undefined,
                       warehouseName: options[selectedIndex].innerHTML
                     })
                   }}
@@ -247,23 +209,19 @@ const HistoryListPage = () => {
                       })
                     }}
                   />
-                  <FormLabel style={{ fontSize: '1.2em', marginTop: '5px' }}>
-                    ｘ
-                  </FormLabel>
+                  <FormLabel style={{ fontSize: '1.2em', marginTop: '5px' }}>ｘ</FormLabel>
                   <Input
                     size="sm"
                     placeholder="厚み"
                     type="number"
-                    defaultValue={item?.thickness ?? undefined}
+                    defaultValue={item?.thickness?.toString() ?? undefined}
                     onBlur={(e) => {
                       editItem({
-                        thickness: Number(e.target.value)
+                        thickness: e.target.value ? Number(e.target.value) : undefined
                       })
                     }}
                   />
-                  <FormLabel style={{ fontSize: '1.2em', marginTop: '5px' }}>
-                    ｘ
-                  </FormLabel>
+                  <FormLabel style={{ fontSize: '1.2em', marginTop: '5px' }}>ｘ</FormLabel>
                   <Input
                     size="sm"
                     placeholder="幅"
@@ -271,18 +229,13 @@ const HistoryListPage = () => {
                     defaultValue={item?.width ?? undefined}
                     onBlur={(e) => {
                       editItem({
-                        width: Number(e.target.value)
+                        width: e.target.value ? Number(e.target.value) : undefined
                       })
                     }}
                   />
                 </>
               ) : (
-                <Input
-                  readOnly
-                  value={`${item?.length ?? ''}${
-                    item?.thickness ? '*' + item.thickness : ''
-                  }${item?.width ? '*' + item.width : ''}`}
-                />
+                <Input readOnly value={`${item?.length ?? ''}${item?.thickness ? '*' + item.thickness : ''}${item?.width ? '*' + item.width : ''}`} />
               )}
             </InputGroup>
           </Box>
@@ -295,15 +248,11 @@ const HistoryListPage = () => {
                     required
                     size="sm"
                     type="number"
-                    defaultValue={
-                      item?.packageCount ? Number(item.packageCount) : undefined
-                    }
+                    defaultValue={item?.packageCount ? Number(item.packageCount) : undefined}
                     placeholder="数字"
                     onBlur={(e) => {
                       editItem({
-                        packageCount: e.target.value
-                          ? (new Decimal(e.target.value) as unknown as Decimal)
-                          : undefined
+                        packageCount: e.target.value ? (new Decimal(e.target.value) as unknown as Decimal) : undefined
                       })
                     }}
                   />
@@ -314,7 +263,7 @@ const HistoryListPage = () => {
                     onSelect={(e) => {
                       const { options, selectedIndex } = e.target
                       editItem({
-                        packageCountUnitId: Number(e.target.value),
+                        packageCountUnitId: e.target.value ? Number(e.target.value) : undefined,
                         packageCountUnitName: options[selectedIndex].innerHTML
                       })
                     }}
@@ -322,21 +271,8 @@ const HistoryListPage = () => {
                 </>
               ) : (
                 <>
-                  <Input
-                    readOnly
-                    w="6em"
-                    size="sm"
-                    value={
-                      item?.packageCount ? Number(item.packageCount) : undefined
-                    }
-                  />
-                  {item?.packageCountUnitName ? (
-                    <InputLeftAddon>
-                      {item?.packageCountUnitName}
-                    </InputLeftAddon>
-                  ) : (
-                    <></>
-                  )}
+                  <Input readOnly w="6em" size="sm" value={item?.packageCount ? Number(item.packageCount) : undefined} />
+                  {item?.packageCountUnitName ? <InputLeftAddon>{item?.packageCountUnitName}</InputLeftAddon> : <></>}
                 </>
               )}
             </InputGroup>
@@ -352,19 +288,12 @@ const HistoryListPage = () => {
                   placeholder="数字"
                   onBlur={(e) => {
                     editItem({
-                      cost: e.target.value
-                        ? (new Decimal(e.target.value) as unknown as Decimal)
-                        : undefined
+                      cost: e.target.value ? (new Decimal(e.target.value) as unknown as Decimal) : undefined
                     })
                   }}
                 />
               ) : (
-                <Input
-                  readOnly
-                  w="10em"
-                  textAlign="right"
-                  value={`${Number(item?.cost).toLocaleString() ?? ''}`}
-                />
+                <Input readOnly w="10em" textAlign="right" value={`${Number(item?.cost).toLocaleString() ?? ''}`} />
               )}
               <InputLeftAddon>/ {item?.costUnitName}</InputLeftAddon>
             </InputGroup>
@@ -372,24 +301,14 @@ const HistoryListPage = () => {
           <Box>
             <InputGroup size="sm">
               <InputLeftAddon>実数</InputLeftAddon>
-              <Input
-                readOnly
-                w="8em"
-                textAlign="right"
-                value={`${item?.count}`}
-              />
+              <Input readOnly w="8em" textAlign="right" value={`${item?.count}`} />
               <InputLeftAddon>{item?.unitName}</InputLeftAddon>
             </InputGroup>
           </Box>
           <Box>
             <InputGroup size="sm">
               <InputLeftAddon>仮数</InputLeftAddon>
-              <Input
-                readOnly
-                w="8em"
-                textAlign="right"
-                value={`${item?.tempCount}`}
-              />
+              <Input readOnly w="8em" textAlign="right" value={`${item?.tempCount}`} />
               <InputLeftAddon>{item?.unitName}</InputLeftAddon>
             </InputGroup>
           </Box>
@@ -459,14 +378,7 @@ const HistoryListPage = () => {
         </HStack>
       </VStack>
       <VStack>
-        <Box
-          overflowY="auto"
-          maxHeight="65vh"
-          w="100vw"
-          bgColor="white"
-          zIndex="10"
-          mt="10px"
-        >
+        <Box overflowY="auto" maxHeight="65vh" w="100vw" bgColor="white" zIndex="10" mt="10px">
           <Table variant="striped" className="hover" borderBottom="1px">
             <Thead position="sticky" top="0" bgColor="white" zIndex="10">
               <Tr>
@@ -486,11 +398,7 @@ const HistoryListPage = () => {
                   <Tr
                     key={data.id}
                     style={{
-                      color: data.isTemp
-                        ? data.reasonId === 4
-                          ? 'green'
-                          : 'red'
-                        : ''
+                      color: data.isTemp ? (data.reasonId === 4 ? 'green' : 'red') : ''
                     }}
                     onMouseEnter={() => setHoverIndex(i)}
                     onMouseLeave={() => setHoverIndex(-1)}
@@ -511,9 +419,7 @@ const HistoryListPage = () => {
                       {data.isTemp ? '(仮)' : ''}
                       {data.status === 1 ? '入庫' : '出庫'}
                     </Td>
-                    <Td textAlign="center">
-                      {reasons?.find((r) => r.id === data.reasonId)?.name}
-                    </Td>
+                    <Td textAlign="center">{reasons?.find((r) => r.id === data.reasonId)?.name}</Td>
                     <Td>
                       <Input
                         border="solid 1px #ddd"
@@ -532,40 +438,21 @@ const HistoryListPage = () => {
                         defaultValue={data.note ?? undefined}
                       />
                     </Td>
+                    <Td textAlign="center">{data.addCount.toString() != '0' && data.addCount}</Td>
+                    <Td textAlign="center">{data.reduceCount.toString() != '0' && data.reduceCount}</Td>
                     <Td textAlign="center">
-                      {data.addCount.toString() != '0' && data.addCount}
+                      {data.bookDate ? dayjs(data.bookDate).format('YY/MM/DD') : ''}
+                      {data.bookDate && dayjs(data.bookDate).diff(new Date(), 'day') <= -1 && <Text fontSize="xx-small">期限が切れています</Text>}
                     </Td>
                     <Td textAlign="center">
-                      {data.reduceCount.toString() != '0' && data.reduceCount}
-                    </Td>
-                    <Td textAlign="center">
-                      {data.bookDate
-                        ? dayjs(data.bookDate).format('YY/MM/DD')
-                        : ''}
-                      {data.bookDate &&
-                        dayjs(data.bookDate).diff(new Date(), 'day') <= -1 && (
-                          <Text fontSize="xx-small">期限が切れています</Text>
-                        )}
-                    </Td>
-                    <Td textAlign="center">
-                      <Box
-                        display="flex"
-                        justifyContent="space-around"
-                        visibility={
-                          data.isTemp && hoverIndex == i ? 'visible' : 'hidden'
-                        }
-                      >
+                      <Box display="flex" justifyContent="space-around" visibility={data.isTemp && hoverIndex == i ? 'visible' : 'hidden'}>
                         <DeleteIcon
                           title="削除"
                           cursor="pointer"
                           fontSize="lg"
                           color="red"
                           onClick={async () => {
-                            const res = confirm(
-                              `この明細を削除しますか？\n入出庫日:${dayjs(
-                                data.date
-                              ).format('YY/MM/DD')}`
-                            )
+                            const res = confirm(`この明細を削除しますか？\n入出庫日:${dayjs(data.date).format('YY/MM/DD')}`)
                             if (res) {
                               await deleteHistory(data.id).then(() => {
                                 refetch()

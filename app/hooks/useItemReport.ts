@@ -1,25 +1,21 @@
-import { useAspidaQuery } from '@aspida/react-query'
 import ExcelJS from 'exceljs'
 import '../utils/number'
 import { apiClient } from '~/utils/apiClient'
 export type ReportType = '不良在庫一覧' | 'ロット別在庫金額'
 
-const useItemReport = (type: ReportType) => {
-  const query = (() => {
-    switch (type) {
-      case '不良在庫一覧':
-        return { notZero: true, isDefective: true }
-      case 'ロット別在庫金額':
-        return { notZero: true }
-    }
-  })()
-  const res = useAspidaQuery(apiClient.itemList, { query })
-
+const useItemReport = (type: ReportType, query?: {fromDate?: Date, toDate?: Date, itemTypeId?:number, woodSpeciesId? :number}) => {
   const print = async () => {
-    if (!res) return
+    const param = (() => {
+      const {fromDate, toDate, itemTypeId, woodSpeciesId}  = query || {}
+      switch (type) {
+        case '不良在庫一覧':
+          return { notZero: true, isDefective: true }
+        case 'ロット別在庫金額':
+          return { notZero: true, registerFrom: fromDate, registerTo: toDate, itemTypeId: itemTypeId, woodSpeciesId: woodSpeciesId }
+      }
+    })()
 
-    const { data: items } = res
-
+    const items = await apiClient.itemList.$get({query:param})
     const workbook = new ExcelJS.Workbook()
     workbook.addWorksheet(`${type}`)
     const worksheet = workbook.getWorksheet(`${type}`)
