@@ -1,23 +1,5 @@
-import {
-  HStack,
-  Box,
-  VStack,
-  InputGroup,
-  InputLeftAddon,
-  Input,
-  Spacer,
-  Button,
-  Divider,
-  FormLabel
-} from '@chakra-ui/react'
-import {
-  WoodSpeciesSelect,
-  ItemTypeSelect,
-  SupplierSelect,
-  GradeSelect,
-  UnitSelect,
-  WarehouseSelect
-} from '~/components/select/'
+import { HStack, Box, VStack, InputGroup, InputLeftAddon, Input, Spacer, Button, Divider, FormLabel } from '@chakra-ui/react'
+import { WoodSpeciesSelect, ItemTypeSelect, SupplierSelect, GradeSelect, UnitSelect, WarehouseSelect } from '~/components/select/'
 import Footer from '~/components/Footer'
 import useStock from '~/hooks/useStock'
 import { Decimal } from 'decimal.js'
@@ -43,18 +25,7 @@ const Register = ({
     setTitle('新規在庫登録')
   }
 
-  const {
-    headerData,
-    stockItems,
-    updateItem,
-    updateHeader,
-    updateItemField,
-    addItemLine,
-    deleteItemLine,
-    copyItemLine,
-    postStock,
-    resetData
-  } = useStock()
+  const { headerData, stockItems, updateItem, updateHeader, updateItemField, addItemLine, deleteItemLine, copyItemLine, postStock, resetData } = useStock()
   return (
     <>
       <VStack align="left" pl="10" mb="3">
@@ -184,10 +155,7 @@ const Register = ({
                 </Box>
                 <Box>
                   <InputGroup>
-                    <InputLeftAddon
-                      aria-required
-                      bgColor={isFromIssue ? 'red.100' : undefined}
-                    >
+                    <InputLeftAddon aria-required bgColor={isFromIssue ? 'red.100' : undefined}>
                       ロットNo
                     </InputLeftAddon>
                     <Input
@@ -215,41 +183,26 @@ const Register = ({
                       defaultValue={item.length}
                       type="text"
                       onBlur={(e) => {
-                        updateItemField<'length'>(
-                          index,
-                          'length',
-                          e.target.value
-                        )
+                        updateItemField<'length'>(index, 'length', e.target.value)
                       }}
                     />
-                    <FormLabel style={{ fontSize: '1.2em', marginTop: '5px' }}>
-                      ｘ
-                    </FormLabel>
+                    <FormLabel style={{ fontSize: '1.2em', marginTop: '5px' }}>ｘ</FormLabel>
                     <Input
                       placeholder="厚み"
                       type="number"
+                      step={0.1}
                       value={item.thickness}
                       onChange={(e) => {
-                        updateItemField<'thickness'>(
-                          index,
-                          'thickness',
-                          Number(e.target.value)
-                        )
+                        updateItemField<'thickness'>(index, 'thickness', Number(e.target.value))
                       }}
                     />
-                    <FormLabel style={{ fontSize: '1.2em', marginTop: '5px' }}>
-                      ｘ
-                    </FormLabel>
+                    <FormLabel style={{ fontSize: '1.2em', marginTop: '5px' }}>ｘ</FormLabel>
                     <Input
                       placeholder="幅"
                       type="number"
                       value={item.width}
                       onChange={(e) => {
-                        updateItemField<'width'>(
-                          index,
-                          'width',
-                          Number(e.target.value)
-                        )
+                        updateItemField<'width'>(index, 'width', Number(e.target.value))
                       }}
                     />
                   </InputGroup>
@@ -260,22 +213,10 @@ const Register = ({
                     <Input
                       required
                       type="number"
-                      value={
-                        item.packageCount
-                          ? Number(item.packageCount)
-                          : undefined
-                      }
+                      value={item.packageCount ? Number(item.packageCount) : undefined}
                       placeholder="数字"
                       onChange={(e) => {
-                        updateItemField<'packageCount'>(
-                          index,
-                          'packageCount',
-                          e.target.value
-                            ? (new Decimal(
-                                e.target.value
-                              ) as unknown as ServerDecimal)
-                            : undefined
-                        )
+                        updateItemField<'packageCount'>(index, 'packageCount', e.target.value ? (new Decimal(e.target.value) as unknown as ServerDecimal) : undefined)
                       }}
                     />
                     <UnitSelect
@@ -300,21 +241,14 @@ const Register = ({
                       placeholder="自由入力"
                       defaultValue={item.manufacturer}
                       onBlur={(e) => {
-                        updateItemField<'manufacturer'>(
-                          index,
-                          'manufacturer',
-                          e.target.value
-                        )
+                        updateItemField<'manufacturer'>(index, 'manufacturer', e.target.value)
                       }}
                     />
                   </InputGroup>
                 </Box>
                 <Box>
                   <InputGroup>
-                    <InputLeftAddon
-                      aria-required
-                      bgColor={isFromIssue ? 'red.100' : undefined}
-                    >
+                    <InputLeftAddon aria-required bgColor={isFromIssue ? 'red.100' : undefined}>
                       倉庫
                     </InputLeftAddon>
                     <WarehouseSelect
@@ -332,25 +266,14 @@ const Register = ({
                 </Box>
                 <Box>
                   <InputGroup>
-                    <InputLeftAddon
-                      aria-required
-                      bgColor={isFromIssue ? 'red.100' : undefined}
-                    >
+                    <InputLeftAddon aria-required bgColor={isFromIssue ? 'red.100' : undefined}>
                       入荷日
                     </InputLeftAddon>
                     <Input
                       type="date"
-                      value={
-                        item.arrivalDate
-                          ? dayjs(item.arrivalDate).format('YYYY-MM-DD')
-                          : undefined
-                      }
+                      value={item.arrivalDate ? dayjs(item.arrivalDate).format('YYYY-MM-DD') : undefined}
                       onChange={(e) => {
-                        updateItemField<'arrivalDate'>(
-                          index,
-                          'arrivalDate',
-                          e.target.valueAsDate ?? undefined
-                        )
+                        updateItemField<'arrivalDate'>(index, 'arrivalDate', e.target.valueAsDate ?? undefined)
                       }}
                     />
                   </InputGroup>
@@ -366,15 +289,7 @@ const Register = ({
                       value={item.cost ? Number(item.cost) : undefined}
                       placeholder="数字"
                       onChange={(e) => {
-                        updateItemField<'cost'>(
-                          index,
-                          'cost',
-                          e.target.value
-                            ? (new Decimal(
-                                e.target.value
-                              ) as unknown as ServerDecimal)
-                            : undefined
-                        )
+                        updateItemField<'cost'>(index, 'cost', e.target.value ? (new Decimal(e.target.value) as unknown as ServerDecimal) : undefined)
                       }}
                     />
                     <FormLabel fontSize="1.2em" mt="5px">
@@ -402,15 +317,7 @@ const Register = ({
                       type="number"
                       placeholder="数字"
                       onChange={(e) => {
-                        updateItemField<'count'>(
-                          index,
-                          'count',
-                          e.target.value
-                            ? (new Decimal(
-                                e.target.value
-                              ) as unknown as ServerDecimal)
-                            : undefined
-                        )
+                        updateItemField<'count'>(index, 'count', e.target.value ? (new Decimal(e.target.value) as unknown as ServerDecimal) : undefined)
                       }}
                     />
                     <UnitSelect
@@ -449,11 +356,7 @@ const Register = ({
                       placeholder="割れなど傷品としての備考"
                       defaultValue={item.defectiveNote}
                       onBlur={(e) => {
-                        updateItemField<'defectiveNote'>(
-                          index,
-                          'defectiveNote',
-                          e.target.value
-                        )
+                        updateItemField<'defectiveNote'>(index, 'defectiveNote', e.target.value)
                       }}
                     />
                   </InputGroup>
@@ -486,12 +389,7 @@ const Register = ({
             </Button>
           </Box>
           <Box textAlign="left">
-            <Button
-              ml="50"
-              w={80}
-              bgColor="green.100"
-              onClick={() => addItemLine()}
-            >
+            <Button ml="50" w={80} bgColor="green.100" onClick={() => addItemLine()}>
               行追加
             </Button>
             <Button

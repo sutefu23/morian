@@ -114,7 +114,7 @@ model Item {
   gradeName            String?
   length               String? // 寸法（長さ）
   width                Int? // 寸法（幅）
-  thickness            Int? // 寸法（厚）
+  thickness            Decimal? // 寸法（厚）
   packageCount         Decimal? // 入数
   packageCountUnit     Unit?     @relation(name: "packageCountUnit", fields: [packageCountUnitId], references: [id]) // 入数単位
   packageCountUnitId   Int?
