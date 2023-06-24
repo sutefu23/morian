@@ -1,23 +1,22 @@
 import styles from '~/styles/Home.module.css'
 import Sidebar from '~/components/navigation/sidebar'
-import {
-  Button,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  Heading
-} from '@chakra-ui/react'
+import { Button, Table, Thead, Tbody, Tr, Th, Td, Heading, chakra, useDisclosure, VStack } from '@chakra-ui/react'
 import usePageTitle from '~/hooks/usePageTitle'
 import { apiClient } from '~/utils/apiClient'
 import { useAspidaQuery } from '@aspida/react-query'
+import SingleBarCodePdf from '~/components/barcode/SingleBarcode'
 import NextLink from 'next/link'
 import dayjs from 'dayjs'
+import { FaBarcode } from 'react-icons/fa'
+import { PDFDownloadLink } from '@react-pdf/renderer'
+import Dialog from '~/components/feedback/dialog'
+import { useState } from 'react'
+const BarCodeIcon = chakra(FaBarcode)
 
 const Home = () => {
   const { setTitle } = usePageTitle()
+  const { isOpen, onOpen, onClose } = useDisclosure()
+
   setTitle('TOP (最近登録順)')
   const { data: items } = useAspidaQuery(apiClient.itemList, {
     query: {
@@ -25,6 +24,7 @@ const Home = () => {
       limit: 30
     }
   })
+  const [selectedItem, setSelectedItem] = useState(items ? items[0] : undefined)
 
   return (
     <>
@@ -83,6 +83,14 @@ const Home = () => {
                       <Td>{item.note}</Td>
                       <Td>{dayjs(item.createdAt).format('YY/MM/DD')}</Td>
                       <Td textAlign="right">
+                        <Button
+                          onClick={() => {
+                            setSelectedItem(item)
+                            onOpen()
+                          }}
+                        >
+                          <BarCodeIcon></BarCodeIcon>
+                        </Button>
                         <NextLink href={`/history/${item.lotNo}`}>
                           <Button ml="5" bgColor="blue.100">
                             詳細
@@ -94,6 +102,25 @@ const Home = () => {
               </Tbody>
             </Table>
           )}
+          <Dialog
+            isOpen={isOpen}
+            title="バーコード印刷"
+            onClose={onClose}
+            size={'xl'}
+            button1={{
+              text: '閉じる',
+              event: onClose,
+              color: 'blue'
+            }}
+          >
+            <VStack>
+              {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+              {/* @ts-ignore */}
+              <PDFDownloadLink document={<SingleBarCodePdf item={selectedItem} />} fileName={`${selectedItem?.lotNo}.pdf`}>
+                {({ loading }) => (loading ? 'Loading' : <Button color="blue.300">クリックでPDFダウンロード</Button>)}
+              </PDFDownloadLink>
+            </VStack>
+          </Dialog>
         </main>
       </div>
     </>
