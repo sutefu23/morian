@@ -67,6 +67,8 @@ export const SingleBarCodePdf = ({ item }: { item: Item }) => {
               {item.woodSpeciesName} {item.itemTypeName} {item.spec}
             </Text>
             <Text style={styles.title}>{size}</Text>
+            <Text style={styles.title}>{item.note}</Text>
+            <Text style={styles.title}>{item.defectiveNote}</Text>
           </View>
           <View style={styles.barcode}>
             <Image src={barcode} style={{ height: 50 }} />

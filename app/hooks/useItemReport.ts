@@ -3,10 +3,10 @@ import '../utils/number'
 import { apiClient } from '~/utils/apiClient'
 export type ReportType = '不良在庫一覧' | 'ロット別在庫金額'
 
-const useItemReport = (type: ReportType, query?: {fromDate?: Date, toDate?: Date, itemTypeId?:number, woodSpeciesId? :number}) => {
+const useItemReport = (type: ReportType, query?: { fromDate?: Date; toDate?: Date; itemTypeId?: number; woodSpeciesId?: number }) => {
   const print = async () => {
     const param = (() => {
-      const {fromDate, toDate, itemTypeId, woodSpeciesId}  = query || {}
+      const { fromDate, toDate, itemTypeId, woodSpeciesId } = query || {}
       switch (type) {
         case '不良在庫一覧':
           return { notZero: true, isDefective: true }
@@ -15,17 +15,16 @@ const useItemReport = (type: ReportType, query?: {fromDate?: Date, toDate?: Date
       }
     })()
 
-    const items = await apiClient.itemList.$get({query:param})
+    const items = await apiClient.itemList.$get({ query: param })
     const workbook = new ExcelJS.Workbook()
     workbook.addWorksheet(`${type}`)
     const worksheet = workbook.getWorksheet(`${type}`)
-
     // 列を定義
     worksheet.columns = [
       { header: 'ロットNo', key: 'lotNo' },
       { header: '樹種', key: 'woodSpeciesName' },
       { header: '分類', key: 'itemTypeName' },
-      { header: 'グレード', key: 'grade' },
+      { header: 'グレード', key: 'gradeName' },
       { header: '仕様', key: 'spec' },
       { header: '製造元', key: 'manufacturer' },
       { header: '仕入元', key: 'supplierName' },
@@ -45,23 +44,15 @@ const useItemReport = (type: ReportType, query?: {fromDate?: Date, toDate?: Date
     worksheet.columns = (() => {
       switch (type) {
         case '不良在庫一覧':
-          return [
-            ...worksheet.columns,
-            ...[{ header: '不良品備考', key: 'defectiveNote' }]
-          ]
+          return [...worksheet.columns, ...[{ header: '不良品備考', key: 'defectiveNote' }]]
         case 'ロット別在庫金額':
           return [...worksheet.columns, ...[]]
       }
     })()
     // 行を定義
     items?.map((item) => {
-      const cost = `${Number(item.cost ?? 0).toYenFormat()}/${
-        item.costUnitName
-      }`
-      const totalAmount =
-        Number(item.cost ?? 0) *
-        Number(item.costPackageCount ?? 0) *
-        Number(item.count ?? 0)
+      const cost = `${Number(item.cost ?? 0).toYenFormat()}/${item.costUnitName}`
+      const totalAmount = Number(item.cost ?? 0) * Number(item.costPackageCount ?? 0) * Number(item.count ?? 0)
       worksheet.addRow({
         ...item,
         totalAmount: totalAmount.toYenFormat(),
