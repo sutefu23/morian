@@ -226,7 +226,7 @@ const HistoryListPage = () => {
                     size="sm"
                     placeholder="幅"
                     type="number"
-                    defaultValue={item?.width ?? undefined}
+                    defaultValue={item?.width?.toString() ?? undefined}
                     onBlur={(e) => {
                       editItem({
                         width: e.target.value ? Number(e.target.value) : undefined

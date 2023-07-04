@@ -201,6 +201,7 @@ const Register = ({
                     <Input
                       placeholder="幅"
                       type="number"
+                      step={0.1}
                       value={item.width}
                       onChange={(e) => {
                         const data = e.target.value ? Number(e.target.value) : undefined
