@@ -1,18 +1,6 @@
 import { useAspidaQuery } from '@aspida/react-query'
-import {
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  Text,
-  Input,
-  Container,
-  Button,
-  Flex
-} from '@chakra-ui/react'
-import { useCallback, useState } from 'react'
+import { Table, Thead, Tbody, Tr, Th, Td, Text, Input, Container, Button, Flex } from '@chakra-ui/react'
+import { useCallback, useState, useEffect } from 'react'
 import usePageTitle from '~/hooks/usePageTitle'
 import { ItemTypeType } from '~/server/domain/entity/stock'
 import { apiClient } from '~/utils/apiClient'
@@ -24,15 +12,9 @@ const ItemTypesManage = () => {
 
   useAspidaQuery(apiClient.master.itemType, {
     onSuccess: (itemTypes) => {
-      const maxId = itemTypes.reduce(
-        (prevId, curr) => (prevId < curr.id ? curr.id : prevId),
-        0
-      )
+      const maxId = itemTypes.reduce((prevId, curr) => (prevId < curr.id ? curr.id : prevId), 0)
 
-      const maxOrder = itemTypes.reduce(
-        (prevOrder, curr) => (prevOrder < curr.order ? curr.order : prevOrder),
-        0
-      )
+      const maxOrder = itemTypes.reduce((prevOrder, curr) => (prevOrder < curr.order ? curr.order : prevOrder), 0)
 
       setNewItemTypes({
         id: maxId + 1,
@@ -41,10 +23,11 @@ const ItemTypesManage = () => {
         order: maxOrder + 1
       })
       setItemTypes(itemTypes)
-      setTitle(`分類 マスタ設定`)
     }
   })
-
+  useEffect(() => {
+    setTitle(`分類 マスタ設定`)
+  }, [setTitle])
   const handleSubmit = useCallback(async () => {
     if (!newItemTypes) return
 
@@ -60,29 +43,17 @@ const ItemTypesManage = () => {
       alert('接頭辞は必須です。')
       return
     }
-    await apiClient.master.itemType
-      ._id(0)
-      .post({ body: { body: newItemTypes } })
+    await apiClient.master.itemType._id(0).post({ body: { body: newItemTypes } })
     window.location.reload()
   }, [newItemTypes])
 
-  const handleModifyPrefix = useCallback(
-    async (id: number, newPrefix: string) => {
-      await apiClient.master.itemType
-        ._id(id)
-        .patch({ body: { id, body: { prefix: newPrefix } } })
-    },
-    []
-  )
+  const handleModifyPrefix = useCallback(async (id: number, newPrefix: string) => {
+    await apiClient.master.itemType._id(id).patch({ body: { id, body: { prefix: newPrefix } } })
+  }, [])
 
-  const handleModifyOrder = useCallback(
-    async (id: number, newOrder: number) => {
-      await apiClient.master.itemType
-        ._id(id)
-        .patch({ body: { id, body: { order: newOrder } } })
-    },
-    []
-  )
+  const handleModifyOrder = useCallback(async (id: number, newOrder: number) => {
+    await apiClient.master.itemType._id(id).patch({ body: { id, body: { order: newOrder } } })
+  }, [])
 
   return (
     <>
@@ -123,10 +94,7 @@ const ItemTypesManage = () => {
                     type="number"
                     onChange={(e) => {
                       e.preventDefault()
-                      handleModifyOrder(
-                        master.id,
-                        Number(e.currentTarget.value)
-                      )
+                      handleModifyOrder(master.id, Number(e.currentTarget.value))
                     }}
                     defaultValue={master.order}
                   ></Input>
@@ -135,12 +103,7 @@ const ItemTypesManage = () => {
             ))}
             <Tr>
               <Td>
-                <Input
-                  bgColor="white"
-                  type="text"
-                  readOnly
-                  defaultValue={newItemTypes?.id}
-                ></Input>
+                <Input bgColor="white" type="text" readOnly defaultValue={newItemTypes?.id}></Input>
               </Td>
               <Td>
                 <Input

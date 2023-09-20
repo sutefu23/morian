@@ -10,14 +10,15 @@ import dayjs from 'dayjs'
 import { FaBarcode } from 'react-icons/fa'
 import { PDFDownloadLink } from '@react-pdf/renderer'
 import Dialog from '~/components/feedback/dialog'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 const BarCodeIcon = chakra(FaBarcode)
 
 const Home = () => {
   const { setTitle } = usePageTitle()
   const { isOpen, onOpen, onClose } = useDisclosure()
-
-  setTitle('TOP (最近登録順)')
+  useEffect(() => {
+    setTitle('TOP (最近登録順)')
+  }, [setTitle])
   const { data: items } = useAspidaQuery(apiClient.itemList, {
     query: {
       orderBy: 'desc',

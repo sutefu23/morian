@@ -43,7 +43,7 @@ const RegisterIssue = () => {
       }
     }
     setTitle(`在庫発注 ${editMode == 'create' ? '新規作成' : '編集'}`)
-  }, [])
+  }, [setTitle])
 
   const { user } = useUser()
   useEffect(() => {

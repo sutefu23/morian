@@ -11,6 +11,7 @@ import { FaBarcode } from 'react-icons/fa'
 import { PDFDownloadLink } from '@react-pdf/renderer'
 import Dialog from '~/components/feedback/dialog'
 import SingleBarCodePdf from '~/components/barcode/SingleBarcode'
+import { useEffect } from 'react'
 const BarCodeIcon = chakra(FaBarcode)
 
 const WoodSpeciesPage = () => {
@@ -32,8 +33,9 @@ const WoodSpeciesPage = () => {
   const { data: itemType } = useAspidaQuery(apiClient.master.itemType._id(Number(itemTypeId)))
   const { data: woodSpecies } = useAspidaQuery(apiClient.master.species._id(Number(woodSpeciesId)))
 
-  setTitle(`${woodSpecies?.name} ${itemType?.name} 在庫一覧`)
-
+  useEffect(() => {
+    setTitle(`${woodSpecies?.name} ${itemType?.name} 在庫一覧`)
+  }, [woodSpecies?.name, itemType?.name, setTitle])
   if (!woodSpeciesId || !itemTypeId) {
     return (
       <>

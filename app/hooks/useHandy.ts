@@ -10,7 +10,7 @@ const useHandy = () => {
   useEffect(() => {
     const isHandy = navigator.userAgent.indexOf('BHT-1700') > -1
     setIsHandy(isHandy)
-  }, [navigator.userAgent])
+  }, [navigator.userAgent, setIsHandy])
 
   return {
     isHandy

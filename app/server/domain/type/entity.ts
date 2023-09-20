@@ -5,6 +5,7 @@ export abstract class EntityProps {
   protected constructor(props: EntityProps) {
     Object.assign(this, props)
   }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   protected equals?: (other: Entity<any>) => boolean
 }
 

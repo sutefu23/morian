@@ -7,7 +7,7 @@ import dayjs from 'dayjs'
 import RightDrawer from '~/components/drawer/rightDrawer'
 import Breadcrumbs from '~/components/navigation/breadcrumb'
 import { RiDeleteBinLine } from 'react-icons/ri'
-import { useState, useCallback, createRef } from 'react'
+import { useEffect, useState, useCallback, createRef } from 'react'
 import EditHistoryModal from '../../components/form/editHistory'
 import useHistory from '~/hooks/useHistory'
 import HistoryDetail from './historyDetail'
@@ -52,7 +52,9 @@ const HistoryListPage = () => {
 
   const { data: reasons } = useAspidaQuery(apiClient.master.reason)
   const arraivalDate = item?.arrivalDate ? '入荷日:' + dayjs(item.arrivalDate).format('YY/MM/DD') : ''
-  setTitle(`${lotId} ${item?.woodSpeciesName} ${item?.itemTypeName} 在庫一覧   ${arraivalDate}`)
+  useEffect(() => {
+    setTitle(`${lotId} ${item?.woodSpeciesName} ${item?.itemTypeName} 在庫一覧   ${arraivalDate}`)
+  }, [lotId, item?.woodSpeciesName, item?.itemTypeName, arraivalDate, setTitle])
   const [mode, setEditMode] = useState<'新規作成' | '編集'>('新規作成')
 
   const ref = createRef<HTMLTableRowElement>()

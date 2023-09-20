@@ -8,6 +8,7 @@ import usePageTitle from '~/hooks/usePageTitle'
 import '~/utils/string'
 import '~/utils/number'
 import dayjs from 'dayjs'
+import { useEffect } from 'react'
 
 type Props = {
   isFromIssue?: boolean //発注情報を入庫化する時
@@ -21,10 +22,12 @@ const Register = ({
   }
 }: Props) => {
   const { setTitle } = usePageTitle()
-  if (!isFromIssue) {
-    setTitle('新規在庫登録')
-  }
 
+  useEffect(() => {
+    if (!isFromIssue) {
+      setTitle('新規在庫登録')
+    }
+  }, [isFromIssue, setTitle])
   const { headerData, stockItems, updateItem, updateHeader, updateItemField, addItemLine, deleteItemLine, copyItemLine, postStock, resetData } = useStock()
   return (
     <>

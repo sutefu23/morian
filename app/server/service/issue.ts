@@ -18,11 +18,7 @@ export const createIssue = async (issueData: IssueProps) => {
     },
     where: {
       managedId: {
-        startsWith:
-          dayjs().format('YYMMDD') +
-          '-' +
-          ('000' + issueData.userId).slice(-3) +
-          '-'
+        startsWith: dayjs().format('YYMMDD') + '-' + ('000' + issueData.userId).slice(-3) + '-'
       }
     }
   })
@@ -35,9 +31,7 @@ export const createIssue = async (issueData: IssueProps) => {
       if (!split) return 0
       return Number(split[split?.length - 1])
     })()
-    return `${dayjs().format('YYMMDD')}-${('000' + issueData.userId).slice(
-      -3
-    )}-${daySerial + 1}`
+    return `${dayjs().format('YYMMDD')}-${('000' + issueData.userId).slice(-3)}-${daySerial + 1}`
   })()
 
   const findManagedId = await prisma.issue.findFirst({
@@ -102,8 +96,8 @@ export const fetchIssues = async (query: getQuery) => {
       id,
       supplierId,
       date: {
-        gte: fromDate,
-        lte: toDate
+        gte: fromDate ? dayjs(fromDate).toISOString() : undefined,
+        lte: toDate ? dayjs(toDate).toISOString() : undefined
       },
       issueItems: {
         some: {

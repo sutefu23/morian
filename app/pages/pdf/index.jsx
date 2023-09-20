@@ -1,4 +1,4 @@
-import { PDFDownloadLink, PDFViewer, Page, Font, Text, View, Image, Document, StyleSheet } from '@react-pdf/renderer'
+import { PDFDownloadLink, Page, Font, Text, View, Image, Document, StyleSheet } from '@react-pdf/renderer'
 import {
   HStack,
   VStack,

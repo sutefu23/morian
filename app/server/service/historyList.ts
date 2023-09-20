@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client'
+import dayjs from 'dayjs'
 const prisma = new PrismaClient()
 
 export type getQuery = {
@@ -9,13 +10,7 @@ export type getQuery = {
   editUserId?: number
 }
 
-export const getHistoryList = async ({
-  lotNo,
-  reasonId,
-  fromDate,
-  toDate,
-  editUserId
-}: getQuery) => {
+export const getHistoryList = async ({ lotNo, reasonId, fromDate, toDate, editUserId }: getQuery) => {
   const data = await prisma.item.findMany({
     where: {
       lotNo,
@@ -23,8 +18,8 @@ export const getHistoryList = async ({
         some: {
           reasonId,
           date: {
-            gte: fromDate,
-            lte: toDate
+            gte: fromDate ? dayjs(fromDate).toISOString() : undefined,
+            lte: toDate ? dayjs(toDate).toISOString() : undefined
           }
         }
       }
@@ -34,8 +29,8 @@ export const getHistoryList = async ({
         where: {
           reasonId,
           date: {
-            gte: fromDate,
-            lte: toDate
+            gte: fromDate ? dayjs(fromDate).toISOString() : undefined,
+            lte: toDate ? dayjs(toDate).toISOString() : undefined
           },
           editUserId
         },
@@ -56,8 +51,8 @@ export const getUserEditedHistoryList = async (editUserId: number) => {
       history: {
         some: {
           date: {
-            gte: fromDate,
-            lte: toDate
+            gte: fromDate ? dayjs(fromDate).toISOString() : undefined,
+            lte: toDate ? dayjs(toDate).toISOString() : undefined
           },
           editUserId
         }
@@ -67,8 +62,8 @@ export const getUserEditedHistoryList = async (editUserId: number) => {
       history: {
         where: {
           date: {
-            gte: fromDate,
-            lte: toDate
+            gte: fromDate ? dayjs(fromDate).toISOString() : undefined,
+            lte: toDate ? dayjs(toDate).toISOString() : undefined
           },
           editUserId
         },
@@ -80,6 +75,6 @@ export const getUserEditedHistoryList = async (editUserId: number) => {
 }
 export const getAllLotId = () => {
   return prisma.item.findMany({
-    select:{lotNo:true}
+    select: { lotNo: true }
   })
 }

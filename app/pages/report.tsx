@@ -1,5 +1,5 @@
 import { SimpleGrid, Button, Heading, Container, Input, InputGroup, InputLeftAddon, Box, HStack, VStack, useDisclosure, Text } from '@chakra-ui/react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import useHistoryReport from '~/hooks/useHistoryReport'
 import useItemReport from '~/hooks/useItemReport'
 import usePageTitle from '~/hooks/usePageTitle'
@@ -9,7 +9,9 @@ import { ItemTypeSelect, WoodSpeciesSelect } from '~/components/select'
 
 const Report = () => {
   const { setTitle } = usePageTitle()
-  setTitle('帳票出力')
+  useEffect(() => {
+    setTitle('帳票出力')
+  }, [setTitle])
 
   const [selectedWoodSpeciesId, setSelectedWoodSpeciesId] = useState<number | undefined>()
   const [selectedItemTypeId, setSelectedItemTypeId] = useState<number | undefined>()

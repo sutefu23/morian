@@ -1,6 +1,6 @@
 import { UpdateHistoryData } from '~/server/domain/service/stock'
 import { apiClient } from '~/utils/apiClient'
-import { atom, useRecoilCallback, useRecoilState, useResetRecoilState } from 'recoil'
+import { atom, useRecoilCallback, useRecoilState } from 'recoil'
 
 export type EditUpdataHistoryData = Partial<UpdateHistoryData>
 
@@ -26,37 +26,22 @@ const historyDataAtom = atom({
 })
 
 const useHistory = () => {
-  const [historyData, setHistoryData] =
-    useRecoilState<EditUpdataHistoryData>(historyDataAtom)
+  const [historyData, setHistoryData] = useRecoilState<EditUpdataHistoryData>(historyDataAtom)
 
-  
-  const updateField = useRecoilCallback(({set}) =>
-    <K extends keyof EditUpdataHistoryData>(
-      key: K,
-      val: EditUpdataHistoryData[K]
-    ): void => {
-      set(historyDataAtom, { ...historyData, [key]: val })
-    },
+  const updateField = useRecoilCallback(
+    ({ set }) =>
+      <K extends keyof EditUpdataHistoryData>(key: K, val: EditUpdataHistoryData[K]): void => {
+        set(historyDataAtom, { ...historyData, [key]: val })
+      },
     [historyData]
   )
 
-  const checkValidHistory = (
-    data: EditUpdataHistoryData | undefined
-  ): UpdateHistoryData | null => {
+  const checkValidHistory = (data: EditUpdataHistoryData | undefined): UpdateHistoryData | null => {
     if (!data) {
       console.error('checkValidHistory data is null')
       return null
     }
-    const {
-      itemId,
-      date,
-      status,
-      reasonId,
-      reduceCount,
-      addCount,
-      editUserId,
-      editUserName
-    } = data
+    const { itemId, date, status, reasonId, reduceCount, addCount, editUserId, editUserName } = data
     const { bookDate, bookUserId, bookUserName } = data
     if (!itemId) {
       alert('itemIdは必須です')
@@ -108,22 +93,25 @@ const useHistory = () => {
     }
   }
 
-  const postHistory = useRecoilCallback(() => async () => {
-    const postHistoryData = checkValidHistory(historyData)
-    if (!postHistoryData) {
-      console.error('postHistoryData is not valid')
-      return false
-    }
-    await apiClient.history.post({
-      body: {
-        data: postHistoryData
+  const postHistory = useRecoilCallback(
+    () => async () => {
+      const postHistoryData = checkValidHistory(historyData)
+      if (!postHistoryData) {
+        console.error('postHistoryData is not valid')
+        return false
       }
-    })
-    return true
-  }, [historyData])
+      await apiClient.history.post({
+        body: {
+          data: postHistoryData
+        }
+      })
+      return true
+    },
+    [historyData]
+  )
 
-  const updateHistory = useRecoilCallback(() => 
-    async (id: number) => {
+  const updateHistory = useRecoilCallback(
+    () => async (id: number) => {
       const updateHistoryData = checkValidHistory(historyData)
       if (!updateHistoryData) {
         console.error('postHistoryData is not valid')

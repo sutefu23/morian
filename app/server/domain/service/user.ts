@@ -1,7 +1,7 @@
 import { User } from '@domain/entity/user'
 import { IUserRepository } from '@domain/repository/interface'
 import bcrypt from 'bcrypt'
-import { DEFAULT_USER_PASS, API_SALT } from 'envValues'
+import { API_SALT } from 'envValues'
 
 export class UserService {
   private userRepository: IUserRepository

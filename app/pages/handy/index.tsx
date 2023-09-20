@@ -1,13 +1,5 @@
 import { useAspidaQuery } from '@aspida/react-query'
-import {
-  Table,
-  Tbody,
-  Tr,
-  Td,
-  Text,
-  Container,
-  useDisclosure
-} from '@chakra-ui/react'
+import { Table, Tbody, Tr, Td, Text, Container, useDisclosure } from '@chakra-ui/react'
 import EditHistory from '~/components/form/editHistory'
 import { useCallback, useEffect, useState } from 'react'
 import { apiClient } from '~/utils/apiClient'
@@ -50,21 +42,18 @@ const Handy = () => {
     }
   })
   const item = items ? items[0] : undefined
-  const { data: itemHistory, refetch } = useAspidaQuery(
-    apiClient.historyList.userEditedHistory,
-    {
-      query: {
-        editUserId: user?.id ?? 0
-      },
-      onSuccess: () => {
-        onOpen()
-      }
+  const { data: itemHistory, refetch } = useAspidaQuery(apiClient.historyList.userEditedHistory, {
+    query: {
+      editUserId: user?.id ?? 0
+    },
+    onSuccess: () => {
+      onOpen()
     }
-  )
+  })
 
   useEffect(() => {
     if (typeof bht_init == 'undefined') return
-    if (typeof bht_init === undefined) {
+    if (bht_init === undefined) {
       return
     }
     const bht_js = eval(bht_init.LoadPluginsCode())
@@ -146,11 +135,7 @@ const Handy = () => {
                       <Td>
                         {itm.woodSpeciesName} {itm.itemTypeName}
                       </Td>
-                      <Td>
-                        {Number(history.addCount) > 0
-                          ? history.addCount
-                          : history.reduceCount}
-                      </Td>
+                      <Td>{Number(history.addCount) > 0 ? history.addCount : history.reduceCount}</Td>
                     </Tr>
                   ))
                 )}

@@ -1,7 +1,6 @@
 import bcrypt from 'bcrypt'
 import { API_SALT } from '$/envValues'
 import { IUserRepository } from '../repository/interface'
-import { AuthHeader } from '$/types'
 import { User } from '../entity/user'
 
 export class AuthService {
@@ -29,16 +28,11 @@ export class AuthService {
     return user.pass == AuthService.encrypt(pass)
   }
 
-  public async getUserFromToken(
-    token: string,
-    jwtDecodeFunc: (token: string) => { payload: { id: string } } | null
-  ) {
+  public async getUserFromToken(token: string, jwtDecodeFunc: (token: string) => { payload: { id: string } } | null) {
     const decodedToken = jwtDecodeFunc(token)
     AuthService._user = await (async () => {
       if (decodedToken) {
-        const me = await this.userRepository.findById(
-          Number(decodedToken.payload.id)
-        )
+        const me = await this.userRepository.findById(Number(decodedToken.payload.id))
         if (me instanceof Error) {
           throw new Error(me.message)
         } else {

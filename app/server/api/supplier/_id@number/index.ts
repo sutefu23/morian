@@ -1,5 +1,4 @@
 import { SupplierDTO } from '$/domain/dto/supplier'
-import { Supplier } from '$/domain/entity/stock'
 
 export type Methods = {
   get: {

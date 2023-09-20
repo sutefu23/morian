@@ -1,17 +1,5 @@
-import {
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  Text,
-  Input,
-  Container,
-  Button,
-  Flex
-} from '@chakra-ui/react'
-import { useCallback, useState } from 'react'
+import { Table, Thead, Tbody, Tr, Th, Td, Text, Input, Container, Button, Flex } from '@chakra-ui/react'
+import { useCallback, useEffect, useState } from 'react'
 import usePageTitle from '~/hooks/usePageTitle'
 import { Master } from '~/server/domain/entity/stock'
 import { apiClient } from '~/utils/apiClient'
@@ -38,15 +26,9 @@ const MasterManage = () => {
 
   useAspidaQuery(apiClient.master[masterType as unknown as MasterKey], {
     onSuccess: (masters) => {
-      const maxId = masters.reduce(
-        (prevId, curr) => (prevId < curr.id ? curr.id : prevId),
-        0
-      )
+      const maxId = masters.reduce((prevId, curr) => (prevId < curr.id ? curr.id : prevId), 0)
 
-      const maxOrder = masters.reduce(
-        (prevOrder, curr) => (prevOrder < curr.order ? curr.order : prevOrder),
-        0
-      )
+      const maxOrder = masters.reduce((prevOrder, curr) => (prevOrder < curr.order ? curr.order : prevOrder), 0)
 
       setNewMaster({
         id: maxId + 1,
@@ -54,10 +36,12 @@ const MasterManage = () => {
         order: maxOrder + 1
       })
       setMasters(masters)
-      const title = masterTypes.find((m) => m.key === masterType)?.name
-      setTitle(`${title} マスタ設定`)
     }
   })
+  useEffect(() => {
+    const title = masterTypes.find((m) => m.key === masterType)?.name
+    setTitle(`${title} マスタ設定`)
+  }, [setTitle, masterTypes, masterType])
 
   const handleSubmit = useCallback(async () => {
     if (!newMaster) return
@@ -78,9 +62,7 @@ const MasterManage = () => {
   const handleModifyOrder = useCallback(
     async (id: number, newOrder: number) => {
       const type = masterType as unknown as MasterKey
-      await apiClient.master[type]
-        ._id(id)
-        .patch({ body: { id, body: { order: newOrder } } })
+      await apiClient.master[type]._id(id).patch({ body: { id, body: { order: newOrder } } })
     },
     [masterType]
   )
@@ -116,10 +98,7 @@ const MasterManage = () => {
                     type="number"
                     onChange={(e) => {
                       e.preventDefault()
-                      handleModifyOrder(
-                        master.id,
-                        Number(e.currentTarget.value)
-                      )
+                      handleModifyOrder(master.id, Number(e.currentTarget.value))
                     }}
                     defaultValue={master.order}
                   ></Input>
@@ -128,12 +107,7 @@ const MasterManage = () => {
             ))}
             <Tr>
               <Td>
-                <Input
-                  bgColor="white"
-                  type="text"
-                  readOnly
-                  defaultValue={newMaster?.id}
-                ></Input>
+                <Input bgColor="white" type="text" readOnly defaultValue={newMaster?.id}></Input>
               </Td>
               <Td>
                 <Input
