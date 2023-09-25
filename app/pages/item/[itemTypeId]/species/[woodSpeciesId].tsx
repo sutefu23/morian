@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import { Button, Table, Thead, Tbody, Tr, Th, Td, VStack, useDisclosure, chakra, Checkbox } from '@chakra-ui/react'
+import { Button, Heading, Table, Thead, Tbody, Tr, Th, Td, VStack, HStack, useDisclosure, chakra, Checkbox, Input } from '@chakra-ui/react'
 import usePageTitle from '~/hooks/usePageTitle'
 import { apiClient } from '~/utils/apiClient'
 import dayjs from 'dayjs'
@@ -12,46 +12,103 @@ import { PDFDownloadLink } from '@react-pdf/renderer'
 import Dialog from '~/components/feedback/dialog'
 import SingleBarCodePdf from '~/components/barcode/SingleBarcode'
 import { useEffect } from 'react'
+import { WarehouseSelect } from '~/components/select'
 const BarCodeIcon = chakra(FaBarcode)
+
+type SearchOptions = {
+  warehouse?: number
+  thickness?: number
+  notZero?: boolean
+  specFilter?: string
+}
 
 const WoodSpeciesPage = () => {
   const router = useRouter()
   const { setTitle } = usePageTitle()
   const { itemTypeId, woodSpeciesId } = router.query
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const [displayZero, setDisplayZero] = useState(false)
+  const searchDefault: SearchOptions = {
+    warehouse: undefined,
+    thickness: undefined,
+    notZero: true,
+    specFilter: ''
+  }
+  const [searchOptions, setSearchOptions] = useState<SearchOptions>(searchDefault)
+
   const { data: stocks } = useAspidaQuery(apiClient.itemList, {
     query: {
       woodSpeciesId: Number(woodSpeciesId),
       itemTypeId: Number(itemTypeId),
-      notZero: !displayZero
-    }
+      notZero: searchOptions.notZero,
+      warehouseId: searchOptions.warehouse,
+      thickness: searchOptions.thickness,
+      specFilter: searchOptions.specFilter
+    },
+    enabled: !!woodSpeciesId && !!itemTypeId
   })
   const [selectedItem, setSelectedItem] = useState(stocks ? stocks[0] : undefined)
   const { data: units } = useAspidaQuery(apiClient.master.unit)
   const { data: grades } = useAspidaQuery(apiClient.master.grade)
   const { data: warehouses } = useAspidaQuery(apiClient.master.warehouse)
-  const { data: itemType } = useAspidaQuery(apiClient.master.itemType._id(Number(itemTypeId)))
-  const { data: woodSpecies } = useAspidaQuery(apiClient.master.species._id(Number(woodSpeciesId)))
+  const { data: itemType } = useAspidaQuery(apiClient.master.itemType._id(Number(itemTypeId)), { enabled: !!itemTypeId })
+  const { data: woodSpecies } = useAspidaQuery(apiClient.master.species._id(Number(woodSpeciesId)), { enabled: !!woodSpeciesId })
 
   useEffect(() => {
     setTitle(`${woodSpecies?.name} ${itemType?.name} 在庫一覧`)
   }, [woodSpecies?.name, itemType?.name, setTitle])
-  if (!woodSpeciesId || !itemTypeId) {
-    return (
-      <>
-        <p>Loading...</p>
-      </>
-    )
-  }
+
   return (
     <>
       <Breadcrumbs links={[{ name: `${woodSpecies?.name} ${itemType?.name}一覧` }]}></Breadcrumbs>
-      <VStack textAlign={'right'}>
-        <Checkbox fontWeight={'bold'} onChange={(e) => setDisplayZero(e.target.checked)} defaultChecked={false}>
-          0在庫も表示
-        </Checkbox>
+      <VStack maxWidth={'60%'} padding={'1em'} border={'1px'} borderColor={'blackAlpha.100'} bgColor={'blackAlpha.100'}>
+        <HStack>
+          <Heading as="h4" size={'sm'} fontWeight={'normal'}>
+            検索:
+          </Heading>
+          <Input
+            backgroundColor={'white'}
+            width={'100px'}
+            placeholder="厚み検索"
+            type="number"
+            value={searchOptions.thickness}
+            onChange={(e) => {
+              setSearchOptions({ ...searchOptions, thickness: e.target.value ? Number(e.target.value) : undefined })
+            }}
+          />
+          <WarehouseSelect
+            width="100px"
+            placeholder="倉庫で検索"
+            onSelect={(e) => {
+              setSearchOptions({ ...searchOptions, warehouse: e.target.value ? Number(e.target.value) : undefined })
+            }}
+            value={searchOptions.warehouse ?? ''}
+          ></WarehouseSelect>
+          <Input
+            backgroundColor={'white'}
+            width={'200px'}
+            placeholder="仕様検索（部分一致）"
+            type="text"
+            value={searchOptions.specFilter}
+            onChange={(e) => {
+              setSearchOptions({ ...searchOptions, specFilter: e.target.value })
+            }}
+          />
+          <Checkbox id="notZero" size={'lg'} backgroundColor="white" fontWeight={'bold'} isChecked={searchOptions.notZero} onChange={(e) => setSearchOptions({ ...searchOptions, notZero: e.target.checked })} defaultChecked={false}></Checkbox>
+          <label htmlFor="notZero" style={{ cursor: 'pointer', fontWeight: 'bold' }}>
+            0在庫非表示
+          </label>
+          <Button
+            bgColor={'pink.100'}
+            marginLeft={'10px'}
+            onClick={() => {
+              setSearchOptions(searchDefault)
+            }}
+          >
+            検索をクリア
+          </Button>
+        </HStack>
       </VStack>
+
       <Table variant="striped" colorScheme="gray">
         <Thead>
           <Tr>

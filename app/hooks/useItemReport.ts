@@ -51,15 +51,6 @@ const useItemReport = (type: ReportType, query?: { fromDate?: Date; toDate?: Dat
     })()
     // 行を定義
     items?.map((item) => {
-      const length = (() => {
-        if (!item.length) return ''
-        if (Number.isFinite(item.length)) {
-          return Number(item.length)
-        } else {
-          return item.length
-        }
-      })()
-
       const cost = `${Number(item.cost ?? 0).toYenFormat()}/${item.costUnitName}`
       const totalAmount = Number(item.cost ?? 0) * Number(item.costPackageCount ?? 0) * Number(item.count ?? 0)
       worksheet.addRow({

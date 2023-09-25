@@ -17,6 +17,9 @@ export type getQuery = {
   limit?: number
   registerFrom?: Date
   registerTo?: Date
+  warehouseId?: number
+  specFilter?: string
+  thickness?: number
 }
 
 export const getExsitItemGroupList = async () => {
@@ -31,11 +34,14 @@ export const getGroupByWarehouseWoodspecies = async () => {
   })
 }
 
-export const getItemList = async ({ woodSpeciesId, itemTypeId, notZero, isDefective, limit, registerFrom, registerTo, orderBy = 'asc' }: getQuery) => {
+export const getItemList = async ({ woodSpeciesId, itemTypeId, notZero, isDefective, limit, registerFrom, registerTo, orderBy = 'asc', warehouseId, specFilter, thickness }: getQuery) => {
   const query = {
     where: {
       woodSpeciesId,
+      warehouseId,
+      thickness,
       itemTypeId,
+      spec: specFilter ? { contains: specFilter } : undefined,
       createdAt: {
         gte: registerFrom ? dayjs(registerFrom).toISOString() : undefined,
         lte: registerTo ? dayjs(registerTo).toISOString() : undefined
