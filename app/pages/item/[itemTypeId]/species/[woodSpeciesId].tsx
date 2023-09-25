@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import { Button, Table, Thead, Tbody, Tr, Th, Td, VStack, useDisclosure, chakra } from '@chakra-ui/react'
+import { Button, Table, Thead, Tbody, Tr, Th, Td, VStack, useDisclosure, chakra, Checkbox } from '@chakra-ui/react'
 import usePageTitle from '~/hooks/usePageTitle'
 import { apiClient } from '~/utils/apiClient'
 import dayjs from 'dayjs'
@@ -19,14 +19,15 @@ const WoodSpeciesPage = () => {
   const { setTitle } = usePageTitle()
   const { itemTypeId, woodSpeciesId } = router.query
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const [displayZero, setDisplayZero] = useState(false)
   const { data: stocks } = useAspidaQuery(apiClient.itemList, {
     query: {
       woodSpeciesId: Number(woodSpeciesId),
-      itemTypeId: Number(itemTypeId)
+      itemTypeId: Number(itemTypeId),
+      notZero: !displayZero
     }
   })
   const [selectedItem, setSelectedItem] = useState(stocks ? stocks[0] : undefined)
-
   const { data: units } = useAspidaQuery(apiClient.master.unit)
   const { data: grades } = useAspidaQuery(apiClient.master.grade)
   const { data: warehouses } = useAspidaQuery(apiClient.master.warehouse)
@@ -46,6 +47,11 @@ const WoodSpeciesPage = () => {
   return (
     <>
       <Breadcrumbs links={[{ name: `${woodSpecies?.name} ${itemType?.name}一覧` }]}></Breadcrumbs>
+      <VStack textAlign={'right'}>
+        <Checkbox fontWeight={'bold'} onChange={(e) => setDisplayZero(e.target.checked)} defaultChecked={false}>
+          0在庫も表示
+        </Checkbox>
+      </VStack>
       <Table variant="striped" colorScheme="gray">
         <Thead>
           <Tr>
@@ -80,7 +86,7 @@ const WoodSpeciesPage = () => {
                   {stock.thickness ? `*${stock.thickness}` : ''}
                   {stock.width ? `*${stock.width}` : ''}
                 </Td>
-                <Td>{stock.arrivalDate ? dayjs(stock.arrivalDate).format('YY/MM/DD') : ''}</Td>
+                <Td color={dayjs(stock.arrivalDate).isAfter(dayjs()) ? 'red.500' : ''}>{stock.arrivalDate ? dayjs(stock.arrivalDate).format('YY/MM/DD') : ''}</Td>
                 <Td>{warehouses?.find((w) => w.id === stock.warehouseId)?.name}</Td>
                 <Td>{stock.note}</Td>
                 <Td>

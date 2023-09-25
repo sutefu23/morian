@@ -53,7 +53,7 @@ const Home = () => {
                   <Th>仕入先</Th>
                   <Th>倉庫</Th>
                   <Th>備考</Th>
-                  <Th>登録日</Th>
+                  <Th>入荷日</Th>
                   <Th></Th>
                 </Tr>
               </Thead>
@@ -82,7 +82,7 @@ const Home = () => {
                       <Td>{item.supplierName}</Td>
                       <Td>{item.warehouseName}</Td>
                       <Td>{item.note}</Td>
-                      <Td>{dayjs(item.createdAt).format('YY/MM/DD')}</Td>
+                      <Td color={dayjs(item.arrivalDate).isAfter(dayjs()) ? 'red.500' : ''}>{dayjs(item.arrivalDate).format('YY/MM/DD')}</Td>
                       <Td textAlign="right">
                         <Button
                           onClick={() => {

@@ -11,25 +11,25 @@ const useHistoryReport = (type: ReportType, fromDate?: Date, toDate?: Date) => {
       switch (type) {
         case '受注予約一覧':
           return {
-              reasonId: StockReason.find((r) => r.name === 出庫理由.受注予約)?.id
-            }
+            reasonId: StockReason.find((r) => r.name === 出庫理由.受注予約)?.id
+          }
         case '受注出庫一覧':
           if (!fromDate || !toDate) {
             return
           }
           return {
-              fromDate,
-              toDate,
-              reasonId: StockReason.find((r) => r.name === 出庫理由.受注出庫)?.id
-            }
+            fromDate,
+            toDate,
+            reasonId: StockReason.find((r) => r.name === 出庫理由.受注出庫)?.id
+          }
         case '見積一覧':
           return {
-              reasonId: StockReason.find((r) => r.name === 出庫理由.見積)?.id
-            }
+            reasonId: StockReason.find((r) => r.name === 出庫理由.見積)?.id
+          }
       }
-    })();
-    if(!query) return
-    const items = await apiClient.historyList.$get({query})
+    })()
+    if (!query) return
+    const items = await apiClient.historyList.$get({ query })
     const workbook = new ExcelJS.Workbook()
     workbook.addWorksheet(`${type}`)
     const worksheet = workbook.getWorksheet(`${type}`)
@@ -83,7 +83,17 @@ const useHistoryReport = (type: ReportType, fromDate?: Date, toDate?: Date) => {
       item.history.map((h) => {
         const date = dayjs(h.date).format('YYYY-MM-DD')
         const bookDate = dayjs(h.bookDate).format('YYYY-MM-DD')
-        worksheet.addRow({ ...item, ...h, date, bookDate })  
+        worksheet.addRow({
+          ...item,
+          length: item.length ? Number(item.length ?? 0) : '',
+          thickness: item.thickness ? Number(item.thickness ?? 0) : '',
+          width: item.width ? Number(item.width ?? 0) : '',
+          packageCount: Number(item.packageCount ?? 0),
+          ...h,
+          reduceCount: Number(h.reduceCount ?? 0),
+          date,
+          bookDate
+        })
       })
     })
 

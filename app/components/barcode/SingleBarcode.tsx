@@ -69,6 +69,14 @@ export const SingleBarCodePdf = ({ item }: { item: Item }) => {
             <Text style={styles.title}>{size}</Text>
             <Text style={styles.title}>{item.note}</Text>
             <Text style={styles.title}>{item.defectiveNote}</Text>
+            <Text style={styles.title}>
+              実在庫:{item.count}
+              {item.unitName}
+            </Text>
+            <Text style={styles.title}>
+              仮在庫:{item.tempCount}
+              {item.unitName}
+            </Text>
           </View>
           <View style={styles.barcode}>
             <Image src={barcode} style={{ height: 50 }} />
