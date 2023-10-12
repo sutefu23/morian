@@ -43,7 +43,7 @@
   },
   "exclude": [
     "node_modules",
-    "server"
+    "server",
   ],
   "include": [
     "next-env.d.ts",

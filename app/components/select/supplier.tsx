@@ -3,6 +3,7 @@ import { apiClient } from '~/utils/apiClient'
 import { Autocomplete, Item } from '~/components/combobox/autocomplete'
 import { useAsyncList } from 'react-stately'
 import { SupplierDTO } from '~/server/domain/dto/supplier'
+import { useAspidaQuery } from '@aspida/react-query'
 
 type Props = {
   onSelect: (selected: { id: number; name: string }) => void
@@ -12,17 +13,14 @@ type Props = {
 }
 
 const SupplierSelect = ({ onSelect, required, defaultKey, readOnly }: Props) => {
-  useEffect(() => {
-    ;(async () => {
-      if (defaultKey) {
-        const response = await apiClient.supplier._id(defaultKey).get()
-        const data = response.body
-        if (data) {
-          list.setFilterText(data.name)
-        }
+  useAspidaQuery(apiClient.supplier._id(defaultKey!), {
+    onSuccess: (data) => {
+      if (data) {
+        list.setFilterText(data.name)
       }
-    })()
-  }, [defaultKey])
+    },
+    enabled: !!defaultKey
+  })
 
   const onSelectionChange = async (key: React.Key) => {
     const response = await apiClient.supplier._id(Number(key)).get()

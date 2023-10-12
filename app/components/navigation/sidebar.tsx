@@ -1,21 +1,5 @@
 import { useAspidaQuery } from '@aspida/react-query'
-import {
-  Box,
-  Button,
-  Drawer,
-  DrawerBody,
-  DrawerHeader,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerCloseButton,
-  Accordion,
-  AccordionItem,
-  AccordionButton,
-  AccordionPanel,
-  AccordionIcon,
-  Heading,
-  Link
-} from '@chakra-ui/react'
+import { Box, Button, Drawer, DrawerBody, DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton, Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, Heading, Link } from '@chakra-ui/react'
 import React from 'react'
 import { apiClient } from '~/utils/apiClient'
 import NextLink from 'next/link'
@@ -34,30 +18,17 @@ export type Link =
   | undefined
 
 const Sidebar = () => {
-  const { data: itemTypes, error: itemTypeErr } = useAspidaQuery(
-    apiClient.master.itemType
-  )
-  const { data: species, error: speciesErr } = useAspidaQuery(
-    apiClient.master.species
-  )
-  const { data: existItemGroup, error: existItemGroupErr } = useAspidaQuery(
-    apiClient.itemList.existGroups
-  )
+  const { data: itemTypes, error: itemTypeErr } = useAspidaQuery(apiClient.master.itemType)
+  const { data: species, error: speciesErr } = useAspidaQuery(apiClient.master.species)
+  const { data: existItemGroup, error: existItemGroupErr } = useAspidaQuery(apiClient.itemList.existGroups)
   const { isOpen, setIsOpen } = useSidebar()
-  if (itemTypeErr)
-    return <StatusBar status="error" message="商品の取得に失敗しました。" />
-  if (speciesErr)
-    return <StatusBar status="error" message="樹種の取得に失敗しました。" />
-  if (existItemGroupErr)
-    return (
-      <StatusBar status="error" message="商品グループの取得に失敗しました。" />
-    )
+  if (itemTypeErr) return <StatusBar status="error" message="商品の取得に失敗しました。" />
+  if (speciesErr) return <StatusBar status="error" message="樹種の取得に失敗しました。" />
+  if (existItemGroupErr) return <StatusBar status="error" message="商品グループの取得に失敗しました。" />
 
   if (!species?.length || !itemTypes?.length) return <div>loading...</div>
   const itemLinks: Link[] = itemTypes.map((item) => {
-    const woodSpecies = existItemGroup
-      ?.filter((group) => group.itemTypeId === item.id)
-      .map((i) => i.woodSpeciesId)
+    const woodSpecies = existItemGroup?.filter((group) => group.itemTypeId === item.id).map((i) => i.woodSpeciesId)
     if (!woodSpecies) return
     const childLinks: Link[] = woodSpecies.map((id) => {
       const specie = species.find((s) => s.id === id)
@@ -154,27 +125,12 @@ const Sidebar = () => {
         if (!link) return <></>
         return !link?.children ? (
           <NextLink key={link?.key} href={link.path!}>
-            <Button
-              mt="1"
-              w="100%"
-              pt="2"
-              display="inline-block"
-              textAlign="center"
-              cursor="pointer"
-              bgColor="transparent"
-              border="solid 2px #eee"
-              key={link.key}
-              as="a"
-            >
+            <Button mt="1" w="100%" pt="2" display="inline-block" textAlign="center" cursor="pointer" bgColor="transparent" border="solid 2px #eee" key={link.key} as="a">
               {link.name}
             </Button>
           </NextLink>
         ) : (
-          <Accordion
-            allowToggle
-            defaultIndex={link?.key === 'listItem' ? 0 : -1}
-            key={link?.key}
-          >
+          <Accordion allowToggle defaultIndex={link?.key === 'listItem' ? 0 : -1} key={link?.key}>
             <AccordionItem>
               <AccordionButton>
                 <Box flex="1" textAlign="left">
@@ -197,17 +153,18 @@ const Sidebar = () => {
   )
   return (
     <Drawer isOpen={isOpen} placement="left" onClose={() => setIsOpen(false)}>
-      <DrawerOverlay />
-      <DrawerContent>
-        <DrawerCloseButton onClick={() => setIsOpen(false)} />
-        <DrawerHeader>メニュー</DrawerHeader>
+      <DrawerOverlay>
+        <DrawerContent overflow="scroll">
+          <DrawerCloseButton onClick={() => setIsOpen(false)} />
+          <DrawerHeader>メニュー</DrawerHeader>
 
-        <DrawerBody>
-          <Box>
-            <ButtonLinks links={mainLinks}></ButtonLinks>
-          </Box>
-        </DrawerBody>
-      </DrawerContent>
+          <DrawerBody>
+            <Box>
+              <ButtonLinks links={mainLinks}></ButtonLinks>
+            </Box>
+          </DrawerBody>
+        </DrawerContent>
+      </DrawerOverlay>
     </Drawer>
   )
 }

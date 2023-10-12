@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import { Button, Heading, Table, Thead, Tbody, Tr, Th, Td, VStack, HStack, useDisclosure, chakra, Checkbox, Input } from '@chakra-ui/react'
+import { Button, Heading, Table, Thead, Tbody, Tr, Th, Td, VStack, HStack, useDisclosure, chakra, Checkbox, Input, Box } from '@chakra-ui/react'
 import usePageTitle from '~/hooks/usePageTitle'
 import { apiClient } from '~/utils/apiClient'
 import dayjs from 'dayjs'
@@ -60,8 +60,8 @@ const WoodSpeciesPage = () => {
   return (
     <>
       <Breadcrumbs links={[{ name: `${woodSpecies?.name} ${itemType?.name}一覧` }]}></Breadcrumbs>
-      <VStack maxWidth={'60%'} padding={'1em'} border={'1px'} borderColor={'blackAlpha.100'} bgColor={'blackAlpha.100'}>
-        <HStack>
+      <VStack maxWidth={{ base: '100%', md: '60%' }} padding={'1em'} border={'1px'} borderColor={'blackAlpha.100'} bgColor={'blackAlpha.100'}>
+        <HStack flexWrap={'wrap'}>
           <Heading as="h4" size={'sm'} fontWeight={'normal'}>
             検索:
           </Heading>
@@ -108,69 +108,70 @@ const WoodSpeciesPage = () => {
           </Button>
         </HStack>
       </VStack>
-
-      <Table variant="striped" colorScheme="gray">
-        <Thead>
-          <Tr>
-            <Th>ロットNo</Th>
-            <Th>グレード</Th>
-            <Th>仕様</Th>
-            <Th>仕入先</Th>
-            <Th>入数</Th>
-            <Th>寸法</Th>
-            <Th>入荷日</Th>
-            <Th>倉庫</Th>
-            <Th>備考</Th>
-            <Th>原価</Th>
-            <Th>仮在庫数</Th>
-            <Th></Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {stocks &&
-            stocks.map((stock) => (
-              <Tr key={stock.id}>
-                <Td>{stock.lotNo}</Td>
-                <Td>{grades?.find((g) => g.id === stock.gradeId)?.name}</Td>
-                <Td>{stock.spec}</Td>
-                <Td>{stock.supplierName}</Td>
-                <Td>
-                  {stock.packageCount}
-                  {stock.packageCountUnitName}
-                </Td>
-                <Td>
-                  {stock.length}
-                  {stock.thickness ? `*${stock.thickness}` : ''}
-                  {stock.width ? `*${stock.width}` : ''}
-                </Td>
-                <Td color={dayjs(stock.arrivalDate).isAfter(dayjs()) ? 'red.500' : ''}>{stock.arrivalDate ? dayjs(stock.arrivalDate).format('YY/MM/DD') : ''}</Td>
-                <Td>{warehouses?.find((w) => w.id === stock.warehouseId)?.name}</Td>
-                <Td>{stock.note}</Td>
-                <Td>
-                  {stock.cost}/{units?.find((u) => u.id === stock.costUnitId)?.name}
-                </Td>
-                <Td color={Number(stock.tempCount) < 0 ? 'red' : ''}>
-                  {stock.tempCount} {units?.find((u) => u.id === stock.unitId)?.name}
-                </Td>
-                <Td>
-                  <Button
-                    onClick={() => {
-                      setSelectedItem(stock)
-                      onOpen()
-                    }}
-                  >
-                    <BarCodeIcon></BarCodeIcon>
-                  </Button>
-                  <NextLink href={`/history/${stock.lotNo}`}>
-                    <Button textAlign="center" cursor="pointer" colorScheme="blue" as="a">
-                      詳細
+      <Box overflowX="auto">
+        <Table variant="striped" colorScheme="gray">
+          <Thead>
+            <Tr>
+              <Th>ロットNo</Th>
+              <Th>グレード</Th>
+              <Th>仕様</Th>
+              <Th>仕入先</Th>
+              <Th>入数</Th>
+              <Th>寸法</Th>
+              <Th>入荷日</Th>
+              <Th>倉庫</Th>
+              <Th>備考</Th>
+              <Th>原価</Th>
+              <Th>仮在庫数</Th>
+              <Th></Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {stocks &&
+              stocks.map((stock) => (
+                <Tr key={stock.id}>
+                  <Td>{stock.lotNo}</Td>
+                  <Td>{grades?.find((g) => g.id === stock.gradeId)?.name}</Td>
+                  <Td>{stock.spec}</Td>
+                  <Td>{stock.supplierName}</Td>
+                  <Td>
+                    {stock.packageCount}
+                    {stock.packageCountUnitName}
+                  </Td>
+                  <Td>
+                    {stock.length}
+                    {stock.thickness ? `*${stock.thickness}` : ''}
+                    {stock.width ? `*${stock.width}` : ''}
+                  </Td>
+                  <Td color={dayjs(stock.arrivalDate).isAfter(dayjs()) ? 'red.500' : ''}>{stock.arrivalDate ? dayjs(stock.arrivalDate).format('YY/MM/DD') : ''}</Td>
+                  <Td>{warehouses?.find((w) => w.id === stock.warehouseId)?.name}</Td>
+                  <Td>{stock.note}</Td>
+                  <Td>
+                    {stock.cost}/{units?.find((u) => u.id === stock.costUnitId)?.name}
+                  </Td>
+                  <Td color={Number(stock.tempCount) < 0 ? 'red' : ''}>
+                    {stock.tempCount} {units?.find((u) => u.id === stock.unitId)?.name}
+                  </Td>
+                  <Td>
+                    <Button
+                      onClick={() => {
+                        setSelectedItem(stock)
+                        onOpen()
+                      }}
+                    >
+                      <BarCodeIcon></BarCodeIcon>
                     </Button>
-                  </NextLink>
-                </Td>
-              </Tr>
-            ))}
-        </Tbody>
-      </Table>
+                    <NextLink href={`/history/${stock.lotNo}`}>
+                      <Button textAlign="center" cursor="pointer" colorScheme="blue" as="a">
+                        詳細
+                      </Button>
+                    </NextLink>
+                  </Td>
+                </Tr>
+              ))}
+          </Tbody>
+        </Table>
+      </Box>
       <Dialog
         isOpen={isOpen}
         title="バーコード印刷"

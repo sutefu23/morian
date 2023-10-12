@@ -2,7 +2,7 @@ import { ITEM_FIELD, Reason, 入庫理由, 出庫理由 } from '$/domain/entity/
 import { StockReason } from '$/domain/init/master'
 import { UpdateHistoryData } from '$/domain/service/stock'
 import { History, Item, PrismaClient } from '@prisma/client'
-import { Decimal as PrismaDecimal} from '@prisma/client/runtime'
+import { Decimal as PrismaDecimal } from '@prisma/client/runtime/library'
 import { Decimal } from 'decimal.js'
 import { getReasonById } from './reason'
 
@@ -21,118 +21,104 @@ export const createHistory = async (history: UpdateHistoryData) => {
   const reason = getReasonById(historyData.reasonId)
   const { isTemp, itemField } = whichItemField(reason.name)
 
-  return await prisma.$transaction<[History, Item]>(
-    async (prisma) => {
-      const maxOrder = await prisma.history.aggregate({
-        _max: {
-          order: true
-        }
-      })
-      const newHistory = await prisma.history.create({
-        data: { ...historyData, isTemp, order:(maxOrder._max.order ?? 0) + 1 }
-      })
-
-      const itemParam = itemUpdateParam({
-        add:historyData.addCount,
-        reduce:historyData.reduceCount,
-        mode:"create",
-        itemField
-      })
-
-      const newItem = await prisma.item.update({
-        where: { id: historyData.itemId },
-        data: { ...itemParam }
-      })
-      if (newItem.count.lessThan(0)) {
-        throw new Error(`実在庫が0以下になる処置はできません`)
+  return await prisma.$transaction<[History, Item]>(async (prisma) => {
+    const maxOrder = await prisma.history.aggregate({
+      _max: {
+        order: true
       }
-      return [newHistory, newItem]
-    }
-  )
+    })
+    const newHistory = await prisma.history.create({
+      data: { ...historyData, isTemp, order: (maxOrder._max.order ?? 0) + 1 }
+    })
 
+    const itemParam = itemUpdateParam({
+      add: historyData.addCount,
+      reduce: historyData.reduceCount,
+      mode: 'create',
+      itemField
+    })
+
+    const newItem = await prisma.item.update({
+      where: { id: historyData.itemId },
+      data: { ...itemParam }
+    })
+    if (newItem.count.lessThan(0)) {
+      throw new Error(`実在庫が0以下になる処置はできません`)
+    }
+    return [newHistory, newItem]
+  })
 }
 
-export const updateHistory = async (
-  id: number,
-  history: UpdateHistoryData
-) => {
-
+export const updateHistory = async (id: number, history: UpdateHistoryData) => {
   const historyData = checkValidHistory(history)
 
-  return await prisma.$transaction<[History,Item]>(
-    async (prisma) => {
-      
-      const updateHistory = await prisma.history.update({
-        where:{id},
-        data: { ...historyData }
-      })
-      const reason = getReasonById(updateHistory.reasonId)
-      if(reason instanceof Error){
-        throw reason
-      }
-      const { itemField } = whichItemField(reason.name)
-
-      const itemParam = itemUpdateParam({
-        add:updateHistory.addCount,
-        reduce:updateHistory.reduceCount,
-        mode:"delete",
-        itemField
-      })
-
-      const updateItem = await prisma.item.update({
-        where: { id: updateHistory.itemId },
-        data: {
-          ...itemParam
-        }
-      })
-      if (updateItem.count.lessThan(0)) {
-        throw new Error(`実在庫が0以下になる処置はできません`)
-      }
-      return [updateHistory, updateItem]
+  return await prisma.$transaction<[History, Item]>(async (prisma) => {
+    const updateHistory = await prisma.history.update({
+      where: { id },
+      data: { ...historyData }
     })
+    const reason = getReasonById(updateHistory.reasonId)
+    if (reason instanceof Error) {
+      throw reason
+    }
+    const { itemField } = whichItemField(reason.name)
+
+    const itemParam = itemUpdateParam({
+      add: updateHistory.addCount,
+      reduce: updateHistory.reduceCount,
+      mode: 'delete',
+      itemField
+    })
+
+    const updateItem = await prisma.item.update({
+      where: { id: updateHistory.itemId },
+      data: {
+        ...itemParam
+      }
+    })
+    if (updateItem.count.lessThan(0)) {
+      throw new Error(`実在庫が0以下になる処置はできません`)
+    }
+    return [updateHistory, updateItem]
+  })
 }
 
+export const deleteHistory = async (id: number) => {
+  return await prisma.$transaction<[History, Item]>(async (prisma) => {
+    const deleteHistory = await prisma.history.delete({ where: { id } })
+    const reason = getReasonById(deleteHistory.reasonId)
+    if (reason instanceof Error) {
+      throw reason
+    }
+    const { itemField } = whichItemField(reason.name)
 
-export const deleteHistory = async(id: number)  => {
-
-  return await prisma.$transaction<[History,Item]>(
-    async (prisma) => {
-      
-      const deleteHistory = await prisma.history.delete({ where: { id } })
-      const reason = getReasonById(deleteHistory.reasonId)
-      if(reason instanceof Error){
-        throw reason
-      }
-      const { itemField } = whichItemField(reason.name)
-
-      const itemParam = itemUpdateParam({
-        add:deleteHistory.addCount,
-        reduce:deleteHistory.reduceCount,
-        mode:"delete",
-        itemField
-      })
-
-      const updateItem = await prisma.item.update({
-        where: { id: deleteHistory.itemId },
-        data: {
-          ...itemParam
-        }
-      })
-      if (updateItem.count.lessThan(0)) {
-        throw new Error(`実在庫が0以下になる処置はできません`)
-      }
-      return [deleteHistory, updateItem]
+    const itemParam = itemUpdateParam({
+      add: deleteHistory.addCount,
+      reduce: deleteHistory.reduceCount,
+      mode: 'delete',
+      itemField
     })
-  
+
+    const updateItem = await prisma.item.update({
+      where: { id: deleteHistory.itemId },
+      data: {
+        ...itemParam
+      }
+    })
+    if (updateItem.count.lessThan(0)) {
+      throw new Error(`実在庫が0以下になる処置はできません`)
+    }
+    return [deleteHistory, updateItem]
+  })
 }
 
-export const modifyHistoryParam = async (id:number, historyData: Partial<History>) => {
+export const modifyHistoryParam = async (id: number, historyData: Partial<History>) => {
   const data = await prisma.history.update({
-    where:{id},
+    where: { id },
     data: {
-      ...historyData,
-    }}
-  )
+      ...historyData
+    }
+  })
   return data
 }
 
@@ -143,8 +129,7 @@ const checkValidHistory = (history: UpdateHistoryData) => {
       throw new Error('出庫理由が予約か見積の場合は予約者と予約期限は必須です')
     }
   }
-  if (!history.reasonId)
-    throw new Error('在庫理由は必須です。')
+  if (!history.reasonId) throw new Error('在庫理由は必須です。')
   if (!reason) throw new Error('在庫理由は必須です。')
 
   if (reason == 出庫理由.不良品 && !history.note) {
@@ -159,7 +144,9 @@ const checkValidHistory = (history: UpdateHistoryData) => {
   }
 }
 
-const whichItemField = (reason: Reason): {
+const whichItemField = (
+  reason: Reason
+): {
   isTemp: boolean
   itemField: ITEM_FIELD
 } => {
@@ -182,15 +169,14 @@ const whichItemField = (reason: Reason): {
 }
 
 type HistoryParam = {
-  add: PrismaDecimal|Decimal,
-  reduce: PrismaDecimal|Decimal,
-  mode: 'create' | 'update' | 'delete',
+  add: PrismaDecimal | Decimal
+  reduce: PrismaDecimal | Decimal
+  mode: 'create' | 'update' | 'delete'
   itemField: ITEM_FIELD
-} 
+}
 
-const itemUpdateParam = ( historyParam:HistoryParam )=> {
-
-  const {add, reduce, mode, itemField} = historyParam
+const itemUpdateParam = (historyParam: HistoryParam) => {
+  const { add, reduce, mode, itemField } = historyParam
 
   const addCount = new PrismaDecimal(add?.toString() ?? 0)
   const reduceCount = new PrismaDecimal(reduce?.toString() ?? 0)
@@ -231,4 +217,3 @@ const itemUpdateParam = ( historyParam:HistoryParam )=> {
       }
   }
 }
-

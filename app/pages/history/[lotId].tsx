@@ -196,7 +196,7 @@ const HistoryListPage = () => {
         </HStack>
         <HStack>
           <Box>
-            <InputGroup size="sm">
+            <InputGroup size="sm" flexWrap={'wrap'}>
               <InputLeftAddon>寸法</InputLeftAddon>
               {isItemEditable() ? (
                 <>
@@ -205,6 +205,7 @@ const HistoryListPage = () => {
                     size="sm"
                     defaultValue={item?.length ?? undefined}
                     type="text"
+                    width={'auto'}
                     onBlur={(e) => {
                       editItem({
                         length: e.target.value
@@ -216,6 +217,7 @@ const HistoryListPage = () => {
                     size="sm"
                     placeholder="厚み"
                     type="number"
+                    width={'auto'}
                     defaultValue={item?.thickness?.toString() ?? undefined}
                     onBlur={(e) => {
                       editItem({
@@ -228,6 +230,7 @@ const HistoryListPage = () => {
                     size="sm"
                     placeholder="幅"
                     type="number"
+                    width={'auto'}
                     defaultValue={item?.width?.toString() ?? undefined}
                     onBlur={(e) => {
                       editItem({

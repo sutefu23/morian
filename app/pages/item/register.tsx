@@ -9,6 +9,7 @@ import '~/utils/string'
 import '~/utils/number'
 import dayjs from 'dayjs'
 import { useEffect } from 'react'
+import { relative } from 'path'
 
 type Props = {
   isFromIssue?: boolean //発注情報を入庫化する時
@@ -31,7 +32,7 @@ const Register = ({
   const { headerData, stockItems, updateItem, updateHeader, updateItemField, addItemLine, deleteItemLine, copyItemLine, postStock, resetData } = useStock()
   return (
     <>
-      <VStack align="left" pl="10" mb="3">
+      <VStack align="left" pl="10" mb="3" position={'relative'} zIndex={10}>
         <HStack>
           <Box>
             <InputGroup>
@@ -69,7 +70,7 @@ const Register = ({
       {stockItems &&
         stockItems?.map((item, index) => (
           <>
-            <VStack key={index} align="left" pl="10">
+            <VStack key={index} align="left" pl="10" position={'relative'} zIndex={1}>
               <HStack>
                 <Box>
                   <InputGroup>

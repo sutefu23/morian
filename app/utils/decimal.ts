@@ -1,4 +1,4 @@
-import type { Decimal } from '$/node_modules/@prisma/client/runtime'
+import type { Decimal } from '$/node_modules/@prisma/client/runtime/library'
 import { DeepPartial } from '~/types/DeepPartial.spec'
 
 /**
@@ -6,11 +6,7 @@ import { DeepPartial } from '~/types/DeepPartial.spec'
  *
  * @return {string}
  */
-export const align = (
-  decimal: Decimal | undefined | DeepPartial<Decimal>
-): string => {
+export const align = (decimal: Decimal | undefined | DeepPartial<Decimal>): string => {
   if (!decimal) return ''
-  return (decimal as Decimal).isInteger()
-    ? (decimal as Decimal).toFixed()
-    : (decimal as Decimal).round().toString()
+  return (decimal as Decimal).isInteger() ? (decimal as Decimal).toFixed() : (decimal as Decimal).round().toString()
 }
