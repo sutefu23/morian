@@ -5,7 +5,6 @@ WORKDIR /server
 
 ADD . /server
 
-RUN npm install -g npm@10.2.1
 RUN yarn install --frozen-lockfile
 RUN export PATH=$PATH:./node_modules/.bin
 
