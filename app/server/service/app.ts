@@ -1,7 +1,7 @@
 import Fastify, { FastifyServerFactory } from 'fastify'
-import helmet from 'fastify-helmet'
-import cors from 'fastify-cors'
-import fastifyJwt from 'fastify-jwt'
+import helmet from '@fastify/helmet'
+import cors from '@fastify/cors'
+import fastifyJwt from '@fastify/jwt'
 import { HOST, API_JWT_SECRET, API_BASE_PATH, NODE_ENV } from '$/envValues'
 import server from '$/$server'
 
@@ -9,7 +9,7 @@ export const init = (serverFactory?: FastifyServerFactory) => {
   const app = Fastify({ serverFactory })
   console.log('環境:' + NODE_ENV)
   app.register(helmet)
-  app.register(cors,{origin:HOST})
+  app.register(cors, { origin: HOST })
 
   app.addHook('onError', (req, reply, err) => {
     console.error('onError')

@@ -14,13 +14,12 @@ export default defineHooks((fastify) => ({
       const token = request.headers.token
       if (!token || token.length === 0) {
         reply.status(401)
+        return
       }
-      const me = await Auth.getUserFromToken(
-        token as string,
-        fastify.jwt.decode
-      )
+      const me = await Auth.getUserFromToken(token as string, fastify.jwt.decode)
       if (!me) {
         reply.status(401)
+        return
       }
     }
   }

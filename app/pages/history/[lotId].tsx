@@ -109,7 +109,7 @@ const HistoryListPage = () => {
         ) : (
           <></>
         )}
-        <HStack>
+        <HStack flexWrap={'wrap'}>
           <Box>
             <InputGroup size="sm">
               <InputLeftAddon>グレード</InputLeftAddon>
@@ -194,9 +194,9 @@ const HistoryListPage = () => {
             </InputGroup>
           </Box>
         </HStack>
-        <HStack>
+        <HStack flexWrap={'wrap'}>
           <Box>
-            <InputGroup size="sm" flexWrap={'wrap'}>
+            <InputGroup size="sm">
               <InputLeftAddon>寸法</InputLeftAddon>
               {isItemEditable() ? (
                 <>
@@ -205,7 +205,7 @@ const HistoryListPage = () => {
                     size="sm"
                     defaultValue={item?.length ?? undefined}
                     type="text"
-                    width={'auto'}
+                    width={{ base: '4em', md: 'auto' }}
                     onBlur={(e) => {
                       editItem({
                         length: e.target.value
@@ -217,7 +217,7 @@ const HistoryListPage = () => {
                     size="sm"
                     placeholder="厚み"
                     type="number"
-                    width={'auto'}
+                    width={{ base: '4em', md: 'auto' }}
                     defaultValue={item?.thickness?.toString() ?? undefined}
                     onBlur={(e) => {
                       editItem({
@@ -230,7 +230,7 @@ const HistoryListPage = () => {
                     size="sm"
                     placeholder="幅"
                     type="number"
-                    width={'auto'}
+                    width={{ base: '4em', md: 'auto' }}
                     defaultValue={item?.width?.toString() ?? undefined}
                     onBlur={(e) => {
                       editItem({
@@ -245,7 +245,7 @@ const HistoryListPage = () => {
             </InputGroup>
           </Box>
           <Box>
-            <InputGroup size="sm">
+            <InputGroup size="sm" flexWrap={'wrap'}>
               <InputLeftAddon>入数</InputLeftAddon>
               {isItemEditable() ? (
                 <>
@@ -253,6 +253,7 @@ const HistoryListPage = () => {
                     required
                     size="sm"
                     type="number"
+                    width={{ base: '4em', md: 'auto' }}
                     defaultValue={item?.packageCount ? Number(item.packageCount) : undefined}
                     placeholder="数字"
                     onBlur={(e) => {
@@ -265,6 +266,7 @@ const HistoryListPage = () => {
                     required
                     value={item?.packageCountUnitId ?? undefined}
                     size="sm"
+                    width={{ base: '4em', md: 'auto' }}
                     onSelect={(e) => {
                       const { options, selectedIndex } = e.target
                       editItem({
@@ -429,6 +431,7 @@ const HistoryListPage = () => {
                       <Input
                         border="solid 1px #ddd"
                         bgColor="white"
+                        minWidth={'10em'}
                         onBlur={async (e) => {
                           await apiClient.history._id(data.id).patch({
                             body: {
