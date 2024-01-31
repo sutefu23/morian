@@ -10,23 +10,16 @@ type Props = {
   value?: GradeType['id']
   required?: boolean
   size?: 'sm' | 'md' | 'lg' | 'xs'
+  width?: string
+  placeholder?: string
+  bgcolor?: string
 }
-const GradeSelect = ({ onSelect, selected, required, value, size }: Props) => {
-  const { data: grades, error: gradeErr } = useAspidaQuery(
-    apiClient.master.grade
-  )
-  if (gradeErr)
-    return <StatusBar status="error" message="グレードの取得に失敗しました。" />
+const GradeSelect = ({ onSelect, selected, required, placeholder = '選択してください。', value, size, width, bgcolor }: Props) => {
+  const { data: grades, error: gradeErr } = useAspidaQuery(apiClient.master.grade)
+  if (gradeErr) return <StatusBar status="error" message="グレードの取得に失敗しました。" />
 
   return (
-    <Select
-      size={size}
-      onChange={(e) => onSelect(e)}
-      placeholder="選択して下さい"
-      required={required}
-      defaultValue={selected}
-      value={value}
-    >
+    <Select size={size} onChange={(e) => onSelect(e)} placeholder={placeholder} required={required} defaultValue={selected} value={value ?? ''} w={width} backgroundColor={bgcolor}>
       {grades &&
         grades.map((grade) => {
           return (

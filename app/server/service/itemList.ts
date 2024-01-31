@@ -3,10 +3,11 @@ import { PrismaClient } from '@prisma/client'
 import { AuthService } from '$/domain/service/auth'
 import { ValidationError } from '$/domain/type/error'
 import { Decimal } from 'decimal.js'
-import { Status } from '@domain/entity/stock'
+import { Reason, Status } from '@domain/entity/stock'
 import { queryPrefix } from './itemType'
 import dayjs from 'dayjs'
-const prisma = new PrismaClient()
+import { StockReason } from '$/domain/init/master'
+const prisma = new PrismaClient({})
 
 export type getQuery = {
   woodSpeciesId?: number
@@ -20,6 +21,11 @@ export type getQuery = {
   warehouseId?: number
   specFilter?: string
   thickness?: number
+  length?: number
+  width?: number
+  grade?: number
+  historyReason?: Reason
+  includeBooking?: boolean
 }
 
 export const getExsitItemGroupList = async () => {
@@ -34,29 +40,34 @@ export const getGroupByWarehouseWoodspecies = async () => {
   })
 }
 
-export const getItemList = async ({ woodSpeciesId, itemTypeId, notZero, isDefective, limit, registerFrom, registerTo, orderBy = 'asc', warehouseId, specFilter, thickness }: getQuery) => {
-  const query = {
-    where: {
-      woodSpeciesId,
-      warehouseId,
-      thickness,
-      itemTypeId,
-      spec: specFilter ? { contains: specFilter } : undefined,
-      createdAt: {
-        gte: registerFrom ? dayjs(registerFrom).toISOString() : undefined,
-        lte: registerTo ? dayjs(registerTo).toISOString() : undefined
-      }
+export const getItemList = async ({ woodSpeciesId, itemTypeId, notZero, isDefective, limit, registerFrom, registerTo, orderBy = 'asc', warehouseId, specFilter, thickness, length, width, grade, historyReason, includeBooking }: getQuery) => {
+  const where = {
+    woodSpeciesId,
+    warehouseId,
+    thickness,
+    length: length ? String(length) : undefined,
+    width,
+    gradeId: grade,
+    itemTypeId,
+    spec: specFilter ? { contains: specFilter } : undefined,
+    createdAt: {
+      gte: registerFrom ? dayjs(registerFrom).toISOString() : undefined,
+      lte: registerTo ? dayjs(registerTo).toISOString() : undefined
     }
   }
   const notZeroQuery = (() => {
     if (notZero) {
       return {
-        where: {
-          ...query.where,
-          count: {
-            not: 0
+        OR: [
+          {
+            count: {
+              not: 0
+            }
+          },
+          {
+            onlyBooking: true
           }
-        }
+        ]
       }
     }
   })()
@@ -64,32 +75,59 @@ export const getItemList = async ({ woodSpeciesId, itemTypeId, notZero, isDefect
   const isDefectiveQuery = (() => {
     if (isDefective) {
       return {
-        where: {
-          OR: [
-            {
-              defectiveNote: {
-                not: null
-              }
-            },
-            {
-              defectiveNote: {
-                not: ''
-              }
+        OR: [
+          {
+            defectiveNote: {
+              not: null
             }
-          ]
+          },
+          {
+            defectiveNote: {
+              not: ''
+            }
+          }
+        ]
+      }
+    }
+  })()
+
+  const includeHistoryReason = (() => {
+    if (historyReason) {
+      return {
+        include: {
+          history: {
+            where: {
+              reasonId: StockReason.find((reason) => reason.name === historyReason)?.id
+            }
+          }
+        }
+      }
+    }
+  })()
+  const includeHistoryWhere = (() => {
+    if (historyReason) {
+      return {
+        history: {
+          some: {
+            reasonId: StockReason.find((reason) => reason.name === historyReason)?.id
+          }
         }
       }
     }
   })()
 
   const data = await prisma.item.findMany({
-    ...query,
-    ...notZeroQuery,
-    ...isDefectiveQuery,
+    where: {
+      ...where,
+      ...notZeroQuery,
+      ...isDefectiveQuery,
+      ...includeHistoryWhere
+    },
     orderBy: {
       id: orderBy
     },
-    take: limit
+    take: limit,
+    ...includeHistoryReason
   })
   return data
 }

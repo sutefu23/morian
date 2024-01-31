@@ -53,8 +53,8 @@ const HistoryListPage = () => {
   const { data: reasons } = useAspidaQuery(apiClient.master.reason)
   const arraivalDate = item?.arrivalDate ? '入荷日:' + dayjs(item.arrivalDate).format('YY/MM/DD') : ''
   useEffect(() => {
-    setTitle(`${lotId} ${item?.woodSpeciesName} ${item?.itemTypeName} 在庫一覧   ${arraivalDate}`)
-  }, [lotId, item?.woodSpeciesName, item?.itemTypeName, arraivalDate, setTitle])
+    setTitle(`${lotId} ${item?.woodSpeciesName} ${item?.itemTypeName} ${item?.onlyBooking ? '【予約専用】' : ''}在庫一覧   ${arraivalDate}`)
+  }, [lotId, item?.woodSpeciesName, item?.itemTypeName, arraivalDate, setTitle, item?.onlyBooking])
   const [mode, setEditMode] = useState<'新規作成' | '編集'>('新規作成')
 
   const ref = createRef<HTMLTableRowElement>()
@@ -385,7 +385,26 @@ const HistoryListPage = () => {
         </HStack>
       </VStack>
       <VStack>
-        <Box overflowY="auto" maxHeight="65vh" w="100vw" bgColor="white" zIndex="10" mt="10px">
+        <Box>
+          <Button
+            type="submit"
+            bgColor="green.200"
+            mt="10px"
+            onClick={(e) => {
+              e.preventDefault()
+              if (!item?.id) {
+                alert('itemIdが存在しません')
+                return
+              }
+              setEditMode('新規作成')
+              setEditHistoryId(undefined)
+              onModalOpen()
+            }}
+          >
+            ＋新規行追加
+          </Button>
+        </Box>
+        <Box overflowY="auto" maxHeight="65vh" w="100vw" bgColor="white" zIndex="10">
           <Table variant="striped" className="hover" borderBottom="1px">
             <Thead position="sticky" top="0" bgColor="white" zIndex="10">
               <Tr>
@@ -475,23 +494,6 @@ const HistoryListPage = () => {
             </Tbody>
           </Table>
         </Box>
-        <Button
-          type="submit"
-          bgColor="green.200"
-          mt="10px"
-          onClick={(e) => {
-            e.preventDefault()
-            if (!item?.id) {
-              alert('itemIdが存在しません')
-              return
-            }
-            setEditMode('新規作成')
-            setEditHistoryId(undefined)
-            onModalOpen()
-          }}
-        >
-          ＋新規追加
-        </Button>
       </VStack>
       <aside>
         <RightDrawer isOpen={isRightOpen} onClose={onRightClose} width="30vw">

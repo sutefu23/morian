@@ -12,12 +12,16 @@ import { PDFDownloadLink } from '@react-pdf/renderer'
 import Dialog from '~/components/feedback/dialog'
 import SingleBarCodePdf from '~/components/barcode/SingleBarcode'
 import { useEffect } from 'react'
-import { WarehouseSelect } from '~/components/select'
+import { GradeSelect, WarehouseSelect } from '~/components/select'
+import { 出庫理由 } from '~/server/domain/entity/stock'
 const BarCodeIcon = chakra(FaBarcode)
 
 type SearchOptions = {
   warehouse?: number
   thickness?: number
+  length?: number
+  width?: number
+  grade?: number
   notZero?: boolean
   specFilter?: string
 }
@@ -30,22 +34,34 @@ const WoodSpeciesPage = () => {
   const searchDefault: SearchOptions = {
     warehouse: undefined,
     thickness: undefined,
+    length: undefined,
+    width: undefined,
+    grade: undefined,
     notZero: true,
     specFilter: ''
   }
   const [searchOptions, setSearchOptions] = useState<SearchOptions>(searchDefault)
 
-  const { data: stocks } = useAspidaQuery(apiClient.itemList, {
+  const query = {
     query: {
       woodSpeciesId: Number(woodSpeciesId),
       itemTypeId: Number(itemTypeId),
       notZero: searchOptions.notZero,
       warehouseId: searchOptions.warehouse,
       thickness: searchOptions.thickness,
-      specFilter: searchOptions.specFilter
+      specFilter: searchOptions.specFilter,
+      length: searchOptions.length,
+      width: searchOptions.width,
+      grade: searchOptions.grade,
+      includeBooking: true
     },
     enabled: !!woodSpeciesId && !!itemTypeId
-  })
+  }
+
+  const { data: stocks } = useAspidaQuery(apiClient.itemList, query)
+  const { data: stockYoyaku } = useAspidaQuery(apiClient.itemList, { query: { ...query.query, historyReason: 出庫理由.見積 }, enabled: !!woodSpeciesId && !!itemTypeId })
+  const { data: stockMitsumori } = useAspidaQuery(apiClient.itemList, { query: { ...query.query, historyReason: 出庫理由.受注予約 }, enabled: !!woodSpeciesId && !!itemTypeId })
+
   const [selectedItem, setSelectedItem] = useState(stocks ? stocks[0] : undefined)
   const { data: units } = useAspidaQuery(apiClient.master.unit)
   const { data: grades } = useAspidaQuery(apiClient.master.grade)
@@ -57,10 +73,23 @@ const WoodSpeciesPage = () => {
     setTitle(`${woodSpecies?.name} ${itemType?.name} 在庫一覧`)
   }, [woodSpecies?.name, itemType?.name, setTitle])
 
+  const representitiveUnit = units?.find((u) => u.id === stocks?.[0]?.unitId)
+  const sumOfCount = stocks?.reduce((prev, current) => {
+    return prev + (Number(current.count) ?? 0)
+  }, 0)
+  const yoyakuCount = stockYoyaku?.reduce((prev, current) => {
+    return prev + Number(current.history?.reduce((prev, current) => prev + Number(current.reduceCount), 0))
+  }, 0)
+
+  const mitsumoriCount = stockMitsumori?.reduce((prev, current) => {
+    return prev + Number(current.history?.reduce((prev, current) => prev + Number(current.reduceCount), 0))
+  }, 0)
+
   return (
     <>
       <Breadcrumbs links={[{ name: `${woodSpecies?.name} ${itemType?.name}一覧` }]}></Breadcrumbs>
-      <VStack maxWidth={{ base: '100%', md: '60%' }} padding={'1em'} border={'1px'} borderColor={'blackAlpha.100'} bgColor={'blackAlpha.100'}>
+      <br />
+      <VStack maxWidth={{ base: '100%' }} padding={'1em'} border={'1px'} borderColor={'blackAlpha.100'} bgColor={'blackAlpha.100'}>
         <HStack flexWrap={'wrap'}>
           <Heading as="h4" size={'sm'} fontWeight={'normal'}>
             検索:
@@ -68,11 +97,40 @@ const WoodSpeciesPage = () => {
           <Input
             backgroundColor={'white'}
             width={'100px'}
-            placeholder="厚み検索"
+            placeholder="長さ"
             type="number"
-            value={searchOptions.thickness}
+            value={searchOptions.length ?? ''}
+            onChange={(e) => {
+              setSearchOptions({ ...searchOptions, length: e.target.value ? Number(e.target.value) : undefined })
+            }}
+          />
+          <Input
+            backgroundColor={'white'}
+            width={'100px'}
+            placeholder="厚み"
+            type="number"
+            value={searchOptions.thickness ?? ''}
             onChange={(e) => {
               setSearchOptions({ ...searchOptions, thickness: e.target.value ? Number(e.target.value) : undefined })
+            }}
+          />
+          <Input
+            backgroundColor={'white'}
+            width={'100px'}
+            placeholder="幅"
+            type="number"
+            value={searchOptions.width ?? ''}
+            onChange={(e) => {
+              setSearchOptions({ ...searchOptions, width: e.target.value ? Number(e.target.value) : undefined })
+            }}
+          />
+          <GradeSelect
+            value={searchOptions.grade}
+            width="100px"
+            placeholder="グレードで検索"
+            bgcolor="white"
+            onSelect={(e) => {
+              setSearchOptions({ ...searchOptions, grade: e.target.value ? Number(e.target.value) : undefined })
             }}
           />
           <WarehouseSelect
@@ -108,6 +166,16 @@ const WoodSpeciesPage = () => {
           </Button>
         </HStack>
       </VStack>
+      <VStack maxWidth={{ base: '100%' }} padding={'1em'} border={'1px'} borderColor={'blackAlpha.100'} bgColor={'blackAlpha.100'}>
+        <HStack>
+          <Heading as="h3" size={'sm'} fontWeight={'bold'}>
+            見積予約数:{mitsumoriCount}
+            {representitiveUnit?.name}&emsp; 受注予約数:{yoyakuCount}
+            {representitiveUnit?.name}&emsp; 在庫数:{sumOfCount?.toLocaleString()}
+            {representitiveUnit?.name}
+          </Heading>
+        </HStack>
+      </VStack>
       <Box overflowX="auto">
         <Table variant="striped" colorScheme="gray">
           <Thead>
@@ -130,7 +198,10 @@ const WoodSpeciesPage = () => {
             {stocks &&
               stocks.map((stock) => (
                 <Tr key={stock.id}>
-                  <Td>{stock.lotNo}</Td>
+                  <Td>
+                    {stock.lotNo}
+                    {stock.onlyBooking ? '【予約専用】' : ''}
+                  </Td>
                   <Td>{grades?.find((g) => g.id === stock.gradeId)?.name}</Td>
                   <Td>{stock.spec}</Td>
                   <Td>{stock.supplierName}</Td>

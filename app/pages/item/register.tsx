@@ -1,4 +1,4 @@
-import { HStack, Box, VStack, InputGroup, InputLeftAddon, Input, Spacer, Button, Divider, FormLabel } from '@chakra-ui/react'
+import { HStack, Box, VStack, InputGroup, InputLeftAddon, Input, Spacer, Button, Divider, FormLabel, Checkbox } from '@chakra-ui/react'
 import { WoodSpeciesSelect, ItemTypeSelect, SupplierSelect, GradeSelect, UnitSelect, WarehouseSelect } from '~/components/select/'
 import Footer from '~/components/Footer'
 import useStock from '~/hooks/useStock'
@@ -29,6 +29,7 @@ const Register = ({
       setTitle('新規在庫登録')
     }
   }, [isFromIssue, setTitle])
+
   const { headerData, stockItems, updateItem, updateHeader, updateItemField, addItemLine, deleteItemLine, copyItemLine, postStock, resetData } = useStock()
   return (
     <>
@@ -174,6 +175,20 @@ const Register = ({
                         })
                       }}
                       value={item?.lotNo}
+                    />
+                  </InputGroup>
+                </Box>
+                <Box>
+                  <InputGroup>
+                    <InputLeftAddon mr={10}>予約専用</InputLeftAddon>
+                    <Checkbox
+                      size="md"
+                      onChange={(e) => {
+                        updateItem(index, {
+                          onlyBooking: e.target.checked
+                        })
+                      }}
+                      checked={item?.onlyBooking}
                     />
                   </InputGroup>
                 </Box>

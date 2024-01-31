@@ -19,3 +19,6 @@ dev:
 
 product-up:
 	docker compose -f docker-compose.yml -f docker-compose.prod.override.yml up -d
+
+server-build:
+	docker build -t frourio-server -f ./app/server/Dockerfile ./app/server

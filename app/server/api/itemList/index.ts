@@ -1,10 +1,12 @@
 import { UpdateItemData } from '$/domain/service/stock'
 import { getQuery } from '$/service/itemList'
-import { Item } from '@prisma/client'
+import { Item, History } from '@prisma/client'
 export type Methods = {
   get: {
     query: getQuery
-    resBody: Item[]
+    resBody: (Item & {
+      history?: History[]
+    })[]
   }
   post: {
     reqBody: UpdateItemData[]

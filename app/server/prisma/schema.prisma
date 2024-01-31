@@ -141,6 +141,7 @@ model Item {
   note                 String? // 備考
   manufacturer         String? // 製造元
   defectiveNote        String? //不良品備考
+  onlyBooking          Boolean   @default(false) // 予約専用
   enable               Boolean   @default(true)
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt

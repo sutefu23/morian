@@ -1,6 +1,4 @@
-import {
-  UnitType,
-} from '@domain/entity/stock'
+import { UnitType } from '@domain/entity/stock'
 import { Decimal } from 'decimal.js'
 
 export type UpdateItemData = {
@@ -37,6 +35,7 @@ export type UpdateItemData = {
   readonly enable: boolean
   readonly note?: string
   readonly defectiveNote?: string
+  readonly onlyBooking?: boolean
 }
 // 直接一部のデータだけを変更する用
 export type PartialUpdateItemData = {
@@ -59,10 +58,10 @@ export type PartialUpdateItemData = {
   readonly warehouseName?: string
   readonly manufacturer?: string
   readonly arrivalDate?: Date
-  readonly note?: string,
-  readonly defectiveNote?:string
+  readonly note?: string
+  readonly defectiveNote?: string
 }
-  
+
 export type UpdateHistoryData = {
   readonly itemId: number
   readonly note?: string
@@ -83,5 +82,3 @@ export type GetParam = {
   woodSpeciesId?: number
   itemTypeId?: number
 }
-
-
