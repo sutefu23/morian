@@ -59,8 +59,8 @@ const WoodSpeciesPage = () => {
   }
 
   const { data: stocks } = useAspidaQuery(apiClient.itemList, query)
-  const { data: stockYoyaku } = useAspidaQuery(apiClient.itemList, { query: { ...query.query, historyReason: 出庫理由.見積 }, enabled: !!woodSpeciesId && !!itemTypeId })
-  const { data: stockMitsumori } = useAspidaQuery(apiClient.itemList, { query: { ...query.query, historyReason: 出庫理由.受注予約 }, enabled: !!woodSpeciesId && !!itemTypeId })
+  const { data: stockYoyaku } = useAspidaQuery(apiClient.itemList, { query: { ...query.query, historyReason: 出庫理由.受注予約 }, enabled: !!woodSpeciesId && !!itemTypeId })
+  const { data: stockMitsumori } = useAspidaQuery(apiClient.itemList, { query: { ...query.query, historyReason: 出庫理由.見積 }, enabled: !!woodSpeciesId && !!itemTypeId })
 
   const [selectedItem, setSelectedItem] = useState(stocks ? stocks[0] : undefined)
   const { data: units } = useAspidaQuery(apiClient.master.unit)
