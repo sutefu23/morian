@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client'
 import { AuthService } from '$/domain/service/auth'
 import { ValidationError } from '$/domain/type/error'
 import { Decimal } from 'decimal.js'
-import { Reason, Status } from '@domain/entity/stock'
+import { Reason, Status, 出庫理由 } from '@domain/entity/stock'
 import { queryPrefix } from './itemType'
 import dayjs from 'dayjs'
 import { StockReason } from '$/domain/init/master'
@@ -74,19 +74,17 @@ export const getItemList = async ({ woodSpeciesId, itemTypeId, notZero, isDefect
 
   const isDefectiveQuery = (() => {
     if (isDefective) {
+      // return {
+      //   NOT: [{ defectiveNote: null }, { defectiveNote: '' }, { defectiveNote: 'None' }]
+      // }
       return {
-        OR: [
-          {
-            defectiveNote: {
-              not: null
-            }
-          },
-          {
-            defectiveNote: {
-              not: ''
+        include: {
+          history: {
+            where: {
+              reasonId: StockReason.find((reason) => reason.name === 出庫理由.不良品)?.id
             }
           }
-        ]
+        }
       }
     }
   })()
@@ -116,17 +114,30 @@ export const getItemList = async ({ woodSpeciesId, itemTypeId, notZero, isDefect
     }
   })()
 
-  const data = await prisma.item.findMany({
+  console.log({
     where: {
       ...where,
       ...notZeroQuery,
-      ...isDefectiveQuery,
       ...includeHistoryWhere
     },
     orderBy: {
       id: orderBy
     },
     take: limit,
+    ...isDefectiveQuery,
+    ...includeHistoryReason
+  })
+  const data = await prisma.item.findMany({
+    where: {
+      ...where,
+      ...notZeroQuery,
+      ...includeHistoryWhere
+    },
+    orderBy: {
+      id: orderBy
+    },
+    take: limit,
+    ...isDefectiveQuery,
     ...includeHistoryReason
   })
   return data

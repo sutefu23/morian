@@ -3,7 +3,7 @@ import { apiClient } from '~/utils/apiClient'
 import { StockReason } from '~/server/domain/init/master'
 import { 出庫理由 } from '~/server/domain/entity/stock'
 import dayjs from 'dayjs'
-export type ReportType = '受注予約一覧' | '受注出庫一覧' | '見積一覧'
+export type ReportType = '受注予約一覧' | '受注出庫一覧' | '見積一覧' | '不良品一覧'
 
 const useHistoryReport = (type: ReportType, fromDate?: Date, toDate?: Date) => {
   const print = async () => {
@@ -25,6 +25,10 @@ const useHistoryReport = (type: ReportType, fromDate?: Date, toDate?: Date) => {
         case '見積一覧':
           return {
             reasonId: StockReason.find((r) => r.name === 出庫理由.見積)?.id
+          }
+        case '不良品一覧':
+          return {
+            reasonId: StockReason.find((r) => r.name === 出庫理由.不良品)?.id
           }
       }
     })()
@@ -75,6 +79,8 @@ const useHistoryReport = (type: ReportType, fromDate?: Date, toDate?: Date) => {
               { header: '見積期限', key: 'bookDate' }
             ]
           ]
+        case '不良品一覧':
+          return [...worksheet.columns, ...[]]
       }
     })()
 

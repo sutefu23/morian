@@ -17,12 +17,13 @@ const Report = () => {
   const [selectedItemTypeId, setSelectedItemTypeId] = useState<number | undefined>()
   const [registerDateQuery, setRegisterDateQuery] = useState<{ fromDate?: Date; toDate?: Date } | undefined>({ fromDate: undefined, toDate: undefined })
 
-  const { print: printDefective } = useItemReport('不良在庫一覧')
+  // const { print: printDefective } = useItemReport('不良在庫一覧')
   const { print: printAmountPerLot } = useItemReport('ロット別在庫金額', { fromDate: registerDateQuery?.fromDate, toDate: registerDateQuery?.toDate, woodSpeciesId: selectedWoodSpeciesId, itemTypeId: selectedItemTypeId })
   const [exportDateQuery, setExportDateQuery] = useState<{ fromDate?: Date; toDate?: Date } | undefined>({ fromDate: dayjs().subtract(1, 'M').startOf('month').toDate(), toDate: dayjs().subtract(1, 'M').endOf('month').toDate() })
 
   const { print: printBookList } = useHistoryReport('受注予約一覧')
   const { print: printEstimate } = useHistoryReport('見積一覧')
+  const { print: printDefective } = useHistoryReport('不良品一覧')
   const { print: printMonthlyRecord } = useHistoryReport('受注出庫一覧', exportDateQuery?.fromDate, exportDateQuery?.toDate)
 
   const { isOpen: isMonthlyRecordModalOpen, onClose: onMonthlyRecordModalClose, onOpen: onMonthlyRecordModalOpen } = useDisclosure()
@@ -51,7 +52,7 @@ const Report = () => {
               await printDefective()
             }}
           >
-            不良在庫一覧
+            不良品明細一覧
           </Button>
           <Button
             bg="blue.300"

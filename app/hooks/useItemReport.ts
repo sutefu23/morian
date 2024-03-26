@@ -39,7 +39,8 @@ const useItemReport = (type: ReportType, query?: { fromDate?: Date; toDate?: Dat
       { header: '数量', key: 'count' },
       { header: '単位', key: 'unitName' },
       { header: '金額', key: 'totalAmount' },
-      { header: '備考', key: 'note' }
+      { header: 'ロット備考', key: 'note' }
+      // { header: '明細備考', key: 'detailnote' }
     ]
     worksheet.columns = (() => {
       switch (type) {
