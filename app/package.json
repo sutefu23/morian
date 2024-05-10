@@ -10,7 +10,7 @@
     "dev:aspida": "aspida --watch",
     "build": "run-p build:client build:server",
     "prebuild:client": "npm run generate",
-    "build:client": "next build && next export",
+    "build:client": "next build",
     "build:server": "npm run build --prefix server",
     "generate": "run-p generate:*",
     "generate:aspida": "aspida",
