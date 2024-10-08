@@ -11,9 +11,7 @@ export class lotNoType extends ValueObject<string> {
 
   static getInstance(val: string): lotNoType | ValidationError {
     if (!/^[A-Z]+-([0-9]|-)+$/gu.test(val)) {
-      return new ValidationError(
-        'lotNoの形式が正しくありません。英語-数字' + val
-      )
+      return new ValidationError('lotNoの形式が正しくありません。英語-数字' + val)
     }
     return new this(val)
   }
@@ -41,9 +39,7 @@ export class furiganaType extends ValueObject<string> {
 
   static getInstance(val: string): furiganaType | ValidationError {
     if (!/^[ぁ-ヴー]+$/gu.test(val)) {
-      return new ValidationError(
-        'フリガナの形式が正しくありません。(全角ひらがなのみ)'
-      )
+      return new ValidationError('フリガナの形式が正しくありません。(全角ひらがなのみ)')
     }
     return new this(val)
   }
@@ -307,9 +303,7 @@ export class History extends Entity<HistoryProps> implements HistoryProps {
   private constructor(props: HistoryProps) {
     super(props)
   }
-  public static getInstance(
-    props: HistoryProps
-  ): History | InvalidArgumentError {
+  public static getInstance(props: HistoryProps): History | InvalidArgumentError {
     return new this({ ...props })
   }
 }

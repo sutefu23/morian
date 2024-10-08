@@ -169,8 +169,7 @@ const issueSelector = selector({
 
 const useIssue = () => {
   const [issueData, setIssueData] = useRecoilState<EditIssueData>(issueSelector)
-  const [issueSaveData, setIssueSaveData] =
-    useRecoilState<EditIssueData>(issueSaveDataAtom)
+  const [issueSaveData, setIssueSaveData] = useRecoilState<EditIssueData>(issueSaveDataAtom)
   const [templates, setTemplates] = useRecoilState(issueTemplatesAtom)
   const [editMode, setEditMode] = useRecoilState(editModeAtom)
   const resetIssueData = useResetRecoilState(issueDataAtom)
@@ -238,11 +237,7 @@ const useIssue = () => {
   )
 
   const updateItemField = useCallback(
-    <K extends keyof EditIssueItemData>(
-      index: number,
-      key: K,
-      val: EditIssueItemData[K]
-    ): void => {
+    <K extends keyof EditIssueItemData>(index: number, key: K, val: EditIssueItemData[K]): void => {
       if (issueData.issueItems) {
         const newItem = { ...issueData.issueItems[index], ...{ [key]: val } }
         const newItems = Object.assign([], issueData.issueItems, {
@@ -256,12 +251,7 @@ const useIssue = () => {
 
   const calcCostPackageCount = useCallback(
     (issueItem?: EditIssueItemData) => {
-      if (
-        issueItem?.costUnitId &&
-        issueItem.width &&
-        issueItem.thickness &&
-        issueItem.packageCount
-      ) {
+      if (issueItem?.costUnitId && issueItem.width && issueItem.thickness && issueItem.packageCount) {
         const { width, length, thickness, packageCount } = issueItem
         if (length === '乱尺' || !length) return
 
@@ -276,21 +266,11 @@ const useIssue = () => {
           const dPackageCount = new Decimal(String(packageCount))
           switch (unit) {
             case '㎥': // 幅/1000*長さ/1000*厚み/1000
-              return dWidth
-                .dividedBy(thousand)
-                .mul(dLength.dividedBy(thousand))
-                .mul(dThickness.dividedBy(thousand))
+              return dWidth.dividedBy(thousand).mul(dLength.dividedBy(thousand)).mul(dThickness.dividedBy(thousand))
             case '平米': // 幅/1000*長さ/1000
-              return dWidth
-                .dividedBy(thousand)
-                .mul(dLength.dividedBy(thousand))
-                .mul(dPackageCount)
+              return dWidth.dividedBy(thousand).mul(dLength.dividedBy(thousand)).mul(dPackageCount)
             case '坪': // 幅/1000*長さ/1000/3.3
-              return dWidth
-                .dividedBy(thousand)
-                .mul(dLength.dividedBy(thousand))
-                .mul(dPackageCount)
-                .dividedBy(tubo)
+              return dWidth.dividedBy(thousand).mul(dLength.dividedBy(thousand)).mul(dPackageCount).dividedBy(tubo)
 
             default:
               break
@@ -391,8 +371,7 @@ const useIssue = () => {
       return null
     }
 
-    const { packageCount, count, unitId, costPackageCount, cost, costUnitId } =
-      item
+    const { packageCount, count, unitId, costPackageCount, cost, costUnitId } = item
 
     if (!packageCount) {
       alert('入数は必須です。')
@@ -465,11 +444,10 @@ const useIssue = () => {
     //copySheet.model = template.model
     //copySheet.name = "THE REAL ID"
 
+    if (!sheet) return
     //ヘッダー部
     if (issueData.date) {
-      sheet.getCell('B1').value = dayjs(issueData.date as Date).format(
-        'YYYY年MM月DD日'
-      )
+      sheet.getCell('B1').value = dayjs(issueData.date as Date).format('YYYY年MM月DD日')
     }
     sheet.getCell('P1').value = issueData.managedId
     sheet.getCell('A3').value = issueData.supplierName
@@ -495,9 +473,7 @@ const useIssue = () => {
       sheet.getCell(`I${row}`).value = `${item.thickness}`
       sheet.getCell(`J${row}`).value = `${item.width}`
       sheet.getCell(`K${row}`).value = `${String(item.packageCount)}` // 入数
-      sheet.getCell(`M${row}`).value = `${Number(item.cost).toYenFormat()} / ${
-        item.costUnitName
-      }` // 単価
+      sheet.getCell(`M${row}`).value = `${Number(item.cost).toYenFormat()} / ${item.costUnitName}` // 単価
       sheet.getCell(`N${row}`).value = `${item.count} ${item.unitName}` // 数量
       sheet.getCell(`P${row}`).value = totalPrice(item)
     })
