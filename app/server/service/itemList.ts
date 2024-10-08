@@ -114,19 +114,6 @@ export const getItemList = async ({ woodSpeciesId, itemTypeId, notZero, isDefect
     }
   })()
 
-  console.log({
-    where: {
-      ...where,
-      ...notZeroQuery,
-      ...includeHistoryWhere
-    },
-    orderBy: {
-      id: orderBy
-    },
-    take: limit,
-    ...isDefectiveQuery,
-    ...includeHistoryReason
-  })
   const data = await prisma.item.findMany({
     where: {
       ...where,
