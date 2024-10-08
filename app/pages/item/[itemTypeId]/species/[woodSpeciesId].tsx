@@ -258,7 +258,7 @@ const WoodSpeciesPage = () => {
           {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
           {/* @ts-ignore */}
           <PDFDownloadLink document={<SingleBarCodePdf item={selectedItem} />} fileName={`${selectedItem?.lotNo}.pdf`}>
-            {({ loading }) => (loading ? 'Loading' : <Button color="blue.300">クリックでPDFダウンロード</Button>)}
+            {({ loading }: { loading: boolean }) => (loading ? 'Loading' : <Button color="blue.300">クリックでPDFダウンロード</Button>)}
           </PDFDownloadLink>
         </VStack>
       </Dialog>

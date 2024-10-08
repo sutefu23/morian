@@ -39,6 +39,7 @@ const useHistoryReport = (type: ReportType, fromDate?: Date, toDate?: Date) => {
     const worksheet = workbook.getWorksheet(`${type}`)
 
     // 列を定義
+    if (!worksheet) return
     worksheet.columns = [
       { header: '日付', key: 'date' },
       { header: 'ロットNo', key: 'lotNo' },

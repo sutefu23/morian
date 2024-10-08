@@ -20,6 +20,7 @@ const useItemReport = (type: ReportType, query?: { fromDate?: Date; toDate?: Dat
     workbook.addWorksheet(`${type}`)
     const worksheet = workbook.getWorksheet(`${type}`)
     // 列を定義
+    if (!worksheet) return
     worksheet.columns = [
       { header: 'ロットNo', key: 'lotNo' },
       { header: '樹種', key: 'woodSpeciesName' },
@@ -42,6 +43,7 @@ const useItemReport = (type: ReportType, query?: { fromDate?: Date; toDate?: Dat
       { header: 'ロット備考', key: 'note' }
       // { header: '明細備考', key: 'detailnote' }
     ]
+    if (!worksheet) return
     worksheet.columns = (() => {
       switch (type) {
         case '不良在庫一覧':
