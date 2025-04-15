@@ -22,3 +22,9 @@ product-up:
 
 server-build:
 	docker build -t frourio-server -f ./app/server/Dockerfile ./app/server
+
+fix:
+	cd app && npx yarn-audit-fix && yarn audit
+	cd app/server && npx yarn-audit-fix && yarn audit
+
+
