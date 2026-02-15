@@ -147,9 +147,9 @@ const IssueList = () => {
                             {item?.thickness ? `*${item?.thickness}` : ''}
                             {item?.width ? `*${item?.width}` : ''}
                           </Td>
-                          <Td>{item?.packageCount}</Td>
+                          <Td>{item?.packageCount?.toString()}</Td>
                           <Td>
-                            {item?.count}
+                            {item?.count?.toString()}
                             {item.unitName}
                           </Td>
                           <Td>{issue.supplierName}</Td>

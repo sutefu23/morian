@@ -206,7 +206,7 @@ const WoodSpeciesPage = () => {
                   <Td>{stock.spec}</Td>
                   <Td>{stock.supplierName}</Td>
                   <Td>
-                    {stock.packageCount}
+                    {stock.packageCount?.toString()}
                     {stock.packageCountUnitName}
                   </Td>
                   <Td>
@@ -218,10 +218,10 @@ const WoodSpeciesPage = () => {
                   <Td>{warehouses?.find((w) => w.id === stock.warehouseId)?.name}</Td>
                   <Td>{stock.note}</Td>
                   <Td>
-                    {stock.cost}/{units?.find((u) => u.id === stock.costUnitId)?.name}
+                    {stock.cost?.toString()}/{units?.find((u) => u.id === stock.costUnitId)?.name}
                   </Td>
                   <Td color={Number(stock.tempCount) < 0 ? 'red' : ''}>
-                    {stock.tempCount} {units?.find((u) => u.id === stock.unitId)?.name}
+                    {stock.tempCount?.toString()} {units?.find((u) => u.id === stock.unitId)?.name}
                   </Td>
                   <Td>
                     <Button
@@ -258,7 +258,7 @@ const WoodSpeciesPage = () => {
           {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
           {/* @ts-ignore */}
           <PDFDownloadLink document={<SingleBarCodePdf item={selectedItem} />} fileName={`${selectedItem?.lotNo}.pdf`}>
-            {({ loading }: { loading: boolean }) => (loading ? 'Loading' : <Button color="blue.300">クリックでPDFダウンロード</Button>)}
+            {(({ loading }: { loading: boolean }) => (loading ? 'Loading' : <Button color="blue.300">クリックでPDFダウンロード</Button>)) as any}
           </PDFDownloadLink>
         </VStack>
       </Dialog>

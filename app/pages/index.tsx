@@ -70,11 +70,11 @@ const Home = () => {
                           {item?.width ? `*${item?.width}` : ''}
                         </Td>
                         <Td>
-                          {item?.packageCount}
+                          {item?.packageCount?.toString()}
                           {item?.packageCountUnitName}
                         </Td>
                         <Td>
-                          {item?.count}
+                          {item?.count?.toString()}
                           {item.unitName}
                         </Td>
                         <Td>{item.supplierName}</Td>
@@ -117,7 +117,7 @@ const Home = () => {
               {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
               {/* @ts-ignore */}
               <PDFDownloadLink document={<SingleBarCodePdf item={selectedItem} />} fileName={`${selectedItem?.lotNo}.pdf`}>
-                {({ loading }: { loading: boolean }) => (loading ? 'Loading' : <Button color="blue.300">クリックでPDFダウンロード</Button>)}
+                {(({ loading }: { loading: boolean }) => (loading ? 'Loading' : <Button color="blue.300">クリックでPDFダウンロード</Button>)) as any}
               </PDFDownloadLink>
             </VStack>
           </Dialog>

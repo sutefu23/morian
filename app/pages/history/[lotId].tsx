@@ -465,8 +465,8 @@ const HistoryListPage = () => {
                         defaultValue={data.note ?? undefined}
                       />
                     </Td>
-                    <Td textAlign="center">{data.addCount.toString() != '0' && data.addCount}</Td>
-                    <Td textAlign="center">{data.reduceCount.toString() != '0' && data.reduceCount}</Td>
+                    <Td textAlign="center">{data.addCount.toString() != '0' && data.addCount.toString()}</Td>
+                    <Td textAlign="center">{data.reduceCount.toString() != '0' && data.reduceCount.toString()}</Td>
                     <Td textAlign="center">
                       {data.bookDate ? dayjs(data.bookDate).format('YY/MM/DD') : ''}
                       {data.bookDate && dayjs(data.bookDate).diff(new Date(), 'day') <= -1 && <Text fontSize="xx-small">期限が切れています</Text>}

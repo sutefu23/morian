@@ -135,7 +135,7 @@ const Handy = () => {
                       <Td>
                         {itm.woodSpeciesName} {itm.itemTypeName}
                       </Td>
-                      <Td>{Number(history.addCount) > 0 ? history.addCount : history.reduceCount}</Td>
+                      <Td>{Number(history.addCount) > 0 ? String(history.addCount) : String(history.reduceCount)}</Td>
                     </Tr>
                   ))
                 )}

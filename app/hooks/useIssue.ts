@@ -284,7 +284,7 @@ const useIssue = () => {
 
   const costPerUnit = useCallback(
     //最小単位当たりの原価
-    (issueItem) => {
+    (issueItem: EditIssueItemData) => {
       if (!issueItem?.cost || !issueItem?.costPackageCount) return 0
       return Number(issueItem.cost) * Number(issueItem.costPackageCount)
     },

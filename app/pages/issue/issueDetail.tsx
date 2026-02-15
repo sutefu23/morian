@@ -93,16 +93,16 @@ const IssueDetail = ({
         </Tr>
         <Tr>
           <Th>入数</Th>
-          <Td>{item.packageCount}</Td>
+          <Td>{item.packageCount?.toString()}</Td>
         </Tr>
         <Tr>
           <Th>原価単位数量</Th>
-          <Td>{item.costPackageCount}</Td>
+          <Td>{item.costPackageCount?.toString()}</Td>
         </Tr>
         <Tr>
           <Th>数量</Th>
           <Td>
-            {item.count} {item.unitName}
+            {item.count?.toString()} {item.unitName}
           </Td>
         </Tr>
         <Tr>
