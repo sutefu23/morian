@@ -117,6 +117,7 @@ const Home = () => {
               {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
               {/* @ts-ignore */}
               <PDFDownloadLink document={<SingleBarCodePdf item={selectedItem} />} fileName={`${selectedItem?.lotNo}.pdf`}>
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                 {(({ loading }: { loading: boolean }) => (loading ? 'Loading' : <Button color="blue.300">クリックでPDFダウンロード</Button>)) as any}
               </PDFDownloadLink>
             </VStack>
