@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: redis-${PROJECT_NAME}
+    restart: unless-stopped
+    command: ['redis-server', '--appendonly', 'yes']
+    volumes:
+      - redis_data:/data
+    networks:
+      - internal
+
+  backend:
+    container_name: backend-${PROJECT_NAME}
+    build:
+      context: ./app/server
+      dockerfile: Dockerfile.prod
+    restart: unless-stopped
+    depends_on:
+      redis:
+        condition: service_started
+    environment:
+      NODE_ENV: production
+      TZ: Asia/Tokyo
+      HOST: ${HOST}
+      PORT: 3000
+      API_SERVER_PORT: 3000
+      API_BASE_PATH: ${API_BASE_PATH}
+      API_JWT_SECRET: ${API_JWT_SECRET}
+      API_ORIGIN: ${API_ORIGIN}
+      API_SALT: ${API_SALT}
+      API_UPLOAD_DIR: /uploads
+      DEFAULT_USER_PASS: ${DEFAULT_USER_PASS}
+      API_DATABASE_URL: ${API_DATABASE_URL}
+      REDIS_HOST: redis
+      REDIS_POST: 6379
+      REDIS_USERNAME: ''
+      REDIS_PASSWORD: ''
+    volumes:
+      - uploads:/uploads
+    ports:
+      - '127.0.0.1:3000:3000'
+    healthcheck:
+      test: ['CMD-SHELL', "node -e \"require('http').get('http://127.0.0.1:3000/api/', r => process.exit(r.statusCode < 500 ? 0 : 1)).on('error', () => process.exit(1))\""]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+    networks:
+      - internal
+
+volumes:
+  redis_data:
+  uploads:
+
+networks:
+  internal:
+    driver: bridge

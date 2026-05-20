@@ -5,3 +5,5 @@ data/redis/dump.rdb
 ~*
 .env.production
 .env.development
+.env.prod
+infra/backups/
